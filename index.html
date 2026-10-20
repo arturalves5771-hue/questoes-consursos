@@ -125,9 +125,11 @@
             font-size: 13px;
             margin-top: 12px;
             background: #fef2f2;
-            padding: 8px;
+            padding: 10px;
             border-radius: 6px;
             border: 1px solid #fecaca;
+            text-align: left;
+            word-break: break-all;
         }
 
         /* PAINEL PRINCIPAL */
@@ -246,13 +248,13 @@
             
             <div class="form-group">
                 <label>Usuário</label>
-                <input type="text" id="login-user" placeholder="Digite seu usuário">
+                <input type="text" id="login-user" placeholder="Digite seu usuário" value="waleska">
             </div>
             
             <div class="form-group">
                 <label>Senha</label>
                 <div class="password-container">
-                    <input type="password" id="login-pass" placeholder="••••••••">
+                    <input type="password" id="login-pass" placeholder="••••••••" value="123456">
                     <button type="button" class="btn-toggle-pass" onclick="togglePassword()" id="btn-eye" title="Mostrar senha">👁️</button>
                 </div>
             </div>
@@ -310,9 +312,8 @@
         let provaSelecionada = null;
         let disciplinaSelecionada = null;
         let desafioSelecionado = null;
-        let nivelAtual = 1; // 1: Provas, 2: Disciplinas, 3: Desafios, 4: Questões
+        let nivelAtual = 1;
 
-        // Função para mostrar/ocultar senha
         function togglePassword() {
             const passInput = document.getElementById('login-pass');
             const btnEye = document.getElementById('btn-eye');
@@ -336,31 +337,46 @@
                 return;
             }
 
-            const { data, error } = await supabaseClient
-                .from('usuarios')
-                .select('*')
-                .ilike('username', userVal)
-                .maybeSingle();
-
-            if (error || !data) {
-                errorDiv.innerText = 'Usuário não encontrado.';
-                errorDiv.classList.remove('hidden');
-                return;
-            }
-
-            if (String(data.senha).trim() !== passVal) {
-                errorDiv.innerText = 'Senha incorreta.';
-                errorDiv.classList.remove('hidden');
-                return;
-            }
-
-            usuarioAtual = data;
             errorDiv.classList.add('hidden');
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('main-screen').classList.remove('hidden');
-            document.getElementById('span-nome-usuario').innerText = data.nome_completo;
 
-            carregarProvas();
+            try {
+                // Diagnóstico detalhado de conexão
+                const { data, error } = await supabaseClient
+                    .from('usuarios')
+                    .select('*')
+                    .ilike('username', userVal)
+                    .maybeSingle();
+
+                if (error) {
+                    errorDiv.innerText = `Erro do Supabase: ${error.message} (Código: ${error.code})`;
+                    errorDiv.classList.remove('hidden');
+                    return;
+                }
+
+                if (!data) {
+                    errorDiv.innerText = `Utilizador '${userVal}' não encontrado na tabela 'usuarios'.`;
+                    errorDiv.classList.remove('hidden');
+                    return;
+                }
+
+                if (String(data.senha).trim() !== passVal) {
+                    errorDiv.innerText = `Senha incorreta para o utilizador '${userVal}'.`;
+                    errorDiv.classList.remove('hidden');
+                    return;
+                }
+
+                usuarioAtual = data;
+                errorDiv.classList.add('hidden');
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('main-screen').classList.remove('hidden');
+                document.getElementById('span-nome-usuario').innerText = data.nome_completo;
+
+                carregarProvas();
+
+            } catch (err) {
+                errorDiv.innerText = `Erro de exceção: ${err.message}`;
+                errorDiv.classList.remove('hidden');
+            }
         }
 
         function fazerLogout() {
@@ -369,13 +385,10 @@
             disciplinaSelecionada = null;
             desafioSelecionado = null;
             nivelAtual = 1;
-            document.getElementById('login-user').value = '';
-            document.getElementById('login-pass').value = '';
             document.getElementById('main-screen').classList.add('hidden');
             document.getElementById('login-screen').classList.remove('hidden');
         }
 
-        // ================= NÍVEL 1: CARREGAR PROVAS =================
         async function carregarProvas() {
             nivelAtual = 1;
             atualizarNavegacaoTela();
@@ -388,8 +401,13 @@
                 .select('prova')
                 .ilike('username', usuarioAtual.username);
 
-            if (error || !data.length) {
-                gridProvas.innerHTML = '<p style="color: var(--text-muted);">Nenhuma prova atribuída a este usuário.</p>';
+            if (error) {
+                gridProvas.innerHTML = `<p style="color: red;">Erro ao carregar provas: ${error.message}</p>`;
+                return;
+            }
+
+            if (!data || !data.length) {
+                gridProvas.innerHTML = '<p style="color: var(--text-muted);">Nenhuma prova atribuída a este usuário na tabela `provas_usuario`.</p>';
                 return;
             }
 
@@ -405,7 +423,6 @@
             gridProvas.innerHTML = html;
         }
 
-        // ================= NÍVEL 2: CARREGAR DISCIPLINAS =================
         async function selecionarProva(provaNome) {
             provaSelecionada = provaNome;
             nivelAtual = 2;
@@ -421,8 +438,13 @@
                 .ilike('username', usuarioAtual.username)
                 .eq('tipoprova', provaNome);
 
-            if (error || !data.length) {
-                gridDisc.innerHTML = '<p style="color: var(--text-muted);">Nenhuma disciplina encontrada.</p>';
+            if (error) {
+                gridDisc.innerHTML = `<p style="color: red;">Erro: ${error.message}</p>`;
+                return;
+            }
+
+            if (!data || !data.length) {
+                gridDisc.innerHTML = '<p style="color: var(--text-muted);">Nenhuma disciplina encontrada para esta prova.</p>';
                 return;
             }
 
@@ -439,7 +461,6 @@
             gridDisc.innerHTML = html;
         }
 
-        // ================= NÍVEL 3: CARREGAR DESAFIOS =================
         async function selecionarDisciplina(disciplinaNome) {
             disciplinaSelecionada = disciplinaNome;
             nivelAtual = 3;
@@ -456,7 +477,12 @@
                 .eq('tipoprova', provaSelecionada)
                 .eq('disciplina', disciplinaNome);
 
-            if (error || !data.length) {
+            if (error) {
+                gridDesafios.innerHTML = `<p style="color: red;">Erro: ${error.message}</p>`;
+                return;
+            }
+
+            if (!data || !data.length) {
                 gridDesafios.innerHTML = '<p style="color: var(--text-muted);">Nenhum desafio encontrado.</p>';
                 return;
             }
@@ -474,7 +500,6 @@
             gridDesafios.innerHTML = html;
         }
 
-        // ================= NÍVEL 4: CARREGAR QUESTÕES DO DESAFIO =================
         async function selecionarDesafio(desafioCod) {
             desafioSelecionado = desafioCod;
             nivelAtual = 4;
@@ -492,8 +517,13 @@
                 .eq('disciplina', disciplinaSelecionada)
                 .eq('coddesafio', desafioCod);
 
-            if (error || !data.length) {
-                container.innerHTML = '<p style="text-align:center; color: var(--text-muted);">Nenhuma questão encontrada para este desafio.</p>';
+            if (error) {
+                container.innerHTML = `<p style="color: red; text-align:center;">Erro: ${error.message}</p>`;
+                return;
+            }
+
+            if (!data || !data.length) {
+                container.innerHTML = '<p style="text-align:center; color: var(--text-muted);">Nenhuma questão encontrada.</p>';
                 return;
             }
 
@@ -531,7 +561,6 @@
             container.innerHTML = html;
         }
 
-        // ================= GERENCIAMENTO DE TELAS E BOTÃO VOLTAR =================
         function atualizarNavegacaoTela() {
             document.getElementById('nivel-provas').classList.add('hidden');
             document.getElementById('nivel-disciplinas').classList.add('hidden');
