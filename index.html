@@ -52,17 +52,12 @@
             text-align: center;
         }
 
-        .login-card .logo-icon {
-            width: 50px;
-            height: 50px;
-            background: rgba(59, 130, 246, 0.1);
-            color: var(--primary);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
+        .login-card .logo-img {
+            max-width: 110px;
+            height: auto;
             margin: 0 auto 15px auto;
+            display: block;
+            object-fit: contain;
         }
 
         .login-card h2 { font-size: 22px; font-weight: 700; color: var(--text-main); margin-bottom: 6px; }
@@ -204,7 +199,8 @@
     <!-- TELA DE LOGIN -->
     <div id="login-screen" class="login-wrapper">
         <div class="login-card">
-            <div class="logo-icon">📖</div>
+            <!-- Imagem do brasão/logo da Polícia Penal PE -->
+            <img src="policia-penal-pe.png" alt="Logo Polícia Penal PE" class="logo-img" onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/arturalves5771-hue/questoes-consursos/main/policia-penal-pe.png';">
             <h2>Bem-vindo de volta</h2>
             <p>Acesse seu caderno de questões</p>
             
@@ -260,7 +256,7 @@
         let provaAtual = null;
 
         async function fazerLogin() {
-            const userVal = document.getElementById('login-user').value.trim().toLowerCase();
+            const userVal = document.getElementById('login-user').value.trim();
             const passVal = document.getElementById('login-pass').value.trim();
             const errorDiv = document.getElementById('login-error');
 
@@ -270,12 +266,13 @@
                 return;
             }
 
+            // Uso do ilike para ignorar maiúsculas/minúsculas no username
             const { data, error } = await supabaseClient
                 .from('usuarios')
                 .select('*')
-                .eq('username', userVal)
+                .ilike('username', userVal)
                 .eq('senha', passVal)
-                .single();
+                .maybeSingle();
 
             if (error || !data) {
                 errorDiv.innerText = 'Usuário ou senha inválidos.';
@@ -309,7 +306,7 @@
             const { data, error } = await supabaseClient
                 .from('provas_usuario')
                 .select('prova')
-                .eq('username', usuarioAtual.username);
+                .ilike('username', usuarioAtual.username);
 
             if (error || !data.length) {
                 gridProvas.innerHTML = '<p style="color: var(--text-muted);">Nenhuma prova atribuída a este usuário.</p>';
@@ -336,7 +333,7 @@
             const { data, error } = await supabaseClient
                 .from('questoes_desafios')
                 .select('disciplina')
-                .eq('nome_aluna', usuarioAtual.nome_completo)
+                .ilike('nome_aluna', usuarioAtual.nome_completo)
                 .eq('tipoprova', provaNome);
 
             if (error) return;
@@ -359,7 +356,7 @@
             let query = supabaseClient
                 .from('questoes_desafios')
                 .select('*')
-                .eq('nome_aluna', usuarioAtual.nome_completo)
+                .ilike('nome_aluna', usuarioAtual.nome_completo)
                 .eq('tipoprova', provaAtual);
 
             if (disciplina) {
