@@ -326,8 +326,8 @@
         }
 
         async function fazerLogin() {
-            const userVal = document.getElementById('login-user').value.trim();
-            const passVal = document.getElementById('login-pass').value.trim();
+            const userVal = document.getElementById('login-user').value.trim().toLowerCase();
+            const passVal = String(document.getElementById('login-pass').value).trim();
             const errorDiv = document.getElementById('login-error');
 
             if (!userVal || !passVal) {
@@ -340,11 +340,16 @@
                 .from('usuarios')
                 .select('*')
                 .ilike('username', userVal)
-                .eq('senha', passVal)
                 .maybeSingle();
 
             if (error || !data) {
-                errorDiv.innerText = 'Usuário ou senha inválidos.';
+                errorDiv.innerText = 'Usuário não encontrado.';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            if (String(data.senha).trim() !== passVal) {
+                errorDiv.innerText = 'Senha incorreta.';
                 errorDiv.classList.remove('hidden');
                 return;
             }
