@@ -170,6 +170,21 @@
         }
         .btn-voltar:hover { background: #cbd5e1; }
 
+        /* DESTAQUE DA DATA DA PROVA */
+        .prova-destaque-header {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            padding: 14px 18px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            color: #1e40af;
+            font-weight: 500;
+        }
+
         .grid-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin-bottom: 30px; }
         .card-item {
             background: var(--card-bg);
@@ -278,7 +293,8 @@
 
             <!-- NÍVEL 2: DISCIPLINAS & METAS -->
             <div id="nivel-disciplinas" class="hidden">
-                <h3 class="section-title" id="titulo-prova-atual">Disciplinas e Metas</h3>
+                <div id="detalhes-prova-header" class="prova-destaque-header"></div>
+                <h3 class="section-title" id="titulo-prova-atual">Disciplinas</h3>
                 <div id="grid-disciplinas" class="grid-cards"></div>
             </div>
 
@@ -303,7 +319,7 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let usuarioAtual = null;
-        let provaSelecionada = null;
+        let provaSelecionadaObj = null; // Guarda objeto completo da prova (nome e data)
         let disciplinaSelecionada = null;
         let desafioSelecionado = null;
         let nivelAtual = 1;
@@ -367,7 +383,7 @@
 
         function fazerLogout() {
             usuarioAtual = null;
-            provaSelecionada = null;
+            provaSelecionadaObj = null;
             disciplinaSelecionada = null;
             desafioSelecionado = null;
             nivelAtual = 1;
@@ -375,7 +391,7 @@
             document.getElementById('login-screen').classList.remove('hidden');
         }
 
-        // ================= NÍVEL 1: PROVAS =================
+        // ================= NÍVEL 1: CARREGAR PROVAS =================
         async function carregarProvas() {
             nivelAtual = 1;
             atualizarNavegacaoTela();
@@ -385,7 +401,7 @@
 
             const { data, error } = await supabaseClient
                 .from('provas_usuario')
-                .select('prova')
+                .select('*')
                 .ilike('username', usuarioAtual.username);
 
             if (error || !data || !data.length) {
@@ -395,41 +411,49 @@
 
             let html = '';
             data.forEach(item => {
+                const dataFormatada = item.data_prova ? new Date(item.data_prova).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) : 'Data não informada';
                 html += `
-                    <div class="card-item" onclick="selecionarProva('${item.prova}')">
+                    <div class="card-item" onclick='selecionarProva(${JSON.stringify(item)})'>
                         <h4>🏛️ ${item.prova}</h4>
-                        <span>Clique para ver disciplinas e metas</span>
+                        <span>📅 Data da Prova: <b>${dataFormatada}</b></span>
+                        <span style="margin-top:6px; color:var(--primary); font-weight:600;">Clique para ver as disciplinas ➔</span>
                     </div>
                 `;
             });
             gridProvas.innerHTML = html;
         }
 
-        // ================= NÍVEL 2: DISCIPLINAS, METAS E DATA DA PROVA =================
-        async function selecionarProva(provaNome) {
-            provaSelecionada = provaNome;
+        // ================= NÍVEL 2: CARREGAR DISCIPLINAS =================
+        async function selecionarProva(itemProva) {
+            provaSelecionadaObj = itemProva;
             nivelAtual = 2;
             atualizarNavegacaoTela();
 
-            document.getElementById('titulo-prova-atual').innerText = `📚 Prova: ${provaNome}`;
-            const gridDisc = document.getElementById('grid-disciplinas');
-            gridDisc.innerHTML = '<p style="color: var(--text-muted);">Carregando disciplinas e metas...</p>';
+            document.getElementById('titulo-prova-atual').innerText = `📚 Disciplinas da Prova: ${itemProva.prova}`;
+            
+            const dataFormatada = itemProva.data_prova ? new Date(itemProva.data_prova).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) : 'Não informada';
+            document.getElementById('detalhes-prova-header').innerHTML = `
+                <span>🏛️ <b>${itemProva.prova}</b></span>
+                <span>📅 Data Oficial: <b>${dataFormatada}</b></span>
+            `;
 
-            // Busca as metas cadastradas para esta prova e usuário
+            const gridDisc = document.getElementById('grid-disciplinas');
+            gridDisc.innerHTML = '<p style="color: var(--text-muted);">Buscando disciplinas e metas...</p>';
+
+            // Busca as metas da tabela disciplinas_meta
             const { data: metasData } = await supabaseClient
                 .from('disciplinas_meta')
                 .select('*')
                 .ilike('username', usuarioAtual.username)
-                .eq('prova', provaNome);
+                .eq('prova', itemProva.prova);
 
-            // Busca também as disciplinas presentes nas questões caso não estejam na tabela de metas
+            // Busca as disciplinas diretamente na tabela de questões para garantir cobertura exata
             const { data: questoesData } = await supabaseClient
                 .from('questoes_desafios')
                 .select('disciplina')
                 .ilike('username', usuarioAtual.username)
-                .eq('tipoprova', provaNome);
+                .eq('tipoprova', itemProva.prova);
 
-            // Combina e gera lista única de disciplinas
             const disciplinasSet = new Set();
             if (metasData) metasData.forEach(m => disciplinasSet.add(m.disciplina));
             if (questoesData) questoesData.forEach(q => { if(q.disciplina) disciplinasSet.add(q.disciplina); });
@@ -443,23 +467,20 @@
 
             let html = '';
             disciplinasUnicas.forEach(disc => {
-                // Procura meta e data correspondente
                 const infoMeta = metasData ? metasData.find(m => m.disciplina === disc) : null;
-                const metaQtd = infoMeta ? infoMeta.meta_questoes : 'Não definida';
-                const dataProva = infoMeta && infoMeta.data_prova ? new Date(infoMeta.data_prova).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) : 'Não informada';
+                const metaQtd = infoMeta ? infoMeta.meta_questoes : 'Meta não definida';
 
                 html += `
                     <div class="card-item" onclick="selecionarDisciplina('${disc}')">
                         <h4>📖 ${disc}</h4>
-                        <span>🎯 Meta: <b>${metaQtd}</b> questões</span>
-                        <span>📅 Data da Prova: <b>${dataProva}</b></span>
+                        <span>🎯 Meta de Questões: <b>${metaQtd}</b></span>
                     </div>
                 `;
             });
             gridDisc.innerHTML = html;
         }
 
-        // ================= NÍVEL 3: DESAFIOS =================
+        // ================= NÍVEL 3: CARREGAR DESAFIOS =================
         async function selecionarDisciplina(disciplinaNome) {
             disciplinaSelecionada = disciplinaNome;
             nivelAtual = 3;
@@ -473,7 +494,7 @@
                 .from('questoes_desafios')
                 .select('coddesafio')
                 .ilike('username', usuarioAtual.username)
-                .eq('tipoprova', provaSelecionada)
+                .eq('tipoprova', provaSelecionadaObj.prova)
                 .eq('disciplina', disciplinaNome);
 
             if (error || !data || !data.length) {
@@ -494,7 +515,7 @@
             gridDesafios.innerHTML = html;
         }
 
-        // ================= NÍVEL 4: QUESTÕES =================
+        // ================= NÍVEL 4: CARREGAR QUESTÕES DO DESAFIO (CORRIGIDO) =================
         async function selecionarDesafio(desafioCod) {
             desafioSelecionado = desafioCod;
             nivelAtual = 4;
@@ -504,16 +525,17 @@
             const container = document.getElementById('resultado-questoes');
             container.innerHTML = '<p style="text-align:center; color: var(--text-muted);">Carregando questões...</p>';
 
+            // Filtro rigoroso corrigido unindo username, prova, disciplina e desafio
             const { data, error } = await supabaseClient
                 .from('questoes_desafios')
                 .select('*')
                 .ilike('username', usuarioAtual.username)
-                .eq('tipoprova', provaSelecionada)
+                .eq('tipoprova', provaSelecionadaObj.prova)
                 .eq('disciplina', disciplinaSelecionada)
                 .eq('coddesafio', desafioCod);
 
             if (error || !data || !data.length) {
-                container.innerHTML = '<p style="text-align:center; color: var(--text-muted);">Nenhuma questão encontrada.</p>';
+                container.innerHTML = '<p style="text-align:center; color: var(--text-muted);">Nenhuma questão encontrada para este desafio e disciplina.</p>';
                 return;
             }
 
@@ -578,7 +600,7 @@
             if (nivelAtual === 4) {
                 selecionarDisciplina(disciplinaSelecionada);
             } else if (nivelAtual === 3) {
-                selecionarProva(provaSelecionada);
+                selecionarProva(provaSelecionadaObj);
             } else if (nivelAtual === 2) {
                 carregarProvas();
             }
