@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plataforma de Estudos - Supabase</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; }
+        .container { max-width: 900px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+        h1, h2 { text-align: center; color: #1a202c; }
+        
+        /* Tela de Login */
+        #login-screen { max-width: 400px; margin: 50px auto; padding: 30px; background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+        .form-group { margin-bottom: 15px; display: flex; flex-direction: column; }
+        label { font-weight: 600; margin-bottom: 5px; color: #4a5568; font-size: 14px; }
+        input, select { padding: 10px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 15px; }
+        button { background-color: #3182ce; color: white; border: none; padding: 12px; border-radius: 6px; font-size: 16px; cursor: pointer; width: 100%; font-weight: bold; }
+        button:hover { background-color: #2b6cb0; }
+        .error-msg { color: #e53e3e; font-size: 14px; text-align: center; margin-top: 10px; }
+
+        /* Painel Principal */
+        .hidden { display: none !important; }
+        .user-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #edf2f7; padding-bottom: 15px; margin-bottom: 20px; }
+        .btn-sair { background-color: #e53e3e; width: auto; padding: 8px 15px; font-size: 14px; }
+        
+        /* Grid de Provas (Cadernos) */
+        .grid-provas { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .card-prova { background: #ebf8ff; border: 2px solid #3182ce; padding: 20px; border-radius: 8px; cursor: pointer; text-align: center; transition: all 0.2s; font-weight: bold; color: #2b6cb0; }
+        .card-prova:hover { background: #bee3f8; transform: translateY(-2px); }
+
+        /* Questões */
+        .card-questao { background: #fff; border: 1px solid #e2e8f0; border-left: 5px solid #3182ce; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .badge-desafio { background-color: #ebf8ff; color: #2b6cb0; font-weight: bold; padding: 4px 10px; border-radius: 20px; font-size: 13px; }
+        .enunciado { font-size: 16px; color: #2d3748; margin: 15px 0; font-weight: 500; }
+        .alternativas { list-style: none; padding: 0; }
+        .alternativas li { padding: 8px 12px; margin-bottom: 6px; border-radius: 4px; background: #f7fafc; border: 1px solid #edf2f7; font-size: 14px; }
+        .status-box { margin-top: 15px; padding: 10px; border-radius: 6px; font-size: 14px; font-weight: bold; }
+        .status-acerto { background-color: #c6f6d5; color: #22543d; }
+        .status-erro { background-color: #fed7d7; color: #742a2a; }
+    </style>
+</head>
+<body>
+
+    <!-- TELA DE LOGIN -->
+    <div id="login-screen">
+        <h2>Login - Sistema</h2>
+        <div class="form-group">
+            <label>Usuário (Username):</label>
+            <input type="text" id="login-user" placeholder="Ex: waleska">
+        </div>
+        <div class="form-group">
+            <label>Senha:</label>
+            <input type="password" id="login-pass" placeholder="Sua senha">
+        </div>
+        <button onclick="fazerLogin()">Entrar</button>
+        <div id="login-error" class="error-msg"></div>
+    </div>
+
+    <!-- PAINEL PRINCIPAL DO USUÁRIO -->
+    <div id="main-screen" class="container hidden">
+        <div class="user-header">
+            <div>
+                <h2>Bem-vindo(a), <span id="span-nome-usuario"></span></h2>
+            </div>
+            <button class="btn-sair" onclick="fazerLogout()">Sair</button>
+        </div>
+
+        <h3>Selecione a Prova (Caderno):</h3>
+        <div id="grid-provas" class="grid-provas"></div>
+
+        <div id="secao-disciplinas" class="hidden">
+            <h3 id="titulo-prova-selecionada" style="color: #2b6cb0; margin-top: 25px;"></h3>
+            <div class="form-group" style="max-width: 300px;">
+                <label>Filtrar por Disciplina:</label>
+                <select id="select-disciplina" onchange="carregarQuestoes()">
+                    <option value="">Todas as disciplinas</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="resultado-questoes" style="margin-top: 20px;"></div>
+    </div>
+
+    <script>
+        // Substitua com as suas credenciais do Supabase
+        const SUPABASE_URL = 'SUA_SUPABASE_URL_AQUI';
+        const SUPABASE_ANON_KEY = 'SUA_SUPABASE_ANON_KEY_AQUI';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let usuarioAtual = null;
+        let provaAtual = null;
+
+        async function fazerLogin() {
+            const userVal = document.getElementById('login-user').value.trim().toLowerCase();
+            const passVal = document.getElementById('login-pass').value.trim();
+            const errorDiv = document.getElementById('login-error');
+
+            if (!userVal || !passVal) {
+                errorDiv.innerText = 'Preencha todos os campos.';
+                return;
+            }
+
+            const { data, error } = await supabaseClient
+                .from('usuarios')
+                .select('*')
+                .eq('username', userVal)
+                .eq('senha', passVal)
+                .single();
+
+            if (error || !data) {
+                errorDiv.innerText = 'Usuário ou senha incorretos.';
+                return;
+            }
+
+            usuarioAtual = data;
+            document.getElementById('login-error').innerText = '';
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('main-screen').classList.remove('hidden');
+            document.getElementById('span-nome-usuario').innerText = data.nome_completo;
+
+            carregarProvasDoUsuario();
+        }
+
+        function fazerLogout() {
+            usuarioAtual = null;
+            provaAtual = null;
+            document.getElementById('login-user').value = '';
+            document.getElementById('login-pass').value = '';
+            document.getElementById('main-screen').classList.add('hidden');
+            document.getElementById('login-screen').classList.remove('hidden');
+            document.getElementById('resultado-questoes').innerHTML = '';
+        }
+
+        async function carregarProvasDoUsuario() {
+            const gridProvas = document.getElementById('grid-provas');
+            gridProvas.innerHTML = '<p>A carregar provas...</p>';
+
+            const { data, error } = await supabaseClient
+                .from('provas_usuario')
+                .select('prova')
+                .eq('username', usuarioAtual.username);
+
+            if (error || !data.length) {
+                gridProvas.innerHTML = '<p>Nenhuma prova atribuída a este utilizador.</p>';
+                return;
+            }
+
+            let html = '';
+            data.forEach(item => {
+                html += `<div class="card-prova" onclick="selecionarProva('${item.prova}')">📚 ${item.prova}</div>`;
+            });
+            gridProvas.innerHTML = html;
+        }
+
+        async function selecionarProva(provaNome) {
+            provaAtual = provaNome;
+            document.getElementById('titulo-prova-selecionada').innerText = `Prova: ${provaNome}`;
+            document.getElementById('secao-disciplinas').classList.remove('hidden');
+
+            // Carrega disciplinas associadas a esta prova para este aluno
+            const { data, error } = await supabaseClient
+                .from('questoes_desafios')
+                .select('disciplina')
+                .eq('nome_aluna', usuarioAtual.nome_completo)
+                .eq('tipoprova', provaNome);
+
+            if (error) return;
+
+            const disciplinas = [...new Set(data.map(i => i.disciplina))].filter(Boolean);
+            const selectDisc = document.getElementById('select-disciplina');
+            selectDisc.innerHTML = '<option value="">Todas as disciplinas</option>';
+            disciplinas.forEach(d => {
+                selectDisc.innerHTML += `<option value="${d}">${d}</option>`;
+            });
+
+            carregarQuestoes();
+        }
+
+        async function carregarQuestoes() {
+            const disciplina = document.getElementById('select-disciplina').value;
+            const container = document.getElementById('resultado-questoes');
+            container.innerHTML = '<p style="text-align:center;">A carregar questões...</p>';
+
+            let query = supabaseClient
+                .from('questoes_desafios')
+                .select('*')
+                .eq('nome_aluna', usuarioAtual.nome_completo)
+                .eq('tipoprova', provaAtual);
+
+            if (disciplina) {
+                query = query.eq('disciplina', disciplina);
+            }
+
+            const { data, error } = await query;
+
+            if (error || !data.length) {
+                container.innerHTML = '<p style="text-align:center;">Nenhuma questão encontrada.</p>';
+                return;
+            }
+
+            let html = `<h3>Questões da Prova (${data.length})</h3>`;
+            data.forEach(q => {
+                const isAcerto = q.acerto_erro && q.acerto_erro.toLowerCase() === 'acerto';
+                html += `
+                    <div class="card-questao">
+                        <div style="display:flex; justify-content:space-between;">
+                            <span class="badge-desafio">${q.coddesafio}</span>
+                            <span><b>Disciplina:</b> ${q.disciplina} | <b>Aula:</b> ${q.aula}</span>
+                        </div>
+                        <div class="enunciado">${q.questao}</div>
+                        <ul class="alternativas">
+                            ${q.alternativaa ? `<li><b>A)</b> ${q.alternativaa}</li>` : ''}
+                            ${q.alternativab ? `<li><b>B)</b> ${q.alternativab}</li>` : ''}
+                            ${q.alternativac ? `<li><b>C)</b> ${q.alternativac}</li>` : ''}
+                            ${q.alternativad ? `<li><b>D)</b> ${q.alternativad}</li>` : ''}
+                            ${q.alternativae ? `<li><b>E)</b> ${q.alternativae}</li>` : ''}
+                        </ul>
+                        <div class="status-box ${isAcerto ? 'status-acerto' : 'status-erro'}">
+                            Resultado: ${q.acerto_erro} | Resposta: <b>${q.resposta_aluno}</b> (Gabarito: <b>${q.gabarito}</b>)
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+    </script>
+</body>
+</html>
