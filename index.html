@@ -143,10 +143,11 @@
             transition: all 0.2s ease;
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
-        .card-prova:hover {
+        .card-prova:hover, .card-prova.active {
             border-color: var(--primary);
             transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+            background: #f0f7ff;
         }
         .card-prova h4 { font-size: 15px; color: var(--text-main); margin-bottom: 6px; font-weight: 600; }
         .card-prova span { font-size: 12px; color: var(--text-muted); }
@@ -199,7 +200,6 @@
     <!-- TELA DE LOGIN -->
     <div id="login-screen" class="login-wrapper">
         <div class="login-card">
-            <!-- Imagem do brasão/logo da Polícia Penal PE -->
             <img src="policia-penal-pe.png" alt="Logo Polícia Penal PE" class="logo-img" onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/arturalves5771-hue/questoes-consursos/main/policia-penal-pe.png';">
             <h2>Bem-vindo de volta</h2>
             <p>Acesse seu caderno de questões</p>
@@ -233,7 +233,7 @@
             <div id="secao-disciplinas" class="hidden" style="margin-top: 30px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
                     <h3 id="titulo-prova-selecionada" class="section-title" style="margin-bottom:0;"></h3>
-                    <div class="form-group" style="margin-bottom: 0; min-width: 200px;">
+                    <div class="form-group" style="margin-bottom: 0; min-width: 220px;">
                         <select id="select-disciplina" onchange="carregarQuestoes()">
                             <option value="">Todas as disciplinas</option>
                         </select>
@@ -266,7 +266,6 @@
                 return;
             }
 
-            // Uso do ilike para ignorar maiúsculas/minúsculas no username
             const { data, error } = await supabaseClient
                 .from('usuarios')
                 .select('*')
@@ -297,6 +296,7 @@
             document.getElementById('main-screen').classList.add('hidden');
             document.getElementById('login-screen').classList.remove('hidden');
             document.getElementById('resultado-questoes').innerHTML = '';
+            document.getElementById('secao-disciplinas').classList.add('hidden');
         }
 
         async function carregarProvasDoUsuario() {
@@ -316,27 +316,40 @@
             let html = '';
             data.forEach(item => {
                 html += `
-                    <div class="card-prova" onclick="selecionarProva('${item.prova}')">
-                        <h4>${item.prova}</h4>
-                        <span>Clique para visualizar as questões</span>
+                    <div class="card-prova" onclick="selecionarProva('${item.prova}', this)">
+                        <h4>📚 ${item.prova}</h4>
+                        <span>Clique para visualizar disciplinas e questões</span>
                     </div>
                 `;
             });
             gridProvas.innerHTML = html;
         }
 
-        async function selecionarProva(provaNome) {
+        async function selecionarProva(provaNome, elementoCard) {
             provaAtual = provaNome;
+            
+            // Destaca o card selecionado
+            document.querySelectorAll('.card-prova').forEach(c => c.classList.remove('active'));
+            if(elementoCard) elementoCard.classList.add('active');
+
             document.getElementById('titulo-prova-selecionada').innerText = provaNome;
             document.getElementById('secao-disciplinas').classList.remove('hidden');
 
+            const container = document.getElementById('resultado-questoes');
+            container.innerHTML = '<p style="text-align:center; color: var(--text-muted);">Buscando disciplinas e questões...</p>';
+
+            // Busca vinculada estritamente pelo username único
             const { data, error } = await supabaseClient
                 .from('questoes_desafios')
                 .select('disciplina')
-                .ilike('nome_aluna', usuarioAtual.nome_completo)
+                .ilike('username', usuarioAtual.username)
                 .eq('tipoprova', provaNome);
 
-            if (error) return;
+            if (error) {
+                console.error(error);
+                container.innerHTML = '<p style="color:red; text-align:center;">Erro ao buscar disciplinas.</p>';
+                return;
+            }
 
             const disciplinas = [...new Set(data.map(i => i.disciplina))].filter(Boolean);
             const selectDisc = document.getElementById('select-disciplina');
@@ -353,10 +366,11 @@
             const container = document.getElementById('resultado-questoes');
             container.innerHTML = '<p style="text-align:center; color: var(--text-muted);">Carregando questões...</p>';
 
+            // Consulta vinculada estritamente pelo username único
             let query = supabaseClient
                 .from('questoes_desafios')
                 .select('*')
-                .ilike('nome_aluna', usuarioAtual.nome_completo)
+                .ilike('username', usuarioAtual.username)
                 .eq('tipoprova', provaAtual);
 
             if (disciplina) {
@@ -365,21 +379,21 @@
 
             const { data, error } = await query;
 
-            if (error || !data.length) {
-                container.innerHTML = '<p style="text-align:center; color: var(--text-muted);">Nenhuma questão encontrada para este filtro.</p>';
+            if (error || !data || !data.length) {
+                container.innerHTML = '<p style="text-align:center; color: var(--text-muted);">Nenhuma questão encontrada para este caderno/filtro.</p>';
                 return;
             }
 
-            let html = '';
+            let html = `<h4 style="margin-bottom:15px; color: var(--text-muted); font-weight: 500;">Exibindo ${data.length} questão(ões)</h4>`;
             data.forEach(q => {
                 const isAcerto = q.acerto_erro && q.acerto_erro.toLowerCase() === 'acerto';
                 html += `
                     <div class="card-questao">
                         <div class="questao-header">
-                            <span class="badge">${q.coddesafio}</span>
-                            <span class="questao-meta">${q.disciplina} • ${q.aula}</span>
+                            <span class="badge">${q.coddesafio || 'Desafio'}</span>
+                            <span class="questao-meta">${q.disciplina || ''} • ${q.aula || ''}</span>
                         </div>
-                        <div class="enunciado">${q.questao}</div>
+                        <div class="enunciado">${q.questao || 'Sem enunciado'}</div>
                         
                         <div class="alternativas-list">
                             ${q.alternativaa ? `<div class="alternativa-item"><b>A)</b> ${q.alternativaa}</div>` : ''}
@@ -390,7 +404,7 @@
                         </div>
 
                         <div class="status-badge ${isAcerto ? 'status-acerto' : 'status-erro'}">
-                            ${isAcerto ? '✓ Acerto' : '✕ Erro'} | Sua Resposta: ${q.resposta_aluno} (Gabarito: ${q.gabarito})
+                            ${isAcerto ? '✓ Acerto' : '✕ Erro'} | Sua Resposta: ${q.resposta_aluno || '-'} (Gabarito: ${q.gabarito || '-'})
                         </div>
                     </div>
                 `;
