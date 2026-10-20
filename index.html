@@ -81,7 +81,6 @@
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
         }
 
-        /* Container do input de senha com botão de ver */
         .password-container {
             position: relative;
             display: flex;
@@ -129,7 +128,6 @@
             border-radius: 6px;
             border: 1px solid #fecaca;
             text-align: left;
-            word-break: break-all;
         }
 
         /* PAINEL PRINCIPAL */
@@ -158,7 +156,6 @@
         .main-container { max-width: 960px; margin: 30px auto; padding: 0 20px; width: 100%; }
         .section-title { font-size: 18px; font-weight: 600; color: var(--text-main); margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
 
-        /* BOTÃO DE VOLTAR */
         .btn-voltar {
             background: #e2e8f0;
             color: #334155;
@@ -173,7 +170,6 @@
         }
         .btn-voltar:hover { background: #cbd5e1; }
 
-        /* GRIDS EM CASCATA (CARDS) */
         .grid-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin-bottom: 30px; }
         .card-item {
             background: var(--card-bg);
@@ -192,9 +188,9 @@
             background: #f0f7ff;
         }
         .card-item h4 { font-size: 16px; color: var(--text-main); margin-bottom: 6px; font-weight: 600; }
-        .card-item span { font-size: 12px; color: var(--text-muted); }
+        .card-item span { font-size: 12px; color: var(--text-muted); display: block; margin-top: 4px; }
 
-        /* CARTÃO DE QUESTÃO */
+        /* CARD DE QUESTÃO */
         .card-questao {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -272,7 +268,6 @@
         </nav>
 
         <div class="main-container">
-            <!-- Botão de Voltar Dinâmico -->
             <button id="btn-voltar" class="btn-voltar hidden" onclick="voltarNivel()">⬅ Voltar</button>
 
             <!-- NÍVEL 1: PROVAS -->
@@ -281,9 +276,9 @@
                 <div id="grid-provas" class="grid-cards"></div>
             </div>
 
-            <!-- NÍVEL 2: DISCIPLINAS -->
+            <!-- NÍVEL 2: DISCIPLINAS & METAS -->
             <div id="nivel-disciplinas" class="hidden">
-                <h3 class="section-title" id="titulo-prova-atual">Disciplinas</h3>
+                <h3 class="section-title" id="titulo-prova-atual">Disciplinas e Metas</h3>
                 <div id="grid-disciplinas" class="grid-cards"></div>
             </div>
 
@@ -302,7 +297,6 @@
     </div>
 
     <script>
-        // Credenciais do Supabase
         const SUPABASE_URL = 'https://npedrsbixoaqupljsnpt.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5wZWRyc2JpeG9hcXVwbGpzbnB0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI1MTUzNTIsImV4cCI6MjEwODA5MTM1Mn0.Sthx6-Owgs4cz-jj3wVmUxxQX3V8wq4aQqiMJmnxtjw';
         
@@ -340,27 +334,20 @@
             errorDiv.classList.add('hidden');
 
             try {
-                // Diagnóstico detalhado de conexão
                 const { data, error } = await supabaseClient
                     .from('usuarios')
                     .select('*')
                     .ilike('username', userVal)
                     .maybeSingle();
 
-                if (error) {
-                    errorDiv.innerText = `Erro do Supabase: ${error.message} (Código: ${error.code})`;
-                    errorDiv.classList.remove('hidden');
-                    return;
-                }
-
-                if (!data) {
-                    errorDiv.innerText = `Utilizador '${userVal}' não encontrado na tabela 'usuarios'.`;
+                if (error || !data) {
+                    errorDiv.innerText = 'Utilizador não encontrado.';
                     errorDiv.classList.remove('hidden');
                     return;
                 }
 
                 if (String(data.senha).trim() !== passVal) {
-                    errorDiv.innerText = `Senha incorreta para o utilizador '${userVal}'.`;
+                    errorDiv.innerText = 'Senha incorreta.';
                     errorDiv.classList.remove('hidden');
                     return;
                 }
@@ -372,9 +359,8 @@
                 document.getElementById('span-nome-usuario').innerText = data.nome_completo;
 
                 carregarProvas();
-
             } catch (err) {
-                errorDiv.innerText = `Erro de exceção: ${err.message}`;
+                errorDiv.innerText = `Erro: ${err.message}`;
                 errorDiv.classList.remove('hidden');
             }
         }
@@ -389,6 +375,7 @@
             document.getElementById('login-screen').classList.remove('hidden');
         }
 
+        // ================= NÍVEL 1: PROVAS =================
         async function carregarProvas() {
             nivelAtual = 1;
             atualizarNavegacaoTela();
@@ -401,13 +388,8 @@
                 .select('prova')
                 .ilike('username', usuarioAtual.username);
 
-            if (error) {
-                gridProvas.innerHTML = `<p style="color: red;">Erro ao carregar provas: ${error.message}</p>`;
-                return;
-            }
-
-            if (!data || !data.length) {
-                gridProvas.innerHTML = '<p style="color: var(--text-muted);">Nenhuma prova atribuída a este usuário na tabela `provas_usuario`.</p>';
+            if (error || !data || !data.length) {
+                gridProvas.innerHTML = '<p style="color: var(--text-muted);">Nenhuma prova atribuída a este usuário.</p>';
                 return;
             }
 
@@ -416,13 +398,14 @@
                 html += `
                     <div class="card-item" onclick="selecionarProva('${item.prova}')">
                         <h4>🏛️ ${item.prova}</h4>
-                        <span>Clique para ver as disciplinas</span>
+                        <span>Clique para ver disciplinas e metas</span>
                     </div>
                 `;
             });
             gridProvas.innerHTML = html;
         }
 
+        // ================= NÍVEL 2: DISCIPLINAS, METAS E DATA DA PROVA =================
         async function selecionarProva(provaNome) {
             provaSelecionada = provaNome;
             nivelAtual = 2;
@@ -430,37 +413,53 @@
 
             document.getElementById('titulo-prova-atual').innerText = `📚 Prova: ${provaNome}`;
             const gridDisc = document.getElementById('grid-disciplinas');
-            gridDisc.innerHTML = '<p style="color: var(--text-muted);">Buscando disciplinas...</p>';
+            gridDisc.innerHTML = '<p style="color: var(--text-muted);">Carregando disciplinas e metas...</p>';
 
-            const { data, error } = await supabaseClient
+            // Busca as metas cadastradas para esta prova e usuário
+            const { data: metasData } = await supabaseClient
+                .from('disciplinas_meta')
+                .select('*')
+                .ilike('username', usuarioAtual.username)
+                .eq('prova', provaNome);
+
+            // Busca também as disciplinas presentes nas questões caso não estejam na tabela de metas
+            const { data: questoesData } = await supabaseClient
                 .from('questoes_desafios')
                 .select('disciplina')
                 .ilike('username', usuarioAtual.username)
                 .eq('tipoprova', provaNome);
 
-            if (error) {
-                gridDisc.innerHTML = `<p style="color: red;">Erro: ${error.message}</p>`;
-                return;
-            }
+            // Combina e gera lista única de disciplinas
+            const disciplinasSet = new Set();
+            if (metasData) metasData.forEach(m => disciplinasSet.add(m.disciplina));
+            if (questoesData) questoesData.forEach(q => { if(q.disciplina) disciplinasSet.add(q.disciplina); });
 
-            if (!data || !data.length) {
+            const disciplinasUnicas = [...disciplinasSet];
+
+            if (!disciplinasUnicas.length) {
                 gridDisc.innerHTML = '<p style="color: var(--text-muted);">Nenhuma disciplina encontrada para esta prova.</p>';
                 return;
             }
 
-            const disciplinasUnicas = [...new Set(data.map(i => i.disciplina))].filter(Boolean);
             let html = '';
             disciplinasUnicas.forEach(disc => {
+                // Procura meta e data correspondente
+                const infoMeta = metasData ? metasData.find(m => m.disciplina === disc) : null;
+                const metaQtd = infoMeta ? infoMeta.meta_questoes : 'Não definida';
+                const dataProva = infoMeta && infoMeta.data_prova ? new Date(infoMeta.data_prova).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) : 'Não informada';
+
                 html += `
                     <div class="card-item" onclick="selecionarDisciplina('${disc}')">
                         <h4>📖 ${disc}</h4>
-                        <span>Clique para ver os desafios</span>
+                        <span>🎯 Meta: <b>${metaQtd}</b> questões</span>
+                        <span>📅 Data da Prova: <b>${dataProva}</b></span>
                     </div>
                 `;
             });
             gridDisc.innerHTML = html;
         }
 
+        // ================= NÍVEL 3: DESAFIOS =================
         async function selecionarDisciplina(disciplinaNome) {
             disciplinaSelecionada = disciplinaNome;
             nivelAtual = 3;
@@ -477,13 +476,8 @@
                 .eq('tipoprova', provaSelecionada)
                 .eq('disciplina', disciplinaNome);
 
-            if (error) {
-                gridDesafios.innerHTML = `<p style="color: red;">Erro: ${error.message}</p>`;
-                return;
-            }
-
-            if (!data || !data.length) {
-                gridDesafios.innerHTML = '<p style="color: var(--text-muted);">Nenhum desafio encontrado.</p>';
+            if (error || !data || !data.length) {
+                gridDesafios.innerHTML = '<p style="color: var(--text-muted);">Nenhum desafio encontrado para esta disciplina.</p>';
                 return;
             }
 
@@ -500,6 +494,7 @@
             gridDesafios.innerHTML = html;
         }
 
+        // ================= NÍVEL 4: QUESTÕES =================
         async function selecionarDesafio(desafioCod) {
             desafioSelecionado = desafioCod;
             nivelAtual = 4;
@@ -517,12 +512,7 @@
                 .eq('disciplina', disciplinaSelecionada)
                 .eq('coddesafio', desafioCod);
 
-            if (error) {
-                container.innerHTML = `<p style="color: red; text-align:center;">Erro: ${error.message}</p>`;
-                return;
-            }
-
-            if (!data || !data.length) {
+            if (error || !data || !data.length) {
                 container.innerHTML = '<p style="text-align:center; color: var(--text-muted);">Nenhuma questão encontrada.</p>';
                 return;
             }
