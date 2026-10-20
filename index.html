@@ -186,7 +186,7 @@
             gap: 10px;
         }
 
-        .grid-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-bottom: 30px; }
+        .grid-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 18px; margin-bottom: 30px; }
         .card-item {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -203,36 +203,58 @@
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
             background: #f0f7ff;
         }
-        .card-item h4 { font-size: 16px; color: var(--text-main); margin-bottom: 10px; font-weight: 600; }
+        .card-item h4 { font-size: 17px; color: var(--text-main); margin-bottom: 12px; font-weight: 700; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
         
-        /* PAINEL DE ESTATÍSTICAS DA DISCIPLINA */
+        /* PAINEL DE ESTATÍSTICAS DA DISCIPLINA ORGANIZADO EM LINHAS */
         .stats-box {
             background: #f8fafc;
             border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 12px;
+            border-radius: 10px;
+            padding: 14px;
             margin-top: 10px;
-            font-size: 13px;
+            font-size: 13.5px;
             color: #334155;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
-        .stats-grid {
+
+        .stats-line {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 6px;
+            align-items: center;
             font-weight: 500;
+        }
+
+        /* BARRAS DE PROGRESSO */
+        .progress-container {
+            margin-top: 2px;
+            margin-bottom: 6px;
+        }
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 4px;
         }
         .progress-bar-bg {
             width: 100%;
-            height: 8px;
+            height: 10px;
             background: #e2e8f0;
-            border-radius: 4px;
+            border-radius: 6px;
             overflow: hidden;
-            margin-top: 8px;
         }
-        .progress-bar-fill {
+        .progress-bar-green {
             height: 100%;
-            background: #10b981;
-            border-radius: 4px;
+            background: linear-gradient(90deg, #22c55e, #16a34a);
+            border-radius: 6px;
+            transition: width 0.4s ease;
+        }
+        .progress-bar-blue {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+            border-radius: 6px;
             transition: width 0.4s ease;
         }
 
@@ -446,15 +468,15 @@
                 html += `
                     <div class="card-item" onclick='selecionarProva(${JSON.stringify(item)})'>
                         <h4>🏛️ ${item.prova}</h4>
-                        <span>📅 Data da Prova: <b>${dataFormatada}</b></span>
-                        <span style="margin-top:8px; color:var(--primary); font-weight:600;">Ver Disciplinas e Metas ➔</span>
+                        <span style="color:var(--text-muted); font-size:13px;">📅 Data da Prova: <b>${dataFormatada}</b></span>
+                        <span style="margin-top:10px; color:var(--primary); font-weight:600; font-size:13px;">Ver Disciplinas e Metas ➔</span>
                     </div>
                 `;
             });
             gridProvas.innerHTML = html;
         }
 
-        // ================= NÍVEL 2: DISCIPLINAS, METAS E DESEMPENHO REAL =================
+        // ================= NÍVEL 2: DISCIPLINAS, METAS E BARRAS DE PROGRESSO =================
         async function selecionarProva(itemProva) {
             provaSelecionadaObj = itemProva;
             nivelAtual = 2;
@@ -469,16 +491,14 @@
             `;
 
             const gridDisc = document.getElementById('grid-disciplinas');
-            gridDisc.innerHTML = '<p style="color: var(--text-muted);">Calculando desempenho e estatísticas...</p>';
+            gridDisc.innerHTML = '<p style="color: var(--text-muted);">Calculando estatísticas...</p>';
 
-            // 1. Busca metas cadastradas
             const { data: metasData } = await supabaseClient
                 .from('disciplinas_meta')
                 .select('*')
                 .ilike('username', usuarioAtual.username)
                 .eq('prova', itemProva.prova);
 
-            // 2. Busca todas as questões respondidas do usuário para esta prova
             const { data: questoesData } = await supabaseClient
                 .from('questoes_desafios')
                 .select('disciplina, acerto_erro')
@@ -499,9 +519,8 @@
             let html = '';
             disciplinasUnicas.forEach(disc => {
                 const infoMeta = metasData ? metasData.find(m => m.disciplina === disc) : null;
-                const metaQtd = infoMeta && infoMeta.meta_questoes ? infoMeta.meta_questoes : 50; // Padrão 50 se não definido
+                const metaQtd = infoMeta && infoMeta.meta_questoes ? infoMeta.meta_questoes : 50;
 
-                // Filtra questões desta disciplina específica
                 const questoesDisc = questoesData ? questoesData.filter(q => q.disciplina === disc) : [];
                 const resolvidas = questoesDisc.length;
                 
@@ -516,21 +535,50 @@
                         <h4>📖 ${disc}</h4>
                         
                         <div class="stats-box">
-                            <div class="stats-grid">
-                                <span>🎯 Meta: <b>${metaQtd}</b></span>
-                                <span>📝 Resolvidas: <b>${resolvidas}</b></span>
+                            <div class="stats-line">
+                                <span>🎯 Meta de Questões:</span>
+                                <b>${metaQtd}</b>
                             </div>
-                            <div class="stats-grid" style="color: #16a34a;">
-                                <span>✅ Acertos: <b>${acertos}</b></span>
-                                <span>❌ Erros: <b>${erros}</b></span>
+                            
+                            <div class="stats-line">
+                                <span>📝 Questões Resolvidas:</span>
+                                <b>${resolvidas}</b>
                             </div>
-                            <div class="stats-grid" style="color: #2563eb; border-top: 1px solid #e2e8f0; padding-top: 4px; margin-top: 4px;">
-                                <span>📈 Aproveitamento: <b>${percentualAcerto}%</b></span>
-                                <span>Conclusão Meta: <b>${percentualMeta}%</b></span>
+                            
+                            <div class="stats-line" style="color: #16a34a;">
+                                <span>✅ Acertos:</span>
+                                <b>${acertos}</b>
                             </div>
-                            <div class="progress-bar-bg" title="Progresso da Meta: ${percentualMeta}%">
-                                <div class="progress-bar-fill" style="width: ${percentualMeta}%;"></div>
+                            
+                            <div class="stats-line" style="color: #dc2626;">
+                                <span>❌ Erros:</span>
+                                <b>${erros}</b>
                             </div>
+
+                            <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 4px 0;">
+
+                            <!-- BARRA DE VERDE: APROVEITAMENTO (ACERTOS) -->
+                            <div class="progress-container">
+                                <div class="progress-label" style="color: #15803d;">
+                                    <span>📈 Aproveitamento (Acertos):</span>
+                                    <span>${percentualAcerto}%</span>
+                                </div>
+                                <div class="progress-bar-bg">
+                                    <div class="progress-bar-green" style="width: ${percentualAcerto}%;"></div>
+                                </div>
+                            </div>
+
+                            <!-- BARRA AZUL: CONCLUSÃO DA META -->
+                            <div class="progress-container">
+                                <div class="progress-label" style="color: #1d4ed8;">
+                                    <span>🏁 Conclusão da Meta:</span>
+                                    <span>${percentualMeta}%</span>
+                                </div>
+                                <div class="progress-bar-bg">
+                                    <div class="progress-bar-blue" style="width: ${percentualMeta}%;"></div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 `;
