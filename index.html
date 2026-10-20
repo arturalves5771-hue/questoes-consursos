@@ -4,11 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Plataforma de Estudos - Caderno de Questões</title>
-    <!-- Fonte Inter do Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- SDK do Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <style>
@@ -32,7 +30,6 @@
 
         .hidden { display: none !important; }
 
-        /* TELA DE LOGIN MODERNA */
         .login-wrapper {
             display: flex;
             align-items: center;
@@ -48,257 +45,82 @@
             max-width: 420px;
             padding: 40px 30px;
             border-radius: 16px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
             text-align: center;
         }
 
-        .login-card .logo-img {
-            max-width: 110px;
-            height: auto;
-            margin: 0 auto 15px auto;
-            display: block;
-            object-fit: contain;
-        }
-
-        .login-card h2 { font-size: 22px; font-weight: 700; color: var(--text-main); margin-bottom: 6px; }
+        .login-card .logo-img { max-width: 110px; height: auto; margin: 0 auto 15px auto; display: block; object-fit: contain; }
+        .login-card h2 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
         .login-card p { font-size: 14px; color: var(--text-muted); margin-bottom: 25px; }
 
         .form-group { text-align: left; margin-bottom: 18px; }
         .form-group label { display: block; font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 6px; }
         .form-group input {
-            width: 100%;
-            padding: 12px 14px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 14px;
-            outline: none;
-            transition: all 0.2s;
-            background: #f8fafc;
+            width: 100%; padding: 12px 14px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 14px; outline: none; background: #f8fafc;
         }
-        .form-group input:focus {
-            border-color: var(--primary);
-            background: #fff;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
-        }
+        .form-group input:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
 
-        .password-container {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-        .password-container input {
-            padding-right: 45px;
-        }
-        .btn-toggle-pass {
-            position: absolute;
-            right: 12px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 18px;
-            color: var(--text-muted);
-            padding: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .btn-toggle-pass:hover { color: var(--text-main); }
+        .password-container { position: relative; display: flex; align-items: center; }
+        .password-container input { padding-right: 45px; }
+        .btn-toggle-pass { position: absolute; right: 12px; background: none; border: none; cursor: pointer; font-size: 18px; color: var(--text-muted); }
 
         .btn-primary {
-            width: 100%;
-            padding: 12px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-            margin-top: 10px;
+            width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-top: 10px;
         }
         .btn-primary:hover { background: var(--primary-hover); }
 
-        .error-msg {
-            color: #ef4444;
-            font-size: 13px;
-            margin-top: 12px;
-            background: #fef2f2;
-            padding: 10px;
-            border-radius: 6px;
-            border: 1px solid #fecaca;
-            text-align: left;
-        }
+        .error-msg { color: #ef4444; font-size: 13px; margin-top: 12px; background: #fef2f2; padding: 10px; border-radius: 6px; border: 1px solid #fecaca; text-align: left; }
 
-        /* PAINEL PRINCIPAL */
-        .navbar {
-            background: var(--card-bg);
-            border-bottom: 1px solid var(--border-color);
-            padding: 16px 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .navbar .user-info { font-size: 15px; font-weight: 600; color: var(--text-main); }
-        .btn-logout {
-            background: transparent;
-            color: #ef4444;
-            border: 1px solid #fca5a5;
-            padding: 6px 14px;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
+        .navbar { background: var(--card-bg); border-bottom: 1px solid var(--border-color); padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
+        .navbar .user-info { font-size: 15px; font-weight: 600; }
+        .btn-logout { background: transparent; color: #ef4444; border: 1px solid #fca5a5; padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; }
         .btn-logout:hover { background: #fef2f2; }
 
         .main-container { max-width: 960px; margin: 30px auto; padding: 0 20px; width: 100%; }
-        .section-title { font-size: 18px; font-weight: 600; color: var(--text-main); margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        .section-title { font-size: 18px; font-weight: 600; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
 
-        .btn-voltar {
-            background: #e2e8f0;
-            color: #334155;
-            border: none;
-            padding: 6px 14px;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-bottom: 20px;
-            transition: background 0.2s;
-        }
+        .btn-voltar { background: #e2e8f0; color: #334155; border: none; padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; margin-bottom: 20px; }
         .btn-voltar:hover { background: #cbd5e1; }
 
-        .prova-destaque-header {
-            background: #eff6ff;
-            border: 1px solid #bfdbfe;
-            padding: 14px 18px;
-            border-radius: var(--radius);
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 14px;
-            color: #1e40af;
-            font-weight: 500;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
+        .prova-destaque-header { background: #eff6ff; border: 1px solid #bfdbfe; padding: 14px 18px; border-radius: var(--radius); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; color: #1e40af; font-weight: 500; flex-wrap: wrap; gap: 10px; }
 
         .grid-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 18px; margin-bottom: 30px; }
         .card-item {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            padding: 22px;
-            border-radius: var(--radius);
-            cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            text-align: left;
+            background: var(--card-bg); border: 1px solid var(--border-color); padding: 22px; border-radius: var(--radius); cursor: pointer; transition: all 0.2s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.05); text-align: left;
         }
-        .card-item:hover {
-            border-color: var(--primary);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
-            background: #f0f7ff;
-        }
+        .card-item:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08); background: #f0f7ff; }
         .card-item h4 { font-size: 17px; color: var(--text-main); margin-bottom: 12px; font-weight: 700; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
-        
-        /* PAINEL DE ESTATÍSTICAS DA DISCIPLINA ORGANIZADO EM LINHAS */
-        .stats-box {
-            background: #f8fafc;
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 14px;
-            margin-top: 10px;
-            font-size: 13.5px;
-            color: #334155;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
 
-        .stats-line {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: 500;
-        }
+        .stats-box { background: #f8fafc; border: 1px solid var(--border-color); border-radius: 10px; padding: 14px; margin-top: 10px; font-size: 13.5px; color: #334155; display: flex; flex-direction: column; gap: 8px; }
+        .stats-line { display: flex; justify-content: space-between; align-items: center; font-weight: 500; }
+        .progress-container { margin-top: 2px; margin-bottom: 6px; }
+        .progress-label { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 4px; }
+        .progress-bar-bg { width: 100%; height: 10px; background: #e2e8f0; border-radius: 6px; overflow: hidden; }
+        .progress-bar-green { height: 100%; background: linear-gradient(90deg, #22c55e, #16a34a); border-radius: 6px; }
+        .progress-bar-blue { height: 100%; background: linear-gradient(90deg, #3b82f6, #1d4ed8); border-radius: 6px; }
 
-        /* BARRAS DE PROGRESSO */
-        .progress-container {
-            margin-top: 2px;
-            margin-bottom: 6px;
-        }
-        .progress-label {
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-        .progress-bar-bg {
-            width: 100%;
-            height: 10px;
-            background: #e2e8f0;
-            border-radius: 6px;
-            overflow: hidden;
-        }
-        .progress-bar-green {
-            height: 100%;
-            background: linear-gradient(90deg, #22c55e, #16a34a);
-            border-radius: 6px;
-            transition: width 0.4s ease;
-        }
-        .progress-bar-blue {
-            height: 100%;
-            background: linear-gradient(90deg, #3b82f6, #1d4ed8);
-            border-radius: 6px;
-            transition: width 0.4s ease;
-        }
-
-        /* CARD DE QUESTÃO */
-        .card-questao {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius);
-            padding: 24px;
-            margin-bottom: 20px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
+        /* ESTILOS DO CARD DE QUESTÃO */
+        .card-questao { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius); padding: 24px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
         .questao-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 8px; }
-        .badge {
-            background: #eff6ff;
-            color: var(--primary);
-            font-size: 12px;
-            font-weight: 600;
-            padding: 4px 10px;
-            border-radius: 20px;
-        }
-        .questao-meta { font-size: 13px; color: var(--text-muted); }
+        .badge { background: #eff6ff; color: var(--primary); font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
         .enunciado { font-size: 15px; font-weight: 500; color: #1e293b; line-height: 1.6; margin-bottom: 18px; }
 
-        .alternativas-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
-        .alternativa-item {
-            padding: 10px 14px;
-            border-radius: 8px;
-            background: #f8fafc;
-            border: 1px solid var(--border-color);
-            font-size: 14px;
-            color: #334155;
+        .alternativas-list { display: flex; flex-direction: column; gap: 8px; }
+        .alternativa-btn {
+            padding: 12px 14px; border-radius: 8px; background: #f8fafc; border: 1px solid var(--border-color); font-size: 14px; color: #334155; text-align: left; cursor: pointer; transition: all 0.2s; width: 100%; display: flex; align-items: center; gap: 10px;
         }
+        .alternativa-btn:hover:not(:disabled) { background: #eff6ff; border-color: var(--primary); }
+        .alternativa-btn:disabled { cursor: default; opacity: 0.9; }
 
-        .status-badge {
-            margin-top: 15px;
-            padding: 10px 14px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            display: inline-block;
-        }
+        .alternativa-correta { background: #dcfce7 !important; border-color: #16a34a !important; color: #166534 !important; font-weight: 600; }
+        .alternativa-errada { background: #fee2e2 !important; border-color: #dc2626 !important; color: #991b1b !important; font-weight: 600; }
+
+        .painel-resposta-info { margin-top: 15px; padding: 12px; border-radius: 8px; font-size: 13.5px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
         .status-acerto { background: var(--success-bg); color: var(--success-text); }
         .status-erro { background: var(--error-bg); color: var(--error-text); }
+
+        .btn-duvida { background: #f1f5f9; border: 1px solid #cbd5e1; color: #475569; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: 600; }
+        .btn-duvida.ativo { background: #f59e0b; border-color: #d97706; color: white; }
     </style>
 </head>
 <body>
@@ -306,7 +128,7 @@
     <!-- TELA DE LOGIN -->
     <div id="login-screen" class="login-wrapper">
         <div class="login-card">
-            <img src="policia-penal-pe.png" alt="Logo Polícia Penal PE" class="logo-img" onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/arturalves5771-hue/questoes-consursos/main/policia-penal-pe.png';">
+            <img src="policia-penal-pe.png" alt="Logo" class="logo-img" onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/arturalves5771-hue/questoes-consursos/main/policia-penal-pe.png';">
             <h2>Bem-vindo de volta</h2>
             <p>Acesse seu caderno de questões</p>
             
@@ -319,7 +141,7 @@
                 <label>Senha</label>
                 <div class="password-container">
                     <input type="password" id="login-pass" placeholder="••••••••" value="123456">
-                    <button type="button" class="btn-toggle-pass" onclick="togglePassword()" id="btn-eye" title="Mostrar senha">👁️</button>
+                    <button type="button" class="btn-toggle-pass" onclick="togglePassword()" id="btn-eye">👁️</button>
                 </div>
             </div>
             
@@ -328,7 +150,7 @@
         </div>
     </div>
 
-    <!-- PAINEL PRINCIPAL (CASCATA) -->
+    <!-- PAINEL PRINCIPAL -->
     <div id="main-screen" class="hidden">
         <nav class="navbar">
             <div class="user-info">Olá, <span id="span-nome-usuario"></span> 👋</div>
@@ -344,7 +166,7 @@
                 <div id="grid-provas" class="grid-cards"></div>
             </div>
 
-            <!-- NÍVEL 2: DISCIPLINAS & DESEMPENHO -->
+            <!-- NÍVEL 2: DISCIPLINAS -->
             <div id="nivel-disciplinas" class="hidden">
                 <div id="detalhes-prova-header" class="prova-destaque-header"></div>
                 <h3 class="section-title" id="titulo-prova-atual">Disciplinas e Desempenho</h3>
@@ -357,9 +179,16 @@
                 <div id="grid-desafios" class="grid-cards"></div>
             </div>
 
+            <!-- NÍVEL 3.5: BLOCOS -->
+            <div id="nivel-blocos" class="hidden">
+                <h3 class="section-title" id="titulo-desafio-blocos">Selecione o Bloco</h3>
+                <div id="grid-blocos" class="grid-cards"></div>
+            </div>
+
             <!-- NÍVEL 4: QUESTÕES -->
             <div id="nivel-questoes" class="hidden">
-                <h3 class="section-title" id="titulo-desafio-atual">Questões do Desafio</h3>
+                <div id="header-bloco-info" class="prova-destaque-header"></div>
+                <h3 class="section-title" id="titulo-questao-atual">Questões</h3>
                 <div id="resultado-questoes"></div>
             </div>
         </div>
@@ -375,18 +204,14 @@
         let provaSelecionadaObj = null;
         let disciplinaSelecionada = null;
         let desafioSelecionado = null;
+        let blocoSelecionado = null;
         let nivelAtual = 1;
 
         function togglePassword() {
             const passInput = document.getElementById('login-pass');
             const btnEye = document.getElementById('btn-eye');
-            if (passInput.type === 'password') {
-                passInput.type = 'text';
-                btnEye.textContent = '🙈';
-            } else {
-                passInput.type = 'password';
-                btnEye.textContent = '👁️';
-            }
+            if (passInput.type === 'password') { passInput.type = 'text'; btnEye.textContent = '🙈'; }
+            else { passInput.type = 'password'; btnEye.textContent = '👁️'; }
         }
 
         async function fazerLogin() {
@@ -394,321 +219,284 @@
             const passVal = String(document.getElementById('login-pass').value).trim();
             const errorDiv = document.getElementById('login-error');
 
-            if (!userVal || !passVal) {
-                errorDiv.innerText = 'Por favor, preencha o usuário e a senha.';
-                errorDiv.classList.remove('hidden');
-                return;
-            }
-
+            if (!userVal || !passVal) { errorDiv.innerText = 'Preencha usuário e senha.'; errorDiv.classList.remove('hidden'); return; }
             errorDiv.classList.add('hidden');
 
-            try {
-                const { data, error } = await supabaseClient
-                    .from('usuarios')
-                    .select('*')
-                    .ilike('username', userVal)
-                    .maybeSingle();
-
-                if (error || !data) {
-                    errorDiv.innerText = 'Utilizador não encontrado.';
-                    errorDiv.classList.remove('hidden');
-                    return;
-                }
-
-                if (String(data.senha).trim() !== passVal) {
-                    errorDiv.innerText = 'Senha incorreta.';
-                    errorDiv.classList.remove('hidden');
-                    return;
-                }
-
-                usuarioAtual = data;
-                errorDiv.classList.add('hidden');
-                document.getElementById('login-screen').classList.add('hidden');
-                document.getElementById('main-screen').classList.remove('hidden');
-                document.getElementById('span-nome-usuario').innerText = data.nome_completo;
-
-                carregarProvas();
-            } catch (err) {
-                errorDiv.innerText = `Erro: ${err.message}`;
-                errorDiv.classList.remove('hidden');
+            const { data, error } = await supabaseClient.from('usuarios').select('*').ilike('username', userVal).maybeSingle();
+            if (error || !data || String(data.senha).trim() !== passVal) {
+                errorDiv.innerText = 'Usuário ou senha incorretos.'; errorDiv.classList.remove('hidden'); return;
             }
+
+            usuarioAtual = data;
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('main-screen').classList.remove('hidden');
+            document.getElementById('span-nome-usuario').innerText = data.nome_completo;
+            carregarProvas();
         }
 
         function fazerLogout() {
-            usuarioAtual = null;
-            provaSelecionadaObj = null;
-            disciplinaSelecionada = null;
-            desafioSelecionado = null;
-            nivelAtual = 1;
+            usuarioAtual = null; nivelAtual = 1;
             document.getElementById('main-screen').classList.add('hidden');
             document.getElementById('login-screen').classList.remove('hidden');
         }
 
-        // ================= NÍVEL 1: CARREGAR PROVAS =================
         async function carregarProvas() {
-            nivelAtual = 1;
-            atualizarNavegacaoTela();
-            
+            nivelAtual = 1; atualizarNavegacaoTela();
             const gridProvas = document.getElementById('grid-provas');
-            gridProvas.innerHTML = '<p style="color: var(--text-muted);">Carregando cadernos de provas...</p>';
+            gridProvas.innerHTML = '<p style="color: var(--text-muted);">Carregando...</p>';
 
-            const { data, error } = await supabaseClient
-                .from('provas_usuario')
-                .select('*')
-                .ilike('username', usuarioAtual.username);
-
-            if (error || !data || !data.length) {
-                gridProvas.innerHTML = '<p style="color: var(--text-muted);">Nenhuma prova atribuída a este usuário.</p>';
-                return;
-            }
+            const { data } = await supabaseClient.from('provas_usuario').select('*').ilike('username', usuarioAtual.username);
+            if (!data || !data.length) { gridProvas.innerHTML = '<p>Nenhuma prova encontrada.</p>'; return; }
 
             let html = '';
             data.forEach(item => {
-                const dataFormatada = item.data_prova ? new Date(item.data_prova).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) : 'Data não informada';
-                html += `
-                    <div class="card-item" onclick='selecionarProva(${JSON.stringify(item)})'>
-                        <h4>🏛️ ${item.prova}</h4>
-                        <span style="color:var(--text-muted); font-size:13px;">📅 Data da Prova: <b>${dataFormatada}</b></span>
-                        <span style="margin-top:10px; color:var(--primary); font-weight:600; font-size:13px;">Ver Disciplinas e Metas ➔</span>
-                    </div>
-                `;
+                const dt = item.data_prova ? new Date(item.data_prova).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) : 'Não informada';
+                html += `<div class="card-item" onclick='selecionarProva(${JSON.stringify(item)})'>
+                    <h4>🏛️ ${item.prova}</h4>
+                    <span>📅 Data da Prova: <b>${dt}</b></span>
+                    <span style="margin-top:10px; color:var(--primary); font-weight:600; font-size:13px;">Ver Disciplinas ➔</span>
+                </div>`;
             });
             gridProvas.innerHTML = html;
         }
 
-        // ================= NÍVEL 2: DISCIPLINAS, METAS E BARRAS DE PROGRESSO =================
         async function selecionarProva(itemProva) {
             provaSelecionadaObj = itemProva;
-            nivelAtual = 2;
-            atualizarNavegacaoTela();
-
+            nivelAtual = 2; atualizarNavegacaoTela();
             document.getElementById('titulo-prova-atual').innerText = `📚 Disciplinas: ${itemProva.prova}`;
-            
-            const dataFormatada = itemProva.data_prova ? new Date(itemProva.data_prova).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) : 'Não informada';
-            document.getElementById('detalhes-prova-header').innerHTML = `
-                <span>🏛️ <b>${itemProva.prova}</b></span>
-                <span>📅 Data da Prova: <b>${dataFormatada}</b></span>
-            `;
+            document.getElementById('detalhes-prova-header').innerHTML = `<span>🏛️ <b>${itemProva.prova}</b></span><span>📅 Data da Prova: <b>${itemProva.data_prova ? new Date(itemProva.data_prova).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) : 'Não informada'}</b></span>`;
 
             const gridDisc = document.getElementById('grid-disciplinas');
-            gridDisc.innerHTML = '<p style="color: var(--text-muted);">Calculando estatísticas...</p>';
+            gridDisc.innerHTML = '<p>Carregando...</p>';
 
-            const { data: metasData } = await supabaseClient
-                .from('disciplinas_meta')
-                .select('*')
-                .ilike('username', usuarioAtual.username)
-                .eq('prova', itemProva.prova);
+            const { data: metas } = await supabaseClient.from('disciplinas_meta').select('*').ilike('username', usuarioAtual.username).eq('prova', itemProva.prova);
+            const { data: questoes } = await supabaseClient.from('questoes_desafios').select('disciplina, acerto_erro').ilike('username', usuarioAtual.username).eq('tipoprova', itemProva.prova);
 
-            const { data: questoesData } = await supabaseClient
-                .from('questoes_desafios')
-                .select('disciplina, acerto_erro')
-                .ilike('username', usuarioAtual.username)
-                .eq('tipoprova', itemProva.prova);
-
-            const disciplinasSet = new Set();
-            if (metasData) metasData.forEach(m => disciplinasSet.add(m.disciplina));
-            if (questoesData) questoesData.forEach(q => { if(q.disciplina) disciplinasSet.add(q.disciplina); });
-
-            const disciplinasUnicas = [...disciplinasSet];
-
-            if (!disciplinasUnicas.length) {
-                gridDisc.innerHTML = '<p style="color: var(--text-muted);">Nenhuma disciplina encontrada para esta prova.</p>';
-                return;
-            }
+            const discSet = new Set();
+            if (metas) metas.forEach(m => discSet.add(m.disciplina));
+            if (questoes) questoes.forEach(q => { if(q.disciplina) discSet.add(q.disciplina); });
 
             let html = '';
-            disciplinasUnicas.forEach(disc => {
-                const infoMeta = metasData ? metasData.find(m => m.disciplina === disc) : null;
-                const metaQtd = infoMeta && infoMeta.meta_questoes ? infoMeta.meta_questoes : 50;
+            [...discSet].forEach(disc => {
+                const mInfo = metas ? metas.find(m => m.disciplina === disc) : null;
+                const metaQtd = mInfo ? mInfo.meta_questoes : 50;
+                const qDisc = questoes ? questoes.filter(q => q.disciplina === disc) : [];
+                const resolvidas = qDisc.length;
+                const acertos = qDisc.filter(q => q.acerto_erro === 'Acerto').length;
+                const erros = qDisc.filter(q => q.acerto_erro === 'Erro').length;
+                const pAcerto = resolvidas > 0 ? ((acertos / resolvidas) * 100).toFixed(0) : 0;
+                const pMeta = Math.min(((resolvidas / metaQtd) * 100), 100).toFixed(0);
 
-                const questoesDisc = questoesData ? questoesData.filter(q => q.disciplina === disc) : [];
-                const resolvidas = questoesDisc.length;
-                
-                const acertos = questoesDisc.filter(q => q.acerto_erro && q.acerto_erro.toLowerCase() === 'acerto').length;
-                const erros = questoesDisc.filter(q => q.acerto_erro && q.acerto_erro.toLowerCase() === 'erro').length;
-                
-                const percentualAcerto = resolvidas > 0 ? ((acertos / resolvidas) * 100).toFixed(0) : 0;
-                const percentualMeta = Math.min(((resolvidas / metaQtd) * 100), 100).toFixed(0);
-
-                html += `
-                    <div class="card-item" onclick="selecionarDisciplina('${disc}')">
-                        <h4>📖 ${disc}</h4>
-                        
-                        <div class="stats-box">
-                            <div class="stats-line">
-                                <span>🎯 Meta de Questões:</span>
-                                <b>${metaQtd}</b>
-                            </div>
-                            
-                            <div class="stats-line">
-                                <span>📝 Questões Resolvidas:</span>
-                                <b>${resolvidas}</b>
-                            </div>
-                            
-                            <div class="stats-line" style="color: #16a34a;">
-                                <span>✅ Acertos:</span>
-                                <b>${acertos}</b>
-                            </div>
-                            
-                            <div class="stats-line" style="color: #dc2626;">
-                                <span>❌ Erros:</span>
-                                <b>${erros}</b>
-                            </div>
-
-                            <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 4px 0;">
-
-                            <!-- BARRA DE VERDE: APROVEITAMENTO (ACERTOS) -->
-                            <div class="progress-container">
-                                <div class="progress-label" style="color: #15803d;">
-                                    <span>📈 Aproveitamento (Acertos):</span>
-                                    <span>${percentualAcerto}%</span>
-                                </div>
-                                <div class="progress-bar-bg">
-                                    <div class="progress-bar-green" style="width: ${percentualAcerto}%;"></div>
-                                </div>
-                            </div>
-
-                            <!-- BARRA AZUL: CONCLUSÃO DA META -->
-                            <div class="progress-container">
-                                <div class="progress-label" style="color: #1d4ed8;">
-                                    <span>🏁 Conclusão da Meta:</span>
-                                    <span>${percentualMeta}%</span>
-                                </div>
-                                <div class="progress-bar-bg">
-                                    <div class="progress-bar-blue" style="width: ${percentualMeta}%;"></div>
-                                </div>
-                            </div>
-
-                        </div>
+                html += `<div class="card-item" onclick="selecionarDisciplina('${disc}')">
+                    <h4>📖 ${disc}</h4>
+                    <div class="stats-box">
+                        <div class="stats-line"><span>🎯 Meta:</span><b>${metaQtd}</b></div>
+                        <div class="stats-line"><span>📝 Resolvidas:</span><b>${resolvidas}</b></div>
+                        <div class="stats-line" style="color:#16a34a"><span>✅ Acertos:</span><b>${acertos}</b></div>
+                        <div class="stats-line" style="color:#dc2626"><span>❌ Erros:</span><b>${erros}</b></div>
+                        <div class="progress-container"><div class="progress-label"><span>Aproveitamento:</span><span>${pAcerto}%</span></div><div class="progress-bar-bg"><div class="progress-bar-green" style="width:${pAcerto}%"></div></div></div>
+                        <div class="progress-container"><div class="progress-label"><span>Conclusão Meta:</span><span>${pMeta}%</span></div><div class="progress-bar-bg"><div class="progress-bar-blue" style="width:${pMeta}%"></div></div></div>
                     </div>
-                `;
+                </div>`;
             });
             gridDisc.innerHTML = html;
         }
 
-        // ================= NÍVEL 3: CARREGAR DESAFIOS =================
-        async function selecionarDisciplina(disciplinaNome) {
-            disciplinaSelecionada = disciplinaNome;
-            nivelAtual = 3;
-            atualizarNavegacaoTela();
+        async function selecionarDisciplina(disc) {
+            disciplinaSelecionada = disc;
+            nivelAtual = 3; atualizarNavegacaoTela();
+            document.getElementById('titulo-disciplina-atual').innerText = `⚡ Desafios de ${disc}`;
+            const grid = document.getElementById('grid-desafios');
+            grid.innerHTML = '<p>Buscando...</p>';
 
-            document.getElementById('titulo-disciplina-atual').innerText = `⚡ Disciplina: ${disciplinaNome}`;
-            const gridDesafios = document.getElementById('grid-desafios');
-            gridDesafios.innerHTML = '<p style="color: var(--text-muted);">Buscando desafios...</p>';
+            const { data } = await supabaseClient.from('questoes_desafios').select('coddesafio').ilike('username', usuarioAtual.username).eq('tipoprova', provaSelecionadaObj.prova).eq('disciplina', disc);
+            const desafios = [...new Set(data.map(i => i.coddesafio))].filter(Boolean);
 
-            const { data, error } = await supabaseClient
-                .from('questoes_desafios')
-                .select('coddesafio')
-                .ilike('username', usuarioAtual.username)
-                .eq('tipoprova', provaSelecionadaObj.prova)
-                .eq('disciplina', disciplinaNome);
-
-            if (error || !data || !data.length) {
-                gridDesafios.innerHTML = '<p style="color: var(--text-muted);">Nenhum desafio encontrado para esta disciplina.</p>';
-                return;
-            }
-
-            const desafiosUnicos = [...new Set(data.map(i => i.coddesafio))].filter(Boolean);
             let html = '';
-            desafiosUnicos.forEach(desafio => {
-                html += `
-                    <div class="card-item" onclick="selecionarDesafio('${desafio}')">
-                        <h4>🎯 ${desafio}</h4>
-                        <span>Clique para abrir as questões</span>
-                    </div>
-                `;
+            desafios.forEach(d => {
+                html += `<div class="card-item" onclick="selecionarDesafio('${d}')">
+                    <h4>🎯 ${d}</h4>
+                    <span>Clique para ver os blocos ➔</span>
+                </div>`;
             });
-            gridDesafios.innerHTML = html;
+            grid.innerHTML = html;
         }
 
-        // ================= NÍVEL 4: CARREGAR QUESTÕES DO DESAFIO =================
         async function selecionarDesafio(desafioCod) {
             desafioSelecionado = desafioCod;
-            nivelAtual = 4;
-            atualizarNavegacaoTela();
+            nivelAtual = 3.5; atualizarNavegacaoTela();
+            document.getElementById('titulo-desafio-blocos').innerText = `📦 Blocos do ${desafioCod} (${disciplinaSelecionada})`;
 
-            document.getElementById('titulo-desafio-atual').innerText = `📝 Questões do ${desafioCod} (${disciplinaSelecionada})`;
-            const container = document.getElementById('resultado-questoes');
-            container.innerHTML = '<p style="text-align:center; color: var(--text-muted);">Carregando questões...</p>';
+            const grid = document.getElementById('grid-blocos');
+            grid.innerHTML = '<p>Buscando blocos...</p>';
 
-            const { data, error } = await supabaseClient
-                .from('questoes_desafios')
-                .select('*')
+            const { data } = await supabaseClient.from('questoes_desafios').select('bloco').ilike('username', usuarioAtual.username).eq('tipoprova', provaSelecionadaObj.prova).eq('disciplina', disciplinaSelecionada).eq('coddesafio', desafioCod);
+            const blocos = [...new Set(data.map(i => i.bloco))].filter(Boolean).sort((a,b)=>a-b);
+
+            let html = '';
+            blocos.forEach(b => {
+                html += `<div class="card-item" onclick="selecionarBloco(${b})">
+                    <h4>📦 Bloco ${b} (10 Questões)</h4>
+                    <span>Clique para iniciar o bloco ➔</span>
+                </div>`;
+            });
+            grid.innerHTML = html;
+        }
+
+        async function selecionarBloco(blocoNum) {
+            blocoSelecionado = blocoNum;
+            nivelAtual = 4; atualizarNavegacaoTela();
+
+            // Grava a hora em que iniciou o bloco/desafio no banco para as questões não respondidas
+            const agora = new Date().toISOString();
+            await supabaseClient.from('questoes_desafios')
+                .update({ inicio_desafio: agora })
                 .ilike('username', usuarioAtual.username)
                 .eq('tipoprova', provaSelecionadaObj.prova)
                 .eq('disciplina', disciplinaSelecionada)
-                .eq('coddesafio', desafioCod);
+                .eq('coddesafio', desafioSelecionado)
+                .eq('bloco', blocoNum)
+                .is('inicio_desafio', null);
 
-            if (error || !data || !data.length) {
-                container.innerHTML = '<p style="text-align:center; color: var(--text-muted);">Nenhuma questão encontrada para este desafio e disciplina.</p>';
-                return;
-            }
+            document.getElementById('titulo-questao-atual').innerText = `📝 Bloco ${blocoNum} - Questões`;
+            document.getElementById('header-bloco-info').innerHTML = `<span>🎯 Desafio: <b>${desafioSelecionado}</b></span><span>📦 Bloco: <b>${blocoNum}</b></span>`;
+
+            const container = document.getElementById('resultado-questoes');
+            container.innerHTML = '<p style="text-align:center;">Carregando questões...</p>';
+
+            const { data } = await supabaseClient.from('questoes_desafios').select('*').ilike('username', usuarioAtual.username).eq('tipoprova', provaSelecionadaObj.prova).eq('disciplina', disciplinaSelecionada).eq('coddesafio', desafioSelecionado).eq('bloco', blocoNum);
+
+            if (!data || !data.length) { container.innerHTML = '<p>Nenhuma questão neste bloco.</p>'; return; }
 
             let html = '';
-            data.forEach(q => {
-                const isAcerto = q.acerto_erro && q.acerto_erro.toLowerCase() === 'acerto';
-                html += `
-                    <div class="card-questao">
-                        <div class="questao-header">
-                            <span class="badge">${q.coddesafio}</span>
-                            <span class="questao-meta">Aula: ${q.aula || 'Geral'}</span>
-                        </div>
-                        <div class="enunciado">${q.questao || 'Sem enunciado'}</div>
-                        
+            data.forEach((q, idx) => {
+                const jaRespondido = q.resposta_aluno ? true : false;
+                const respAluno = q.resposta_aluno || '';
+                const isCertoErrado = (!q.alternativaa || q.alternativaa === 'Certo' || q.alternativab === 'Errado' || !q.alternativac);
+
+                let alternativasHtml = '';
+                if (isCertoErrado) {
+                    // Certo (A) ou Errado (B)
+                    const selA = respAluno === 'A' ? (q.gabarito === 'Certo' ? 'alternativa-correta' : 'alternativa-errada') : '';
+                    const selB = respAluno === 'B' ? (q.gabarito === 'Errado' ? 'alternativa-correta' : 'alternativa-errada') : '';
+                    
+                    alternativasHtml = `
                         <div class="alternativas-list">
-                            ${q.alternativaa ? `<div class="alternativa-item"><b>A)</b> ${q.alternativaa}</div>` : ''}
-                            ${q.alternativab ? `<div class="alternativa-item"><b>B)</b> ${q.alternativab}</div>` : ''}
-                            ${q.alternativac ? `<div class="alternativa-item"><b>C)</b> ${q.alternativac}</div>` : ''}
-                            ${q.alternativad ? `<div class="alternativa-item"><b>D)</b> ${q.alternativad}</div>` : ''}
-                            ${q.alternativae ? `<div class="alternativa-item"><b>E)</b> ${q.alternativae}</div>` : ''}
+                            <button class="alternativa-btn ${jaRespondido && respAluno === 'A' ? (q.gabarito==='Certo'?'alternativa-correta':'alternativa-errada') : ''}" ${jaRespondido ? 'disabled' : ''} onclick="responderQuestao('${q.id}', 'A', '${q.gabarito}', this)"><b>A)</b> Certo</button>
+                            <button class="alternativa-btn ${jaRespondido && respAluno === 'B' ? (q.gabarito==='Errado'?'alternativa-correta':'alternativa-errada') : ''}" ${jaRespondido ? 'disabled' : ''} onclick="responderQuestao('${q.id}', 'B', '${q.gabarito}', this)"><b>B)</b> Errado</button>
                         </div>
+                    `;
+                } else {
+                    // Múltipla Escolha A, B, C, D, E
+                    ['a','b','c','d','e'].forEach(letra => {
+                        if (q['alternativa' + letra]) {
+                            let classeExtra = '';
+                            if (jaRespondido) {
+                                if (letra.toUpperCase() === q.gabarito.toUpperCase()) classeExtra = 'alternativa-correta';
+                                else if (respAluno === letra.toUpperCase()) classeExtra = 'alternativa-errada';
+                            }
+                            alternativasHtml += `<button class="alternativa-btn ${classeExtra}" ${jaRespondido ? 'disabled' : ''} onclick="responderQuestao('${q.id}', '${letra.toUpperCase()}', '${q.gabarito}', this)"><b>${letra.toUpperCase())}</b> ${q['alternativa' + letra]}</button>`;
+                        }
+                    });
+                }
 
-                        <div class="status-badge ${isAcerto ? 'status-acerto' : 'status-erro'}">
-                            ${isAcerto ? '✓ Acerto' : '✕ Erro'} | Sua Resposta: ${q.resposta_aluno || '-'} (Gabarito: ${q.gabarito || '-'})
+                html += `
+                    <div class="card-questao" id="questao-${q.id}">
+                        <div class="questao-header">
+                            <span class="badge">Questão ${idx + 1} (${q.coddesafio})</span>
+                            <button class="btn-duvida ${q.acertou_duvida === 'Sim' ? 'ativo' : ''}" onclick="marcarDuvida('${q.id}', this)">⭐ Fiquei em Dúvida</button>
                         </div>
-
-                        ${q.gabarito_comentado ? `
-                            <div style="margin-top: 12px; font-size: 13px; color: var(--text-muted); background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px dashed var(--border-color);">
-                                <b>Comentário:</b> ${q.gabarito_comentado}
+                        <div class="enunciado">${q.questao}</div>
+                        ${alternativasHtml}
+                        
+                        <div id="feedback-${q.id}" class="${jaRespondido ? '' : 'hidden'}">
+                            <div class="painel-resposta-info ${q.acerto_erro === 'Acerto' ? 'status-acerto' : 'status-erro'}">
+                                <span>${q.acerto_erro === 'Acerto' ? '✓ Acertou!' : '✕ Errou!'} | Sua Resposta: ${respAluno} (Gabarito: ${q.gabarito})</span>
+                                <span style="font-size:11px; font-weight:normal;">Respondido em: ${q.data_resposta ? new Date(q.data_resposta).toLocaleString('pt-BR') : 'Agora'}</span>
                             </div>
-                        ` : ''}
+                            ${q.gabarito_comentado ? `<div style="margin-top: 12px; font-size: 13px; color: var(--text-muted); background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px dashed var(--border-color);"><b>Comentário:</b> ${q.gabarito_comentado}</div>` : ''}
+                        </div>
                     </div>
                 `;
             });
             container.innerHTML = html;
         }
 
-        function atualizarNavegacaoTela() {
-            document.getElementById('nivel-provas').classList.add('hidden');
-            document.getElementById('nivel-disciplinas').classList.add('hidden');
-            document.getElementById('nivel-desafios').classList.add('hidden');
-            document.getElementById('nivel-questoes').classList.add('hidden');
-            
-            const btnVoltar = document.getElementById('btn-voltar');
+        // ================= FUNÇÃO DE RESPONDER (GRAVA NO BANCO E BLOQUEIA) =================
+        async function responderQuestao(idQuestao, respostaEscolha, gabaritoOficial, btnElement) {
+            const card = document.getElementById(`questao-${idQuestao}`);
+            const botoes = card.querySelectorAll('.alternativa-btn');
+            botoes.forEach(b => b.disabled = true);
 
-            if (nivelAtual === 1) {
-                document.getElementById('nivel-provas').classList.remove('hidden');
-                btnVoltar.classList.add('hidden');
-            } else if (nivelAtual === 2) {
-                document.getElementById('nivel-disciplinas').classList.remove('hidden');
-                btnVoltar.classList.remove('hidden');
-            } else if (nivelAtual === 3) {
-                document.getElementById('nivel-desafios').classList.remove('hidden');
-                btnVoltar.classList.remove('hidden');
-            } else if (nivelAtual === 4) {
-                document.getElementById('nivel-questoes').classList.remove('hidden');
-                btnVoltar.classList.remove('hidden');
-            }
+            // Mapeia Certo/Errado para A/B
+            let gabaritoLetra = gabaritoOficial;
+            if (gabaritoOficial.toLowerCase() === 'certo') gabaritoLetra = 'A';
+            if (gabaritoOficial.toLowerCase() === 'errado') gabaritoLetra = 'B';
+
+            const acertou = respostaEscolha.toUpperCase() === gabaritoLetra.toUpperCase();
+            const statusAcertoErro = acertou ? 'Acerto' : 'Erro';
+            const dataHoraAtual = new Date().toISOString();
+
+            // Salva no Supabase imediatamente
+            await supabaseClient.from('questoes_desafios')
+                .update({
+                    resposta_aluno: respostaEscolha,
+                    acerto_erro: statusAcertoErro,
+                    data_resposta: dataHoraAtual
+                })
+                .eq('id', idQuestao);
+
+            // Estiliza os botões visualmente
+            botoes.forEach(b => {
+                if (b.innerText.startsWith(respostaEscolha)) {
+                    b.classList.add(acertou ? 'alternativa-correta' : 'alternativa-errada');
+                } else if (b.innerText.startsWith(gabaritoLetra)) {
+                    b.classList.add('alternativa-correta');
+                }
+            });
+
+            // Mostra o painel de feedback
+            let feedbackDiv = document.getElementById(`feedback-${idQuestao}`);
+            feedbackDiv.classList.remove('hidden');
+            feedbackDiv.innerHTML = `
+                <div class="painel-resposta-info ${acertou ? 'status-acerto' : 'status-erro'}">
+                    <span>${acertou ? '✓ Acertou!' : '✕ Errou!'} | Sua Resposta: ${respostaEscolha} (Gabarito: ${gabaritoOficial})</span>
+                    <span style="font-size:11px; font-weight:normal;">Respondido em: ${new Date().toLocaleString('pt-BR')}</span>
+                </div>
+            `;
+        }
+
+        // ================= MARCAR DÚVIDA =================
+        async function marcarDuvida(idQuestao, btn) {
+            const isAtivo = btn.classList.contains('ativo');
+            const novoEstado = isAtivo ? null : 'Sim';
+            
+            btn.classList.toggle('ativo', !isAtivo);
+
+            await supabaseClient.from('questoes_desafios')
+                .update({ acertou_duvida: novoEstado })
+                .eq('id', idQuestao);
+        }
+
+        function atualizarNavegacaoTela() {
+            ['nivel-provas', 'nivel-disciplinas', 'nivel-desafios', 'nivel-blocos', 'nivel-questoes'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            const btnVoltar = document.getElementById('btn-voltar');
+            btnVoltar.classList.toggle('hidden', nivelAtual === 1);
+
+            if (nivelAtual === 1) document.getElementById('nivel-provas').classList.remove('hidden');
+            if (nivelAtual === 2) document.getElementById('nivel-disciplinas').classList.remove('hidden');
+            if (nivelAtual === 3) document.getElementById('nivel-desafios').classList.remove('hidden');
+            if (nivelAtual === 3.5) document.getElementById('nivel-blocos').classList.remove('hidden');
+            if (nivelAtual === 4) document.getElementById('nivel-questoes').classList.remove('hidden');
         }
 
         function voltarNivel() {
-            if (nivelAtual === 4) {
-                selecionarDisciplina(disciplinaSelecionada);
-            } else if (nivelAtual === 3) {
-                selecionarProva(provaSelecionadaObj);
-            } else if (nivelAtual === 2) {
-                carregarProvas();
-            }
+            if (nivelAtual === 4) selecionarDesafio(desafioSelecionado);
+            else if (nivelAtual === 3.5) selecionarDisciplina(disciplinaSelecionada);
+            else if (nivelAtual === 3) selecionarProva(provaSelecionadaObj);
+            else if (nivelAtual === 2) carregarProvas();
         }
     </script>
 </body>
