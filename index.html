@@ -31,22 +31,11 @@
         .hidden { display: none !important; }
 
         .login-wrapper {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            padding: 20px;
+            display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); padding: 20px;
         }
 
         .login-card {
-            background: var(--card-bg);
-            width: 100%;
-            max-width: 420px;
-            padding: 40px 30px;
-            border-radius: 16px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
-            text-align: center;
+            background: var(--card-bg); width: 100%; max-width: 420px; padding: 40px 30px; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3); text-align: center;
         }
 
         .login-card .logo-img { max-width: 110px; height: auto; margin: 0 auto 15px auto; display: block; object-fit: contain; }
@@ -55,18 +44,14 @@
 
         .form-group { text-align: left; margin-bottom: 18px; }
         .form-group label { display: block; font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 6px; }
-        .form-group input {
-            width: 100%; padding: 12px 14px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 14px; outline: none; background: #f8fafc;
-        }
+        .form-group input { width: 100%; padding: 12px 14px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 14px; outline: none; background: #f8fafc; }
         .form-group input:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
 
         .password-container { position: relative; display: flex; align-items: center; }
         .password-container input { padding-right: 45px; }
         .btn-toggle-pass { position: absolute; right: 12px; background: none; border: none; cursor: pointer; font-size: 18px; color: var(--text-muted); }
 
-        .btn-primary {
-            width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-top: 10px;
-        }
+        .btn-primary { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-top: 10px; }
         .btn-primary:hover { background: var(--primary-hover); }
 
         .error-msg { color: #ef4444; font-size: 13px; margin-top: 12px; background: #fef2f2; padding: 10px; border-radius: 6px; border: 1px solid #fecaca; text-align: left; }
@@ -85,9 +70,7 @@
         .prova-destaque-header { background: #eff6ff; border: 1px solid #bfdbfe; padding: 14px 18px; border-radius: var(--radius); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; color: #1e40af; font-weight: 500; flex-wrap: wrap; gap: 10px; }
 
         .grid-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 18px; margin-bottom: 30px; }
-        .card-item {
-            background: var(--card-bg); border: 1px solid var(--border-color); padding: 22px; border-radius: var(--radius); cursor: pointer; transition: all 0.2s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.05); text-align: left;
-        }
+        .card-item { background: var(--card-bg); border: 1px solid var(--border-color); padding: 22px; border-radius: var(--radius); cursor: pointer; transition: all 0.2s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.05); text-align: left; }
         .card-item:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08); background: #f0f7ff; }
         .card-item h4 { font-size: 17px; color: var(--text-main); margin-bottom: 12px; font-weight: 700; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
 
@@ -105,9 +88,7 @@
         .enunciado { font-size: 15px; font-weight: 500; color: #1e293b; line-height: 1.6; margin-bottom: 18px; }
 
         .alternativas-list { display: flex; flex-direction: column; gap: 8px; }
-        .alternativa-btn {
-            padding: 12px 14px; border-radius: 8px; background: #f8fafc; border: 1px solid var(--border-color); font-size: 14px; color: #334155; text-align: left; cursor: pointer; transition: all 0.2s; width: 100%; display: flex; align-items: center; gap: 10px;
-        }
+        .alternativa-btn { padding: 12px 14px; border-radius: 8px; background: #f8fafc; border: 1px solid var(--border-color); font-size: 14px; color: #334155; text-align: left; cursor: pointer; transition: all 0.2s; width: 100%; display: flex; align-items: center; gap: 10px; }
         .alternativa-btn:hover:not(:disabled) { background: #eff6ff; border-color: var(--primary); }
         .alternativa-btn:disabled { cursor: default; opacity: 0.9; }
 
@@ -120,6 +101,17 @@
 
         .btn-duvida { background: #f1f5f9; border: 1px solid #cbd5e1; color: #475569; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: 600; }
         .btn-duvida.ativo { background: #f59e0b; border-color: #d97706; color: white; }
+
+        .btn-relatorio { background: #10b981; color: white; border: none; padding: 10px 18px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; margin-bottom: 20px; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-relatorio:hover { background: #059669; }
+
+        /* ESTILOS DE IMPRESSÃO DO RELATÓRIO */
+        @media print {
+            body { background: white; color: black; }
+            .navbar, .btn-voltar, .btn-relatorio, .btn-logout, .btn-duvida { display: none !important; }
+            .main-container { max-width: 100%; margin: 0; padding: 0; }
+            .card-questao { border: 1px solid #ccc; page-break-inside: avoid; }
+        }
     </style>
 </head>
 <body>
@@ -187,8 +179,15 @@
             <!-- NÍVEL 4: QUESTÕES -->
             <div id="nivel-questoes" class="hidden">
                 <div id="header-bloco-info" class="prova-destaque-header"></div>
+                <button class="btn-relatorio" onclick="gerarRelatorioBloco()">📊 Gerar Relatório do Bloco / Imprimir</button>
                 <h3 class="section-title" id="titulo-questao-atual">Questões</h3>
                 <div id="resultado-questoes"></div>
+            </div>
+
+            <!-- TELA DE RELATÓRIO DO BLOCO -->
+            <div id="nivel-relatorio" class="hidden">
+                <button class="btn-relatorio" onclick="window.print()">🖨️ Imprimir / Salvar PDF</button>
+                <div id="conteudo-relatorio"></div>
             </div>
         </div>
     </div>
@@ -370,14 +369,20 @@
             data.forEach((q, idx) => {
                 const jaRespondido = q.resposta_aluno ? true : false;
                 const respAluno = q.resposta_aluno || '';
-                const isCertoErrado = (!q.alternativaa || q.alternativaa === 'Certo' || q.alternativab === 'Errado' || !q.alternativac);
+
+                // Padroniza o gabarito exibido (Certo ➔ A, Errado ➔ B)
+                let gabaritoExibido = q.gabarito ? q.gabarito.toUpperCase() : 'A';
+                if (gabaritoExibido === 'CERTO' || gabaritoExibido === 'C') gabaritoExibido = 'A';
+                if (gabaritoExibido === 'ERRADO' || gabaritoExibido === 'E') gabaritoExibido = 'B';
+
+                const isCertoErrado = (!q.alternativac || q.alternativaa === 'Certo' || q.alternativab === 'Errado');
 
                 let alternativasHtml = '';
                 if (isCertoErrado) {
                     alternativasHtml = `
                         <div class="alternativas-list">
-                            <button class="alternativa-btn ${jaRespondido && respAluno === 'A' ? (q.gabarito==='Certo'?'alternativa-correta':'alternativa-errada') : ''}" ${jaRespondido ? 'disabled' : ''} onclick="responderQuestao('${q.id}', 'A', '${q.gabarito}', this)"><b>A)</b> Certo</button>
-                            <button class="alternativa-btn ${jaRespondido && respAluno === 'B' ? (q.gabarito==='Errado'?'alternativa-correta':'alternativa-errada') : ''}" ${jaRespondido ? 'disabled' : ''} onclick="responderQuestao('${q.id}', 'B', '${q.gabarito}', this)"><b>B)</b> Errado</button>
+                            <button class="alternativa-btn ${jaRespondido && respAluno === 'A' ? (gabaritoExibido==='A'?'alternativa-correta':'alternativa-errada') : (jaRespondido && gabaritoExibido==='A'?'alternativa-correta':'')}" ${jaRespondido ? 'disabled' : ''} onclick="responderQuestao('${q.id}', 'A', '${gabaritoExibido}', this)"><b>A)</b> Certo</button>
+                            <button class="alternativa-btn ${jaRespondido && respAluno === 'B' ? (gabaritoExibido==='B'?'alternativa-correta':'alternativa-errada') : (jaRespondido && gabaritoExibido==='B'?'alternativa-correta':'')}" ${jaRespondido ? 'disabled' : ''} onclick="responderQuestao('${q.id}', 'B', '${gabaritoExibido}', this)"><b>B)</b> Errado</button>
                         </div>
                     `;
                 } else {
@@ -385,10 +390,10 @@
                         if (q['alternativa' + letra]) {
                             let classeExtra = '';
                             if (jaRespondido) {
-                                if (letra.toUpperCase() === q.gabarito.toUpperCase()) classeExtra = 'alternativa-correta';
+                                if (letra.toUpperCase() === gabaritoExibido) classeExtra = 'alternativa-correta';
                                 else if (respAluno === letra.toUpperCase()) classeExtra = 'alternativa-errada';
                             }
-                            alternativasHtml += `<button class="alternativa-btn ${classeExtra}" ${jaRespondido ? 'disabled' : ''} onclick="responderQuestao('${q.id}', '${letra.toUpperCase()}', '${q.gabarito}', this)"><b>${letra.toUpperCase()}</b> ${q['alternativa' + letra]}</button>`;
+                            alternativasHtml += `<button class="alternativa-btn ${classeExtra}" ${jaRespondido ? 'disabled' : ''} onclick="responderQuestao('${q.id}', '${letra.toUpperCase()}', '${gabaritoExibido}', this)"><b>${letra.toUpperCase()}</b> ${q['alternativa' + letra]}</button>`;
                         }
                     });
                 }
@@ -403,11 +408,11 @@
                         ${alternativasHtml}
                         
                         <div id="feedback-${q.id}" class="${jaRespondido ? '' : 'hidden'}">
-                            <div class="painel-resposta-info ${q.acerto_erro === 'Acerto' ? 'status-acerto' : 'status-erro'}">
-                                <span>${q.acerto_erro === 'Acerto' ? '✓ Acertou!' : '✕ Errou!'} | Sua Resposta: ${respAluno} (Gabarito: ${q.gabarito})</span>
+                            <div class="painel-resposta-info ${q.acerto_erro === 'Acerto' ? 'status-acerto' : 'status-erro'}" style="margin-top: 15px;">
+                                <span>${q.acerto_erro === 'Acerto' ? '✓ Acertou!' : '✕ Errou!'} | Sua Resposta: ${respAluno} (Gabarito: ${gabaritoExibido})</span>
                                 <span style="font-size:11px; font-weight:normal;">Respondido em: ${q.data_resposta ? new Date(q.data_resposta).toLocaleString('pt-BR') : 'Agora'}</span>
                             </div>
-                            ${q.gabarito_comentado ? `<div style="margin-top: 12px; font-size: 13px; color: var(--text-muted); background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px dashed var(--border-color);"><b>Comentário:</b> ${q.gabarito_comentado}</div>` : ''}
+                            ${q.gabarito_comentado ? `<div style="margin-top: 12px; font-size: 13.5px; color: #334155; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px dashed var(--border-color); line-height:1.5;"><b>💡 Comentário:</b> ${q.gabarito_comentado}</div>` : ''}
                         </div>
                     </div>
                 `;
@@ -420,11 +425,11 @@
             const botoes = card.querySelectorAll('.alternativa-btn');
             botoes.forEach(b => b.disabled = true);
 
-            let gabaritoLetra = gabaritoOficial;
-            if (gabaritoOficial.toLowerCase() === 'certo') gabaritoLetra = 'A';
-            if (gabaritoOficial.toLowerCase() === 'errado') gabaritoLetra = 'B';
+            let gabaritoLetra = gabaritoOficial.toUpperCase();
+            if (gabaritoLetra === 'CERTO' || gabaritoLetra === 'C') gabaritoLetra = 'A';
+            if (gabaritoLetra === 'ERRADO' || gabaritoLetra === 'E') gabaritoLetra = 'B';
 
-            const acertou = respostaEscolha.toUpperCase() === gabaritoLetra.toUpperCase();
+            const acertou = respostaEscolha.toUpperCase() === gabaritoLetra;
             const statusAcertoErro = acertou ? 'Acerto' : 'Erro';
             const dataHoraAtual = new Date().toISOString();
 
@@ -437,27 +442,22 @@
                 .eq('id', idQuestao);
 
             botoes.forEach(b => {
-                if (b.innerText.startsWith(respostaEscolha)) {
+                const txt = b.innerText.trim();
+                if (txt.startsWith(respostaEscolha)) {
                     b.classList.add(acertou ? 'alternativa-correta' : 'alternativa-errada');
-                } else if (b.innerText.startsWith(gabaritoLetra)) {
+                }
+                if (txt.startsWith(gabaritoLetra)) {
                     b.classList.add('alternativa-correta');
                 }
             });
 
             let feedbackDiv = document.getElementById(`feedback-${idQuestao}`);
             feedbackDiv.classList.remove('hidden');
-            feedbackDiv.innerHTML = `
-                <div class="painel-resposta-info ${acertou ? 'status-acerto' : 'status-erro'}">
-                    <span>${acertou ? '✓ Acertou!' : '✕ Errou!'} | Sua Resposta: ${respostaEscolha} (Gabarito: ${gabaritoOficial})</span>
-                    <span style="font-size:11px; font-weight:normal;">Respondido em: ${new Date().toLocaleString('pt-BR')}</span>
-                </div>
-            `;
         }
 
         async function marcarDuvida(idQuestao, btn) {
             const isAtivo = btn.classList.contains('ativo');
             const novoEstado = isAtivo ? null : 'Sim';
-            
             btn.classList.toggle('ativo', !isAtivo);
 
             await supabaseClient.from('questoes_desafios')
@@ -465,8 +465,78 @@
                 .eq('id', idQuestao);
         }
 
+        // ================= RELATÓRIO DO BLOCO COM TEMPO E QUESTÕES ERRADAS =================
+        async function gerarRelatorioBloco() {
+            nivelAtual = 5; atualizarNavegacaoTela();
+            const relatorioDiv = document.getElementById('conteudo-relatorio');
+            relatorioDiv.innerHTML = '<p>Gerando relatório do bloco...</p>';
+
+            const { data } = await supabaseClient.from('questoes_desafios')
+                .select('*')
+                .ilike('username', usuarioAtual.username)
+                .eq('tipoprova', provaSelecionadaObj.prova)
+                .eq('disciplina', disciplinaSelecionada)
+                .eq('coddesafio', desafioSelecionado)
+                .eq('bloco', blocoSelecionado);
+
+            if (!data || !data.length) { relatorioDiv.innerHTML = '<p>Sem dados.</p>'; return; }
+
+            const acertos = data.filter(q => q.acerto_erro === 'Acerto').length;
+            const erros = data.filter(q => q.acerto_erro === 'Erro').length;
+            const duvidas = data.filter(q => q.acertou_duvida === 'Sim').length;
+
+            // Cálculo do tempo total
+            let tempoTexto = 'Não registrado';
+            const inicioTimes = data.map(q => q.inicio_desafio ? new Date(q.inicio_desafio).getTime() : null).filter(Boolean);
+            const fimTimes = data.map(q => q.data_resposta ? new Date(q.data_resposta).getTime() : null).filter(Boolean);
+
+            if (inicioTimes.length && fimTimes.length) {
+                const minInicio = Math.min(...inicioTimes);
+                const maxFim = Math.max(...fimTimes);
+                const diffMs = maxFim - minInicio;
+                const min = Math.floor(diffMs / 60000);
+                const seg = Math.floor((diffMs % 60000) / 1000);
+                tempoTexto = `${min} min e ${seg} seg`;
+            }
+
+            const questoesErradas = data.filter(q => q.acerto_erro === 'Erro');
+            const questoesDuvida = data.filter(q => q.acertou_duvida === 'Sim');
+
+            let erradasHtml = '';
+            questoesErradas.forEach(q => {
+                erradasHtml += `<div class="card-questao">
+                    <p><b>Questão:</b> ${q.questao}</p>
+                    <p style="color:#dc2626; margin-top:6px;">Sua Resposta: <b>${q.resposta_aluno || '-'}</b> | Gabarito: <b>${q.gabarito}</b></p>
+                    ${q.gabarito_comentado ? `<div style="margin-top:8px; font-size:13px; color:#475569;"><b>Comentário:</b> ${q.gabarito_comentado}</div>` : ''}
+                </div>`;
+            });
+
+            let duvidasHtml = '';
+            questoesDuvida.forEach(q => {
+                duvidasHtml += `<div class="card-questao">
+                    <p><b>Questão (Dúvida ⭐):</b> ${q.questao}</p>
+                    <p style="color:#2563eb; margin-top:6px;">Sua Resposta: <b>${q.resposta_aluno || '-'}</b> | Gabarito: <b>${q.gabarito}</b></p>
+                </div>`;
+            });
+
+            relatorioDiv.innerHTML = `
+                <div class="prova-destaque-header" style="flex-direction:column; align-items:flex-start;">
+                    <h2>📊 Relatório de Desempenho do Bloco ${blocoSelecionado}</h2>
+                    <p><b>Aluno:</b> ${usuarioAtual.nome_completo} | <b>Disciplina:</b> ${disciplinaSelecionada}</p>
+                    <p><b>⏱️ Tempo Gasto:</b> ${tempoTexto}</p>
+                    <p><b>✅ Acertos:</b> ${acertos} | <b>❌ Erros:</b> ${erros} | <b>⭐ Dúvidas:</b> ${duvidas}</p>
+                </div>
+
+                <h3 style="margin:20px 0 10px 0; color:#dc2626;">❌ Questões Erradas (${questoesErradas.length})</h3>
+                ${erradasHtml || '<p style="color:var(--text-muted);">Nenhuma questão errada neste bloco! Parabéns!</p>'}
+
+                <h3 style="margin:20px 0 10px 0; color:#d97706;">⭐ Questões com Dúvida (${questoesDuvida.length})</h3>
+                ${duvidasHtml || '<p style="color:var(--text-muted);">Nenhuma dúvida sinalizada neste bloco.</p>'}
+            `;
+        }
+
         function atualizarNavegacaoTela() {
-            ['nivel-provas', 'nivel-disciplinas', 'nivel-desafios', 'nivel-blocos', 'nivel-questoes'].forEach(id => {
+            ['nivel-provas', 'nivel-disciplinas', 'nivel-desafios', 'nivel-blocos', 'nivel-questoes', 'nivel-relatorio'].forEach(id => {
                 document.getElementById(id).classList.add('hidden');
             });
             const btnVoltar = document.getElementById('btn-voltar');
@@ -477,10 +547,12 @@
             if (nivelAtual === 3) document.getElementById('nivel-desafios').classList.remove('hidden');
             if (nivelAtual === 3.5) document.getElementById('nivel-blocos').classList.remove('hidden');
             if (nivelAtual === 4) document.getElementById('nivel-questoes').classList.remove('hidden');
+            if (nivelAtual === 5) document.getElementById('nivel-relatorio').classList.remove('hidden');
         }
 
         function voltarNivel() {
-            if (nivelAtual === 4) selecionarDesafio(desafioSelecionado);
+            if (nivelAtual === 5) selecionarBloco(blocoSelecionado);
+            else if (nivelAtual === 4) selecionarDesafio(desafioSelecionado);
             else if (nivelAtual === 3.5) selecionarDisciplina(disciplinaSelecionada);
             else if (nivelAtual === 3) selecionarProva(provaSelecionadaObj);
             else if (nivelAtual === 2) carregarProvas();
