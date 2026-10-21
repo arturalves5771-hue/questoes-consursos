@@ -217,4 +217,532 @@
                 <div id="grid-provas" class="grid-cards"></div>
             </div>
 
-            <!--
+            <!-- NÍVEL 2: DISCIPLINAS -->
+            <div id="nivel-disciplinas" class="hidden">
+                <div id="detalhes-prova-header" class="prova-destaque-header"></div>
+                <h3 class="section-title" id="titulo-prova-atual">Disciplinas e Desempenho</h3>
+                <div id="grid-disciplinas" class="grid-cards"></div>
+            </div>
+
+            <!-- NÍVEL 3: AULAS / DESAFIOS -->
+            <div id="nivel-desafios" class="hidden">
+                <h3 class="section-title" id="titulo-disciplina-atual">Aulas Disponíveis</h3>
+                <div id="grid-desafios" class="grid-cards"></div>
+            </div>
+
+            <!-- NÍVEL 3.5: BLOCOS -->
+            <div id="nivel-blocos" class="hidden">
+                <div style="display:flex; justify-space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
+                    <h3 class="section-title" id="titulo-desafio-blocos" style="margin-bottom:0;">Blocos de Exercícios</h3>
+                    <button class="btn-relatorio" style="margin-bottom:0;" onclick="gerarRelatorioDesafio()">📊 Relatório Geral do Desafio</button>
+                </div>
+                <div id="grid-blocos" class="grid-cards"></div>
+            </div>
+
+            <!-- NÍVEL 4: QUESTÕES -->
+            <div id="nivel-questoes" class="hidden">
+                <div id="header-bloco-info" class="prova-destaque-header"></div>
+                <h3 class="section-title" id="titulo-questao-atual">Questões</h3>
+                <div id="resultado-questoes"></div>
+            </div>
+
+            <!-- TELA DE RELATÓRIO DO DESAFIO GERAL -->
+            <div id="nivel-relatorio" class="hidden">
+                <button class="btn-relatorio" onclick="window.print()">🖨️ Imprimir / Salvar PDF</button>
+                <div id="conteudo-relatorio"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://npedrsbixoaqupljsnpt.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5wZWRyc2JpeG9hcXVwbGpzbnB0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI1MTUzNTIsImV4cCI6MjEwODA5MTM1Mn0.Sthx6-Owgs4cz-jj3wVmUxxQX3V8wq4aQqiMJmnxtjw';
+        
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let usuarioAtual = null;
+        let provaSelecionadaObj = null;
+        let disciplinaSelecionada = null;
+        let desafioSelecionado = null;
+        let aulaSelecionada = null;
+        let blocoSelecionado = null;
+        let nivelAtual = 1;
+        let timerInterval = null;
+        let inicioBlocoTime = null;
+        let bancoQuestoesBloco = {};
+
+        function togglePassword() {
+            const passInput = document.getElementById('login-pass');
+            const btnEye = document.getElementById('btn-eye');
+            if (passInput.type === 'password') { passInput.type = 'text'; btnEye.textContent = '🙈'; }
+            else { passInput.type = 'password'; btnEye.textContent = '👁️'; }
+        }
+
+        async function fazerLogin() {
+            const userVal = document.getElementById('login-user').value.trim().toLowerCase();
+            const passVal = String(document.getElementById('login-pass').value).trim();
+            const errorDiv = document.getElementById('login-error');
+
+            if (!userVal || !passVal) { errorDiv.innerText = 'Preencha usuário e senha.'; errorDiv.classList.remove('hidden'); return; }
+            errorDiv.classList.add('hidden');
+
+            const { data, error } = await supabaseClient.from('usuarios').select('*').ilike('username', userVal).maybeSingle();
+            if (error || !data || String(data.senha).trim() !== passVal) {
+                errorDiv.innerText = 'Usuário ou senha incorretos.'; errorDiv.classList.remove('hidden'); return;
+            }
+
+            usuarioAtual = data;
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('main-screen').classList.remove('hidden');
+            document.getElementById('span-nome-usuario').innerText = data.nome_completo;
+            carregarProvas();
+        }
+
+        function fazerLogout() {
+            usuarioAtual = null; nivelAtual = 1;
+            clearInterval(timerInterval);
+            document.getElementById('main-screen').classList.add('hidden');
+            document.getElementById('login-screen').classList.remove('hidden');
+        }
+
+        async function carregarProvas() {
+            nivelAtual = 1; atualizarNavegacaoTela();
+            const gridProvas = document.getElementById('grid-provas');
+            gridProvas.innerHTML = '<p style="color: var(--text-muted);">Carregando...</p>';
+
+            const { data } = await supabaseClient.from('provas_usuario').select('*').ilike('username', usuarioAtual.username);
+            if (!data || !data.length) { gridProvas.innerHTML = '<p>Nenhuma prova encontrada.</p>'; return; }
+
+            let html = '';
+            data.forEach(item => {
+                const dt = item.data_prova ? new Date(item.data_prova).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) : 'Não informada';
+                html += `<div class="card-item" onclick='selecionarProva(${JSON.stringify(item)})'>
+                    <h4>🏛️ ${item.prova}</h4>
+                    <span>📅 Data da Prova: <b>${dt}</b></span>
+                    <span style="margin-top:10px; color:var(--primary); font-weight:600; font-size:13px; display:block;">Ver Disciplinas ➔</span>
+                </div>`;
+            });
+            gridProvas.innerHTML = html;
+        }
+
+        async function selecionarProva(itemProva) {
+            provaSelecionadaObj = itemProva;
+            nivelAtual = 2; atualizarNavegacaoTela();
+            document.getElementById('titulo-prova-atual').innerText = `📚 Disciplinas: ${itemProva.prova}`;
+            document.getElementById('detalhes-prova-header').innerHTML = `<span>🏛️ <b>${itemProva.prova}</b></span><span>📅 Data da Prova: <b>${itemProva.data_prova ? new Date(itemProva.data_prova).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) : 'Não informada'}</b></span>`;
+
+            const gridDisc = document.getElementById('grid-disciplinas');
+            gridDisc.innerHTML = '<p>Carregando...</p>';
+
+            const { data: metas } = await supabaseClient.from('disciplinas_meta').select('*').ilike('username', usuarioAtual.username).eq('prova', itemProva.prova);
+            const { data: questoes } = await supabaseClient.from('questoes_desafios').select('disciplina, acerto_erro').ilike('username', usuarioAtual.username).eq('tipoprova', itemProva.prova);
+
+            const discSet = new Set();
+            if (metas) metas.forEach(m => discSet.add(m.disciplina));
+            if (questoes) questoes.forEach(q => { if(q.disciplina) discSet.add(q.disciplina); });
+
+            let html = '';
+            [...discSet].forEach(disc => {
+                const mInfo = metas ? metas.find(m => m.disciplina === disc) : null;
+                const metaQtd = mInfo ? mInfo.meta_questoes : 50;
+                const qDisc = questoes ? questoes.filter(q => q.disciplina === disc) : [];
+                const resolvidas = qDisc.length;
+                const acertos = qDisc.filter(q => q.acerto_erro === 'Acerto').length;
+                const erros = qDisc.filter(q => q.acerto_erro === 'Erro').length;
+                const pAcerto = resolvidas > 0 ? ((acertos / resolvidas) * 100).toFixed(0) : 0;
+                const pMeta = Math.min(((resolvidas / metaQtd) * 100), 100).toFixed(0);
+
+                html += `<div class="card-item" onclick="selecionarDisciplina('${disc}')">
+                    <h4>📖 ${disc}</h4>
+                    <div class="stats-box">
+                        <div class="stats-line"><span>🎯 Meta:</span><b>${metaQtd}</b></div>
+                        <div class="stats-line"><span>📝 Resolvidas:</span><b>${resolvidas}</b></div>
+                        <div class="stats-line" style="color:#16a34a"><span>✅ Acertos:</span><b>${acertos}</b></div>
+                        <div class="stats-line" style="color:#dc2626"><span>❌ Erros:</span><b>${erros}</b></div>
+                        <div class="progress-container">
+                            <div class="progress-label"><span>Aproveitamento:</span><span>${pAcerto}%</span></div>
+                            <div class="progress-bar-bg"><div class="progress-bar-green" style="width:${pAcerto}%"></div></div>
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-label"><span>Conclusão Meta:</span><span>${pMeta}%</span></div>
+                            <div class="progress-bar-bg"><div class="progress-bar-blue" style="width:${pMeta}%"></div></div>
+                        </div>
+                    </div>
+                </div>`;
+            });
+            gridDisc.innerHTML = html;
+        }
+
+        async function selecionarDisciplina(disc) {
+            disciplinaSelecionada = disc;
+            nivelAtual = 3; atualizarNavegacaoTela();
+            document.getElementById('titulo-disciplina-atual').innerText = `⚡ Aulas de ${disc}`;
+            const grid = document.getElementById('grid-desafios');
+            grid.innerHTML = '<p>Buscando aulas...</p>';
+
+            const { data } = await supabaseClient.from('questoes_desafios')
+                .select('coddesafio, aula, bloco')
+                .ilike('username', usuarioAtual.username)
+                .eq('tipoprova', provaSelecionadaObj.prova)
+                .eq('disciplina', disc);
+
+            if (!data || !data.length) { grid.innerHTML = '<p>Nenhuma aula encontrada.</p>'; return; }
+
+            const desafiosMap = {};
+            data.forEach(item => {
+                if (!desafiosMap[item.coddesafio]) {
+                    desafiosMap[item.coddesafio] = { total: 0, aula: item.aula || 'Aula Geral', blocosSet: new Set() };
+                }
+                desafiosMap[item.coddesafio].total++;
+                if (item.bloco) desafiosMap[item.coddesafio].blocosSet.add(item.bloco);
+            });
+
+            let html = '';
+            Object.keys(desafiosMap).forEach(dCod => {
+                const info = desafiosMap[dCod];
+                const qtdBlocos = info.blocosSet.size || 1;
+
+                html += `<div class="card-item" onclick="selecionarDesafio('${dCod}', '${info.aula.replace(/'/g, "\\'")}')">
+                    <div class="card-aula-destaque">📖 ${info.aula}</div>
+                    <span class="card-desafio-menor">Código Desafio: ${dCod}</span>
+                    <div class="stats-box">
+                        <div class="stats-line"><span>📝 Total de Questões:</span><b>${info.total}</b></div>
+                        <div class="stats-line"><span>📦 Dividido em:</span><b>${qtdBlocos} bloco(s)</b></div>
+                    </div>
+                    <span style="margin-top:12px; color:var(--primary); font-weight:600; font-size:13px; display:block;">Ver Blocos de Exercícios ➔</span>
+                </div>`;
+            });
+            grid.innerHTML = html;
+        }
+
+        async function selecionarDesafio(desafioCod, aulaNome) {
+            desafioSelecionado = desafioCod;
+            aulaSelecionada = aulaNome || 'Aula Geral';
+            nivelAtual = 3.5; atualizarNavegacaoTela();
+            document.getElementById('titulo-desafio-blocos').innerText = `📦 ${aulaSelecionada}`;
+
+            const grid = document.getElementById('grid-blocos');
+            grid.innerHTML = '<p>Buscando blocos...</p>';
+
+            const { data } = await supabaseClient.from('questoes_desafios')
+                .select('bloco, acerto_erro, acertou_duvida, resposta_aluno')
+                .ilike('username', usuarioAtual.username)
+                .eq('tipoprova', provaSelecionadaObj.prova)
+                .eq('disciplina', disciplinaSelecionada)
+                .eq('coddesafio', desafioCod);
+
+            if (!data || !data.length) { grid.innerHTML = '<p>Nenhum bloco encontrado.</p>'; return; }
+
+            const blocosMap = {};
+            data.forEach(item => {
+                const b = item.bloco || 1;
+                if (!blocosMap[b]) {
+                    blocosMap[b] = { total: 0, acertos: 0, erros: 0, duvidas: 0, respondidas: 0 };
+                }
+                blocosMap[b].total++;
+                if (item.resposta_aluno) blocosMap[b].respondidas++;
+                if (item.acerto_erro === 'Acerto') blocosMap[b].acertos++;
+                if (item.acerto_erro === 'Erro') blocosMap[b].erros++;
+
+                if (item.acertou_duvida === true) {
+                    blocosMap[b].duvidas++;
+                }
+            });
+
+            let html = '';
+            Object.keys(blocosMap).sort((a,b)=>a-b).forEach(bNum => {
+                const b = blocosMap[bNum];
+                html += `<div class="card-item" onclick="selecionarBloco(${bNum})">
+                    <h4>📦 Bloco ${bNum} (${b.total} Questões)</h4>
+                    <div class="stats-box">
+                        <div class="stats-line"><span>📝 Questões:</span><b>${b.total} (${b.respondidas} Feitas)</b></div>
+                        <div class="stats-line" style="color:#16a34a"><span>✅ Acertos:</span><b>${b.acertos}</b></div>
+                        <div class="stats-line" style="color:#dc2626"><span>❌ Erros:</span><b>${b.erros}</b></div>
+                        <div class="stats-line" style="color:#d97706"><span>⭐ Dúvidas:</span><b>${b.duvidas}</b></div>
+                    </div>
+                    <span style="margin-top:12px; color:var(--primary); font-weight:600; font-size:13px; display:block;">Iniciar/Continuar Bloco ➔</span>
+                </div>`;
+            });
+            grid.innerHTML = html;
+        }
+
+        async function selecionarBloco(blocoNum) {
+            blocoSelecionado = blocoNum;
+            nivelAtual = 4; atualizarNavegacaoTela();
+
+            const agora = new Date().toISOString();
+            await supabaseClient.from('questoes_desafios')
+                .update({ inicio_desafio: agora })
+                .ilike('username', usuarioAtual.username)
+                .eq('tipoprova', provaSelecionadaObj.prova)
+                .eq('disciplina', disciplinaSelecionada)
+                .eq('coddesafio', desafioSelecionado)
+                .eq('bloco', blocoNum)
+                .is('inicio_desafio', null);
+
+            inicioBlocoTime = new Date().getTime();
+            clearInterval(timerInterval);
+            timerInterval = setInterval(atualizarTimer, 1000);
+
+            document.getElementById('titulo-questao-atual').innerText = `📝 Bloco ${blocoNum} - Questões`;
+            document.getElementById('header-bloco-info').innerHTML = `
+                <div>
+                    <span class="header-aula-titulo">📖 ${aulaSelecionada}</span>
+                    <span style="font-size:12px; color:#475569;">Desafio: <span class="header-desafio-sub">${desafioSelecionado}</span> | Bloco: <b>${blocoNum}</b></span>
+                </div>
+                <span id="cronometro-header" class="timer-badge">⏱️ Tempo: 00:00</span>
+            `;
+
+            const container = document.getElementById('resultado-questoes');
+            container.innerHTML = '<p style="text-align:center;">Carregando questões...</p>';
+
+            const { data } = await supabaseClient.from('questoes_desafios').select('*').ilike('username', usuarioAtual.username).eq('tipoprova', provaSelecionadaObj.prova).eq('disciplina', disciplinaSelecionada).eq('coddesafio', desafioSelecionado).eq('bloco', blocoNum);
+
+            if (!data || !data.length) { container.innerHTML = '<p>Nenhuma questão neste bloco.</p>'; return; }
+
+            bancoQuestoesBloco = {};
+            let html = '';
+            data.forEach((q, idx) => {
+                bancoQuestoesBloco[q.id] = q;
+                const jaRespondido = Boolean(q.resposta_aluno);
+                const respAluno = q.resposta_aluno ? String(q.resposta_aluno).trim().toUpperCase() : '';
+
+                let gabaritoExibido = q.gabarito ? String(q.gabarito).trim().toUpperCase() : 'A';
+                if (gabaritoExibido === 'CERTO' || gabaritoExibido === 'C') gabaritoExibido = 'A';
+                if (gabaritoExibido === 'ERRADO' || gabaritoExibido === 'E') gabaritoExibido = 'B';
+
+                const isCertoErrado = (!q.alternativac || q.alternativaa === 'Certo' || q.alternativab === 'Errado');
+
+                let alternativasHtml = '';
+                if (isCertoErrado) {
+                    alternativasHtml = `
+                        <div class="alternativas-list">
+                            <button class="alternativa-btn ${jaRespondido && respAluno === 'A' ? (gabaritoExibido==='A'?'alternativa-correta':'alternativa-errada') : (jaRespondido && gabaritoExibido==='A'?'alternativa-correta':'')}" ${jaRespondido ? 'disabled' : ''} onclick="responderQuestao('${q.id}', 'A', '${gabaritoExibido}')"><b>A)</b> Certo</button>
+                            <button class="alternativa-btn ${jaRespondido && respAluno === 'B' ? (gabaritoExibido==='B'?'alternativa-correta':'alternativa-errada') : (jaRespondido && gabaritoExibido==='B'?'alternativa-correta':'')}" ${jaRespondido ? 'disabled' : ''} onclick="responderQuestao('${q.id}', 'B', '${gabaritoExibido}')"><b>B)</b> Errado</button>
+                        </div>
+                    `;
+                } else {
+                    ['a','b','c','d','e'].forEach(letra => {
+                        if (q['alternativa' + letra]) {
+                            let classeExtra = '';
+                            if (jaRespondido) {
+                                if (letra.toUpperCase() === gabaritoExibido) classeExtra = 'alternativa-correta';
+                                else if (respAluno === letra.toUpperCase()) classeExtra = 'alternativa-errada';
+                            }
+                            alternativasHtml += `<button class="alternativa-btn ${classeExtra}" ${jaRespondido ? 'disabled' : ''} onclick="responderQuestao('${q.id}', '${letra.toUpperCase()}', '${gabaritoExibido}')"><b>${letra.toUpperCase()}</b> ${q['alternativa' + letra]}</button>`;
+                        }
+                    });
+                }
+
+                const isAcerto = jaRespondido && (respAluno === gabaritoExibido);
+                const temDuvida = (q.acertou_duvida === true);
+
+                html += `
+                    <div class="card-questao" id="questao-${q.id}">
+                        <div class="questao-header">
+                            <span class="badge">Questão ${idx + 1} (${q.coddesafio})</span>
+                            <button class="btn-duvida ${temDuvida ? 'ativo' : ''}" id="btn-duvida-${q.id}" onclick="marcarDuvida('${q.id}')">⭐ Fiquei em Dúvida</button>
+                        </div>
+                        <div class="enunciado">${q.questao}</div>
+                        ${alternativasHtml}
+                        
+                        <div id="feedback-${q.id}" class="${jaRespondido ? '' : 'hidden'}">
+                            <div class="painel-resposta-info ${isAcerto ? 'status-acerto' : 'status-erro'}" style="margin-top: 15px;">
+                                <span>${isAcerto ? '✓ Acertou!' : '✕ Errou!'} | Sua Resposta: <b>${respAluno}</b> (Gabarito: <b>${gabaritoExibido}</b>)</span>
+                                <span style="font-size:11px; font-weight:normal;">Respondido em: ${q.data_resposta ? new Date(q.data_resposta).toLocaleString('pt-BR') : 'Agora'}</span>
+                            </div>
+                            ${q.gabarito_comentado ? `<div style="margin-top: 12px; font-size: 13.5px; color: #334155; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px dashed var(--border-color); line-height:1.5;"><b>💡 Comentário:</b> ${q.gabarito_comentado}</div>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function atualizarTimer() {
+            if (!inicioBlocoTime) return;
+            const diffMs = new Date().getTime() - inicioBlocoTime;
+            const min = Math.floor(diffMs / 60000);
+            const seg = Math.floor((diffMs % 60000) / 1000);
+            const strMin = String(min).padStart(2, '0');
+            const strSeg = String(seg).padStart(2, '0');
+            const timerSpan = document.getElementById('cronometro-header');
+            if (timerSpan) timerSpan.innerHTML = `⏱️ Tempo: ${strMin}:${strSeg}`;
+        }
+
+        async function responderQuestao(idQuestao, respostaEscolha, gabaritoOficial) {
+            const card = document.getElementById(`questao-${idQuestao}`);
+            const botoes = card.querySelectorAll('.alternativa-btn');
+            botoes.forEach(b => b.disabled = true);
+
+            let gabaritoLetra = String(gabaritoOficial).trim().toUpperCase();
+            if (gabaritoLetra === 'CERTO' || gabaritoLetra === 'C') gabaritoLetra = 'A';
+            if (gabaritoLetra === 'ERRADO' || gabaritoLetra === 'E') gabaritoLetra = 'B';
+
+            const acertou = (respostaEscolha.toUpperCase() === gabaritoLetra);
+            const statusAcertoErro = acertou ? 'Acerto' : 'Erro';
+            const dataHoraAtual = new Date().toISOString();
+
+            await supabaseClient.from('questoes_desafios')
+                .update({
+                    resposta_aluno: respostaEscolha,
+                    acerto_erro: statusAcertoErro,
+                    data_resposta: dataHoraAtual
+                })
+                .eq('id', idQuestao);
+
+            botoes.forEach(b => {
+                const txt = b.innerText.trim();
+                if (txt.startsWith(respostaEscolha)) {
+                    b.classList.add(acertou ? 'alternativa-correta' : 'alternativa-errada');
+                }
+                if (txt.startsWith(gabaritoLetra)) {
+                    b.classList.add('alternativa-correta');
+                }
+            });
+
+            const qObj = bancoQuestoesBloco[idQuestao] || {};
+            const comentarioTxt = qObj.gabarito_comentado || '';
+
+            let feedbackDiv = document.getElementById(`feedback-${idQuestao}`);
+            feedbackDiv.classList.remove('hidden');
+
+            let comentarioHtml = '';
+            if (comentarioTxt && comentarioTxt.trim() !== '') {
+                comentarioHtml = `<div style="margin-top: 12px; font-size: 13.5px; color: #334155; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px dashed var(--border-color); line-height:1.5;"><b>💡 Comentário:</b> ${comentarioTxt}</div>`;
+            }
+
+            feedbackDiv.innerHTML = `
+                <div class="painel-resposta-info ${acertou ? 'status-acerto' : 'status-erro'}" style="margin-top: 15px;">
+                    <span>${acertou ? '✓ Acertou!' : '✕ Errou!'} | Sua Resposta: <b>${respostaEscolha}</b> (Gabarito: <b>${gabaritoLetra}</b>)</span>
+                    <span style="font-size:11px; font-weight:normal;">Respondido em: Agora</span>
+                </div>
+                ${comentarioHtml}
+            `;
+        }
+
+        async function marcarDuvida(idQuestao) {
+            const btn = document.getElementById(`btn-duvida-${idQuestao}`);
+            const estaAtivo = btn.classList.contains('ativo');
+            
+            const novoValorBooleano = !estaAtivo;
+            btn.classList.toggle('ativo', novoValorBooleano);
+
+            const { error } = await supabaseClient.from('questoes_desafios')
+                .update({ acertou_duvida: novoValorBooleano })
+                .eq('id', idQuestao);
+
+            if (error) {
+                console.error("Erro ao registrar dúvida no banco:", error);
+                btn.classList.toggle('ativo', estaAtivo);
+            }
+        }
+
+        async function gerarRelatorioDesafio() {
+            nivelAtual = 5; atualizarNavegacaoTela();
+            clearInterval(timerInterval);
+            const relatorioDiv = document.getElementById('conteudo-relatorio');
+            relatorioDiv.innerHTML = '<p>Calculando relatório completo...</p>';
+
+            const { data } = await supabaseClient.from('questoes_desafios')
+                .select('*')
+                .ilike('username', usuarioAtual.username)
+                .eq('tipoprova', provaSelecionadaObj.prova)
+                .eq('disciplina', disciplinaSelecionada)
+                .eq('coddesafio', desafioSelecionado);
+
+            if (!data || !data.length) { relatorioDiv.innerHTML = '<p>Sem dados.</p>'; return; }
+
+            const totalQ = data.length;
+            const resolvidas = data.filter(q => q.resposta_aluno).length;
+            const acertos = data.filter(q => q.acerto_erro === 'Acerto').length;
+            const erros = data.filter(q => q.acerto_erro === 'Erro').length;
+            
+            const questoesDuvida = data.filter(q => q.acertou_duvida === true);
+            const duvidas = questoesDuvida.length;
+
+            const pAproveitamento = resolvidas > 0 ? ((acertos / resolvidas) * 100).toFixed(0) : 0;
+
+            let tempoTexto = 'Não registrado';
+            const inicioTimes = data.map(q => q.inicio_desafio ? new Date(q.inicio_desafio).getTime() : null).filter(Boolean);
+            const fimTimes = data.map(q => q.data_resposta ? new Date(q.data_resposta).getTime() : null).filter(Boolean);
+
+            if (inicioTimes.length && fimTimes.length) {
+                const minInicio = Math.min(...inicioTimes);
+                const maxFim = Math.max(...fimTimes);
+                const diffMs = maxFim - minInicio;
+                const min = Math.floor(diffMs / 60000);
+                const seg = Math.floor((diffMs % 60000) / 1000);
+                tempoTexto = `${min} min e ${seg} seg`;
+            }
+
+            const questoesErradas = data.filter(q => q.acerto_erro === 'Erro');
+
+            let erradasHtml = '';
+            questoesErradas.forEach(q => {
+                erradasHtml += `<div class="card-questao">
+                    <p><b>[Bloco ${q.bloco || 1}] Questão:</b> ${q.questao}</p>
+                    <p style="color:#dc2626; margin-top:6px;">Sua Resposta: <b>${q.resposta_aluno || '-'}</b> | Gabarito: <b>${q.gabarito}</b></p>
+                    ${q.gabarito_comentado ? `<div style="margin-top:8px; font-size:13px; color:#475569;"><b>Comentário:</b> ${q.gabarito_comentado}</div>` : ''}
+                </div>`;
+            });
+
+            let duvidasHtml = '';
+            questoesDuvida.forEach(q => {
+                duvidasHtml += `<div class="card-questao">
+                    <p><b>[Bloco ${q.bloco || 1}] Questão (Dúvida ⭐):</b> ${q.questao}</p>
+                    <p style="color:#2563eb; margin-top:6px;">Sua Resposta: <b>${q.resposta_aluno || '-'}</b> | Gabarito: <b>${q.gabarito}</b></p>
+                    ${q.gabarito_comentado ? `<div style="margin-top:8px; font-size:13px; color:#475569;"><b>Comentário:</b> ${q.gabarito_comentado}</div>` : ''}
+                </div>`;
+            });
+
+            relatorioDiv.innerHTML = `
+                <div class="prova-destaque-header" style="flex-direction:column; align-items:flex-start; position:static;">
+                    <h2>📊 Relatório Geral - ${aulaSelecionada}</h2>
+                    <p><b>Código Desafio:</b> ${desafioSelecionado} | <b>Aluno:</b> ${usuarioAtual.nome_completo}</p>
+                    <p><b>📖 Disciplina:</b> ${disciplinaSelecionada} | <b>🏛️ Prova:</b> ${provaSelecionadaObj.prova}</p>
+                </div>
+
+                <div class="kpi-grid">
+                    <div class="kpi-card"><h5>Aproveitamento</h5><div class="number" style="color:#2563eb;">${pAproveitamento}%</div></div>
+                    <div class="kpi-card"><h5>Tempo Total</h5><div class="number" style="font-size:16px;">⏱️ ${tempoTexto}</div></div>
+                    <div class="kpi-card"><h5>Questões Feitas</h5><div class="number">${resolvidas}/${totalQ}</div></div>
+                    <div class="kpi-card"><h5>Acertos</h5><div class="number" style="color:#16a34a;">✅ ${acertos}</div></div>
+                    <div class="kpi-card"><h5>Erros</h5><div class="number" style="color:#dc2626;">❌ ${erros}</div></div>
+                    <div class="kpi-card"><h5>Dúvidas</h5><div class="number" style="color:#d97706;">⭐ ${duvidas}</div></div>
+                </div>
+
+                <h3 style="margin:20px 0 10px 0; color:#dc2626;">❌ Todas as Questões Erradas (${questoesErradas.length})</h3>
+                ${erradasHtml || '<p style="color:var(--text-muted);">Nenhuma questão errada! Excelente!</p>'}
+
+                <h3 style="margin:20px 0 10px 0; color:#d97706;">⭐ Questões Marcadas com Dúvida (${questoesDuvida.length})</h3>
+                ${duvidasHtml || '<p style="color:var(--text-muted);">Nenhuma dúvida sinalizada.</p>'}
+            `;
+        }
+
+        function atualizarNavegacaoTela() {
+            ['nivel-provas', 'nivel-disciplinas', 'nivel-desafios', 'nivel-blocos', 'nivel-questoes', 'nivel-relatorio'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            const btnVoltar = document.getElementById('btn-voltar');
+            btnVoltar.classList.toggle('hidden', nivelAtual === 1);
+
+            if (nivelAtual === 1) document.getElementById('nivel-provas').classList.remove('hidden');
+            if (nivelAtual === 2) document.getElementById('nivel-disciplinas').classList.remove('hidden');
+            if (nivelAtual === 3) document.getElementById('nivel-desafios').classList.remove('hidden');
+            if (nivelAtual === 3.5) document.getElementById('nivel-blocos').classList.remove('hidden');
+            if (nivelAtual === 4) document.getElementById('nivel-questoes').classList.remove('hidden');
+            if (nivelAtual === 5) document.getElementById('nivel-relatorio').classList.remove('hidden');
+        }
+
+        function voltarNivel() {
+            clearInterval(timerInterval);
+            if (nivelAtual === 5) selecionarDesafio(desafioSelecionado, aulaSelecionada);
+            else if (nivelAtual === 4) selecionarDesafio(desafioSelecionado, aulaSelecionada);
+            else if (nivelAtual === 3.5) selecionarDisciplina(disciplinaSelecionada);
+            else if (nivelAtual === 3) selecionarProva(provaSelecionadaObj);
+            else if (nivelAtual === 2) carregarProvas();
+        }
+    </script>
+</body>
+</html>
