@@ -322,6 +322,40 @@
 
         let bancoQuestoesBloco = {};
 
+        // Listener do Histórico do Navegador (botão de voltar do browser)
+        window.addEventListener('popstate', async (event) => {
+            if (nivelAtual === 4) {
+                await salvarTempoBlocoAtual();
+            }
+            clearInterval(timerInterval);
+
+            if (event.state && event.state.nivel !== undefined) {
+                const destNivel = event.state.nivel;
+                nivelAtual = destNivel;
+
+                if (destNivel === 1) {
+                    carregarProvas(true);
+                } else if (destNivel === 2) {
+                    provaSelecionadaObj = event.state.provaObj || provaSelecionadaObj;
+                    selecionarProva(provaSelecionadaObj, true);
+                } else if (destNivel === 3) {
+                    disciplinaSelecionada = event.state.disciplina || disciplinaSelecionada;
+                    selecionarDisciplina(disciplinaSelecionada, true);
+                } else if (destNivel === 3.5) {
+                    desafioSelecionado = event.state.desafio || desafioSelecionado;
+                    aulaSelecionada = event.state.aula || aulaSelecionada;
+                    selecionarDesafio(desafioSelecionado, aulaSelecionada, true);
+                } else if (destNivel === 4) {
+                    blocoSelecionado = event.state.bloco || blocoSelecionado;
+                    selecionarBloco(blocoSelecionado, true);
+                } else if (destNivel === 5) {
+                    gerarRelatorioDesafio(true);
+                }
+            } else {
+                carregarProvas(true);
+            }
+        });
+
         function formatarTempoExtenso(segundos) {
             if (!segundos || segundos <= 0) return '0 segundos';
             const min = Math.floor(segundos / 60);
@@ -356,7 +390,9 @@
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('main-screen').classList.remove('hidden');
             document.getElementById('span-nome-usuario').innerText = data.nome_completo;
-            carregarProvas();
+            
+            history.replaceState({ nivel: 1 }, '');
+            carregarProvas(true);
         }
 
         function fazerLogout() {
@@ -367,8 +403,13 @@
             document.getElementById('login-screen').classList.remove('hidden');
         }
 
-        async function carregarProvas() {
-            nivelAtual = 1; atualizarNavegacaoTela();
+        async function carregarProvas(skipPush = false) {
+            nivelAtual = 1; 
+            atualizarNavegacaoTela();
+            if (!skipPush) {
+                history.pushState({ nivel: 1 }, '');
+            }
+
             const gridProvas = document.getElementById('grid-provas');
             gridProvas.innerHTML = '<p style="color: var(--text-muted);">Carregando...</p>';
 
@@ -387,9 +428,14 @@
             gridProvas.innerHTML = html;
         }
 
-        async function selecionarProva(itemProva) {
+        async function selecionarProva(itemProva, skipPush = false) {
             provaSelecionadaObj = itemProva;
-            nivelAtual = 2; atualizarNavegacaoTela();
+            nivelAtual = 2; 
+            atualizarNavegacaoTela();
+            if (!skipPush) {
+                history.pushState({ nivel: 2, provaObj: itemProva }, '');
+            }
+
             document.getElementById('titulo-prova-atual').innerText = `📚 Disciplinas: ${itemProva.prova}`;
             document.getElementById('detalhes-prova-header').innerHTML = `<span>🏛️ <b>${itemProva.prova}</b></span><span>📅 Data da Prova: <b>${itemProva.data_prova ? new Date(itemProva.data_prova).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) : 'Não informada'}</b></span>`;
 
@@ -435,10 +481,14 @@
             gridDisc.innerHTML = html;
         }
 
-        // ================= NÍVEL 3: AULAS COM TEMPO TOTAL CALCULADO NO CARD =================
-        async function selecionarDisciplina(disc) {
+        async function selecionarDisciplina(disc, skipPush = false) {
             disciplinaSelecionada = disc;
-            nivelAtual = 3; atualizarNavegacaoTela();
+            nivelAtual = 3; 
+            atualizarNavegacaoTela();
+            if (!skipPush) {
+                history.pushState({ nivel: 3, disciplina: disc }, '');
+            }
+
             document.getElementById('titulo-disciplina-atual').innerText = `⚡ Aulas de ${disc}`;
             const grid = document.getElementById('grid-desafios');
             grid.innerHTML = '<p>Buscando aulas...</p>';
@@ -510,10 +560,15 @@
             grid.innerHTML = html;
         }
 
-        async function selecionarDesafio(desafioCod, aulaNome) {
+        async function selecionarDesafio(desafioCod, aulaNome, skipPush = false) {
             desafioSelecionado = desafioCod;
             aulaSelecionada = aulaNome || 'Aula Geral';
-            nivelAtual = 3.5; atualizarNavegacaoTela();
+            nivelAtual = 3.5; 
+            atualizarNavegacaoTela();
+            if (!skipPush) {
+                history.pushState({ nivel: 3.5, desafio: desafioCod, aula: aulaNome }, '');
+            }
+
             document.getElementById('titulo-desafio-blocos').innerText = `📦 ${aulaSelecionada}`;
 
             const grid = document.getElementById('grid-blocos');
@@ -561,7 +616,6 @@
             grid.innerHTML = html;
         }
 
-        // ================= FUNÇÕES DO TEMPO INDEXADO POR BLOCO =================
         function gerarChaveBloco() {
             const user = usuarioAtual ? usuarioAtual.username : 'user';
             const disc = disciplinaSelecionada ? disciplinaSelecionada.replace(/\s+/g, '_') : 'DISC';
@@ -627,12 +681,14 @@
             return respondidasCount === totalNoBloco;
         }
 
-        // ================= NÍVEL 4: QUESTÕES COM ALUNO(A) NO CABEÇALHO =================
-        async function selecionarBloco(blocoNum) {
+        async function selecionarBloco(blocoNum, skipPush = false) {
             blocoSelecionado = blocoNum;
             timerPausado = false;
             nivelAtual = 4; 
             atualizarNavegacaoTela();
+            if (!skipPush) {
+                history.pushState({ nivel: 4, bloco: blocoNum }, '');
+            }
 
             await carregarTempoBloco();
 
@@ -849,8 +905,13 @@
             }
         }
 
-        async function gerarRelatorioDesafio() {
-            nivelAtual = 5; atualizarNavegacaoTela();
+        async function gerarRelatorioDesafio(skipPush = false) {
+            nivelAtual = 5; 
+            atualizarNavegacaoTela();
+            if (!skipPush) {
+                history.pushState({ nivel: 5 }, '');
+            }
+
             clearInterval(timerInterval);
             salvarTempoBlocoAtual();
 
@@ -963,17 +1024,9 @@
             if (nivelAtual === 5) document.getElementById('nivel-relatorio').classList.remove('hidden');
         }
 
-        async function voltarNivel() {
-            if (nivelAtual === 4) {
-                await salvarTempoBlocoAtual();
-            }
-            clearInterval(timerInterval);
-
-            if (nivelAtual === 5) selecionarDesafio(desafioSelecionado, aulaSelecionada);
-            else if (nivelAtual === 4) selecionarDesafio(desafioSelecionado, aulaSelecionada);
-            else if (nivelAtual === 3.5) selecionarDisciplina(disciplinaSelecionada);
-            else if (nivelAtual === 3) selecionarProva(provaSelecionadaObj);
-            else if (nivelAtual === 2) carregarProvas();
+        function voltarNivel() {
+            // Aciona o botão de voltar do histórico do navegador, disparando o evento popstate de forma unificada
+            window.history.back();
         }
     </script>
 </body>
