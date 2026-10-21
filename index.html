@@ -47,10 +47,10 @@
         .btn-logout { background: transparent; color: #ef4444; border: 1px solid #fca5a5; padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; }
         .btn-logout:hover { background: #fef2f2; }
 
-        .main-container { max-width: 960px; margin: 20px auto; padding: 0 20px; width: 100%. }
+        .main-container { max-width: 960px; margin: 20px auto; padding: 0 20px; width: 100%; }
         .section-title { font-size: 18px; font-weight: 600; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
 
-        /* BOTÃO VOLTAR CONGELADO, MAIOR E EM VERMELHO */
+        /* BOTÃO VOLTAR MAIOR, VERMELHO E CONGELADO */
         .btn-voltar-fixo { 
             position: sticky; 
             top: 65px; 
@@ -72,7 +72,7 @@
         }
         .btn-voltar-fixo:hover { background: #dc2626; }
 
-        /* NOVO FORMATO DO CABEÇALHO DO BLOCO (BASEADO NA SUA IMAGEM) */
+        /* CABEÇALHO ESCURO DO BLOCO */
         .prova-destaque-header { 
             background: #0f172a; 
             color: #ffffff;
@@ -114,9 +114,8 @@
         .stats-line { display: flex; justify-content: space-between; align-items: center; font-weight: 500; }
 
         /* BARRAS DE PROGRESSO */
-        .progress-container { margin-top: 2px; margin-bottom: 6px; }
-        .progress-label { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 4px; }
-        .progress-bar-bg { width: 100%; height: 10px; background: #e2e8f0; border-radius: 6px; overflow: hidden; }
+        .progress-container { margin-top: 4px; margin-bottom: 4px; }
+        .progress-bar-bg { width: 100%; height: 8px; background: #e2e8f0; border-radius: 6px; overflow: hidden; }
         .progress-bar-green { height: 100%; background: linear-gradient(90deg, #22c55e, #16a34a); border-radius: 6px; }
         .progress-bar-blue { height: 100%; background: linear-gradient(90deg, #3b82f6, #1d4ed8); border-radius: 6px; }
 
@@ -378,7 +377,7 @@
             gridDisc.innerHTML = html;
         }
 
-        // ================= NÍVEL 3: AULAS COM ACERTOS, ERROS E TOTAL NO CARD =================
+        // ================= NÍVEL 3: AULAS COM RESPONDIDAS E BARRA VERDE DE ACERTOS =================
         async function selecionarDisciplina(disc) {
             disciplinaSelecionada = disc;
             nivelAtual = 3; atualizarNavegacaoTela();
@@ -402,19 +401,19 @@
                         aula: item.aula || 'Aula Geral', 
                         acertos: 0, 
                         erros: 0, 
-                        blocosSet: new Set() 
+                        respondidas: 0 
                     };
                 }
                 desafiosMap[item.coddesafio].total++;
+                if (item.resposta_aluno) desafiosMap[item.coddesafio].respondidas++;
                 if (item.acerto_erro === 'Acerto') desafiosMap[item.coddesafio].acertos++;
                 if (item.acerto_erro === 'Erro') desafiosMap[item.coddesafio].erros++;
-                if (item.bloco) desafiosMap[item.coddesafio].blocosSet.add(item.bloco);
             });
 
             let html = '';
             Object.keys(desafiosMap).forEach(dCod => {
                 const info = desafiosMap[dCod];
-                const qtdBlocos = info.blocosSet.size || 1;
+                const pctAcertos = info.total > 0 ? Math.round((info.acertos / info.total) * 100) : 0;
 
                 html += `<div class="card-item" onclick="selecionarDesafio('${dCod}', '${info.aula.replace(/'/g, "\\'")}')">
                     <div class="card-aula-destaque">📖 ${info.aula}</div>
@@ -422,8 +421,13 @@
                     <div class="stats-box">
                         <div class="stats-line"><span>📝 Total de Questões:</span><b>${info.total}</b></div>
                         <div class="stats-line" style="color:#16a34a"><span>✅ Acertos:</span><b>${info.acertos} / ${info.total}</b></div>
+                        <div class="progress-container">
+                            <div class="progress-bar-bg">
+                                <div class="progress-bar-green" style="width:${pctAcertos}%"></div>
+                            </div>
+                        </div>
                         <div class="stats-line" style="color:#dc2626"><span>❌ Erros:</span><b>${info.erros}</b></div>
-                        <div class="stats-line"><span>📦 Blocos:</span><b>${qtdBlocos}</b></div>
+                        <div class="stats-line"><span>✏️ Respondidas:</span><b>${info.respondidas} / ${info.total}</b></div>
                     </div>
                     <span style="margin-top:12px; color:var(--primary); font-weight:600; font-size:13px; display:block;">Ver Blocos de Exercícios ➔</span>
                 </div>`;
@@ -580,7 +584,7 @@
             const nomeUsuario = usuarioAtual ? usuarioAtual.nome_completo.toUpperCase() : 'ALUNO';
 
             document.getElementById('header-bloco-info').innerHTML = `
-                <span>Aluno(a): <b>${nomeUsuario}</b></span>
+                <span>Jogadora: <b>${nomeUsuario}</b></span>
                 <span>Acertos: <b style="color:#22c55e;">${acertosNoBloco}</b> / ${totalNoBloco}</span>
                 <span>Bloco: <b>${blocoSelecionado}</b></span>
                 <span id="cronometro-header" class="timer-badge">⏱️ 00:00</span>
