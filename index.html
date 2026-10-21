@@ -99,7 +99,6 @@
         .progress-bar-green { height: 100%; background: linear-gradient(90deg, #22c55e, #16a34a); border-radius: 6px; }
         .progress-bar-blue { height: 100%; background: linear-gradient(90deg, #3b82f6, #1d4ed8); border-radius: 6px; }
 
-        /* ESTILOS DO CARD DE QUESTÃO */
         .card-questao { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius); padding: 24px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
         .questao-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 8px; }
         .badge { background: #eff6ff; color: var(--primary); font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
@@ -347,7 +346,6 @@
             blocoSelecionado = blocoNum;
             nivelAtual = 4; atualizarNavegacaoTela();
 
-            // Grava a hora em que iniciou o bloco/desafio no banco para as questões não respondidas
             const agora = new Date().toISOString();
             await supabaseClient.from('questoes_desafios')
                 .update({ inicio_desafio: agora })
@@ -376,10 +374,6 @@
 
                 let alternativasHtml = '';
                 if (isCertoErrado) {
-                    // Certo (A) ou Errado (B)
-                    const selA = respAluno === 'A' ? (q.gabarito === 'Certo' ? 'alternativa-correta' : 'alternativa-errada') : '';
-                    const selB = respAluno === 'B' ? (q.gabarito === 'Errado' ? 'alternativa-correta' : 'alternativa-errada') : '';
-                    
                     alternativasHtml = `
                         <div class="alternativas-list">
                             <button class="alternativa-btn ${jaRespondido && respAluno === 'A' ? (q.gabarito==='Certo'?'alternativa-correta':'alternativa-errada') : ''}" ${jaRespondido ? 'disabled' : ''} onclick="responderQuestao('${q.id}', 'A', '${q.gabarito}', this)"><b>A)</b> Certo</button>
@@ -387,7 +381,6 @@
                         </div>
                     `;
                 } else {
-                    // Múltipla Escolha A, B, C, D, E
                     ['a','b','c','d','e'].forEach(letra => {
                         if (q['alternativa' + letra]) {
                             let classeExtra = '';
@@ -395,7 +388,7 @@
                                 if (letra.toUpperCase() === q.gabarito.toUpperCase()) classeExtra = 'alternativa-correta';
                                 else if (respAluno === letra.toUpperCase()) classeExtra = 'alternativa-errada';
                             }
-                            alternativasHtml += `<button class="alternativa-btn ${classeExtra}" ${jaRespondido ? 'disabled' : ''} onclick="responderQuestao('${q.id}', '${letra.toUpperCase()}', '${q.gabarito}', this)"><b>${letra.toUpperCase())}</b> ${q['alternativa' + letra]}</button>`;
+                            alternativasHtml += `<button class="alternativa-btn ${classeExtra}" ${jaRespondido ? 'disabled' : ''} onclick="responderQuestao('${q.id}', '${letra.toUpperCase()}', '${q.gabarito}', this)"><b>${letra.toUpperCase()}</b> ${q['alternativa' + letra]}</button>`;
                         }
                     });
                 }
@@ -422,13 +415,11 @@
             container.innerHTML = html;
         }
 
-        // ================= FUNÇÃO DE RESPONDER (GRAVA NO BANCO E BLOQUEIA) =================
         async function responderQuestao(idQuestao, respostaEscolha, gabaritoOficial, btnElement) {
             const card = document.getElementById(`questao-${idQuestao}`);
             const botoes = card.querySelectorAll('.alternativa-btn');
             botoes.forEach(b => b.disabled = true);
 
-            // Mapeia Certo/Errado para A/B
             let gabaritoLetra = gabaritoOficial;
             if (gabaritoOficial.toLowerCase() === 'certo') gabaritoLetra = 'A';
             if (gabaritoOficial.toLowerCase() === 'errado') gabaritoLetra = 'B';
@@ -437,7 +428,6 @@
             const statusAcertoErro = acertou ? 'Acerto' : 'Erro';
             const dataHoraAtual = new Date().toISOString();
 
-            // Salva no Supabase imediatamente
             await supabaseClient.from('questoes_desafios')
                 .update({
                     resposta_aluno: respostaEscolha,
@@ -446,7 +436,6 @@
                 })
                 .eq('id', idQuestao);
 
-            // Estiliza os botões visualmente
             botoes.forEach(b => {
                 if (b.innerText.startsWith(respostaEscolha)) {
                     b.classList.add(acertou ? 'alternativa-correta' : 'alternativa-errada');
@@ -455,7 +444,6 @@
                 }
             });
 
-            // Mostra o painel de feedback
             let feedbackDiv = document.getElementById(`feedback-${idQuestao}`);
             feedbackDiv.classList.remove('hidden');
             feedbackDiv.innerHTML = `
@@ -466,7 +454,6 @@
             `;
         }
 
-        // ================= MARCAR DÚVIDA =================
         async function marcarDuvida(idQuestao, btn) {
             const isAtivo = btn.classList.contains('ativo');
             const novoEstado = isAtivo ? null : 'Sim';
