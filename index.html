@@ -50,10 +50,29 @@
         .main-container { max-width: 960px; margin: 20px auto; padding: 0 20px; width: 100%; }
         .section-title { font-size: 18px; font-weight: 600; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
 
-        .btn-voltar { background: #e2e8f0; color: #334155; border: none; padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; margin-bottom: 20px; }
-        .btn-voltar:hover { background: #cbd5e1; }
+        /* BOTÃO VOLTAR MAIOR, VERMELHO E CONGELADO */
+        .btn-voltar-fixo { 
+            position: sticky; 
+            top: 65px; 
+            z-index: 950; 
+            background: #ef4444; 
+            color: white; 
+            border: none; 
+            padding: 10px 20px; 
+            border-radius: 8px; 
+            font-size: 15px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            margin-bottom: 20px; 
+            box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.2s;
+        }
+        .btn-voltar-fixo:hover { background: #dc2626; }
 
-        /* HEADER FIXO */
+        /* HEADER FIXO DO BLOCO */
         .prova-destaque-header { 
             background: #eff6ff; 
             border: 1px solid #bfdbfe; 
@@ -69,7 +88,7 @@
             flex-wrap: wrap; 
             gap: 10px; 
             position: sticky;
-            top: 65px;
+            top: 120px;
             z-index: 900;
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
         }
@@ -118,8 +137,9 @@
         .status-acerto { background: var(--success-bg); color: var(--success-text); }
         .status-erro { background: var(--error-bg); color: var(--error-text); }
 
-        .btn-duvida { background: #f1f5f9; border: 1px solid #cbd5e1; color: #475569; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
-        .btn-duvida.ativo { background: #f59e0b !important; border-color: #d97706 !important; color: white !important; font-weight: 700; }
+        /* BOTÃO DE DÚVIDA DESTACADO EM AMARELO */
+        .btn-duvida { background: #f1f5f9; border: 1px solid #cbd5e1; color: #475569; padding: 8px 14px; border-radius: 6px; font-size: 12.5px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
+        .btn-duvida.ativo { background: #eab308 !important; border-color: #ca8a04 !important; color: #000000 !important; font-weight: 700 !important; box-shadow: 0 2px 4px rgba(234, 179, 8, 0.4); }
 
         .btn-relatorio { background: #10b981; color: white; border: none; padding: 10px 18px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; margin-bottom: 20px; display: inline-flex; align-items: center; gap: 8px; }
         .btn-relatorio:hover { background: #059669; }
@@ -146,7 +166,7 @@
 
         @media print {
             body { background: white; color: black; }
-            .navbar, .btn-voltar, .btn-relatorio, .btn-logout, .btn-duvida { display: none !important; }
+            .navbar, .btn-voltar-fixo, .btn-relatorio, .btn-logout, .btn-duvida { display: none !important; }
             .main-container { max-width: 100%; margin: 0; padding: 0; }
             .card-questao { border: 1px solid #ccc; page-break-inside: avoid; }
             .prova-destaque-header { position: static; }
@@ -188,7 +208,8 @@
         </nav>
 
         <div class="main-container">
-            <button id="btn-voltar" class="btn-voltar hidden" onclick="voltarNivel()">⬅ Voltar</button>
+            <!-- BOTÃO VOLTAR CONGELADO, MAIOR E EM VERMELHO -->
+            <button id="btn-voltar" class="btn-voltar-fixo hidden" onclick="voltarNivel()">⬅ Voltar para a Tela Anterior</button>
 
             <!-- NÍVEL 1: PROVAS -->
             <div id="nivel-provas">
@@ -196,14 +217,14 @@
                 <div id="grid-provas" class="grid-cards"></div>
             </div>
 
-            <!-- NÍVEL 2: DISCIPLINAS COM BARRAS DE PROGRESSO RESTAURADAS -->
+            <!-- NÍVEL 2: DISCIPLINAS -->
             <div id="nivel-disciplinas" class="hidden">
                 <div id="detalhes-prova-header" class="prova-destaque-header"></div>
                 <h3 class="section-title" id="titulo-prova-atual">Disciplinas e Desempenho</h3>
                 <div id="grid-disciplinas" class="grid-cards"></div>
             </div>
 
-            <!-- NÍVEL 3: AULAS / DESAFIOS COM NÚMEROS E DADOS RESTAURADOS -->
+            <!-- NÍVEL 3: AULAS / DESAFIOS -->
             <div id="nivel-desafios" class="hidden">
                 <h3 class="section-title" id="titulo-disciplina-atual">Aulas Disponíveis</h3>
                 <div id="grid-desafios" class="grid-cards"></div>
@@ -352,7 +373,7 @@
             gridDisc.innerHTML = html;
         }
 
-        // ================= NÍVEL 3: AULAS COM NÚMEROS E QUANTITATIVOS DE QUESTÕES/BLOCOS =================
+        // ================= NÍVEL 3: AULAS COM DESTAQUE E QUANTITATIVOS =================
         async function selecionarDisciplina(disc) {
             disciplinaSelecionada = disc;
             nivelAtual = 3; atualizarNavegacaoTela();
@@ -425,8 +446,8 @@
                 if (item.acerto_erro === 'Acerto') blocosMap[b].acertos++;
                 if (item.acerto_erro === 'Erro') blocosMap[b].erros++;
 
-                const vDuvida = item.acertou_duvida ? String(item.acertou_duvida).trim().toLowerCase() : '';
-                if (vDuvida === 'sim' || vDuvida === 'true' || vDuvida === '1') {
+                // Checa estritamente se e BOOLEAN TRUE
+                if (item.acertou_duvida === true) {
                     blocosMap[b].duvidas++;
                 }
             });
@@ -516,8 +537,7 @@
                 }
 
                 const isAcerto = jaRespondido && (respAluno === gabaritoExibido);
-                const vDuvida = q.acertou_duvida ? String(q.acertou_duvida).trim().toLowerCase() : '';
-                const temDuvida = (vDuvida === 'sim' || vDuvida === 'true' || vDuvida === '1');
+                const temDuvida = (q.acertou_duvida === true);
 
                 html += `
                     <div class="card-questao" id="questao-${q.id}">
@@ -593,16 +613,17 @@
             `;
         }
 
-        // ================= MÉTODOS CORRIGIDOS PARA REGISTRO DE DÚVIDA =================
+        // ================= TRATAMENTO BOOLEANO ESTRITO PARA DÚVIDAS =================
         async function marcarDuvida(idQuestao) {
             const btn = document.getElementById(`btn-duvida-${idQuestao}`);
             const estaAtivo = btn.classList.contains('ativo');
             
-            const novoValor = estaAtivo ? null : 'Sim';
-            btn.classList.toggle('ativo', !estaAtivo);
+            // Se já esta ativo (true), o novo valor e false. Caso contrário e true.
+            const novoValorBooleano = !estaAtivo;
+            btn.classList.toggle('ativo', novoValorBooleano);
 
             const { error } = await supabaseClient.from('questoes_desafios')
-                .update({ acertou_duvida: novoValor })
+                .update({ acertou_duvida: novoValorBooleano })
                 .eq('id', idQuestao);
 
             if (error) {
@@ -611,7 +632,7 @@
             }
         }
 
-        // ================= RELATÓRIO DO DESAFIO COMPLETO COM DÚVIDAS E ESTATÍSTICAS =================
+        // ================= RELATÓRIO DO DESAFIO COMPLETO =================
         async function gerarRelatorioDesafio() {
             nivelAtual = 5; atualizarNavegacaoTela();
             clearInterval(timerInterval);
@@ -632,11 +653,8 @@
             const acertos = data.filter(q => q.acerto_erro === 'Acerto').length;
             const erros = data.filter(q => q.acerto_erro === 'Erro').length;
             
-            // Filtro dinâmico de Dúvida no Relatório (sim, true, 1)
-            const questoesDuvida = data.filter(q => {
-                const v = q.acertou_duvida ? String(q.acertou_duvida).trim().toLowerCase() : '';
-                return (v === 'sim' || v === 'true' || v === '1');
-            });
+            // Filtra exclusivamente onde acertou_duvida === true
+            const questoesDuvida = data.filter(q => q.acertou_duvida === true);
             const duvidas = questoesDuvida.length;
 
             const pAproveitamento = resolvidas > 0 ? ((acertos / resolvidas) * 100).toFixed(0) : 0;
