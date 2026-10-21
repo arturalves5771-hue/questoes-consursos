@@ -3,25 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plataforma de Estudos - Caderno de Questões</title>
+    <title>Estratégia Penal - Caderno Tático</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <style>
         :root {
-            --primary: #3b82f6;
-            --primary-hover: #2563eb;
-            --bg-color: #f8fafc;
-            --card-bg: #ffffff;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --border-color: #e2e8f0;
-            --success-bg: #dcfce7;
-            --success-text: #166534;
-            --error-bg: #fee2e2;
-            --error-text: #991b1b;
+            /* PALETA ROXO & CINZA TÁTICO */
+            --primary: #8b5cf6;            /* Roxo Principal */
+            --primary-hover: #7c3aed;      /* Roxo Escuro (Hover) */
+            --primary-light: #f5f3ff;      /* Roxo Suave de Fundo */
+            
+            --bg-color: #0f172a;           /* Cinza Chumbo Escuro (Fundo Geral) */
+            --card-bg: #1e293b;            /* Cinza Antracite (Cards) */
+            --card-border: #334155;        /* Borda Cinza sutil */
+            
+            --text-main: #f8fafc;          /* Texto Claro */
+            --text-muted: #94a3b8;         /* Texto Secundário */
+            
+            --success-bg: #064e3b;
+            --success-text: #34d399;
+            --error-bg: #7f1d1d;
+            --error-text: #fca5a5;
             --radius: 12px;
         }
 
@@ -32,8 +37,8 @@
 
         /* NAVBAR STICKY */
         .navbar { 
-            background: var(--card-bg); 
-            border-bottom: 1px solid var(--border-color); 
+            background: #182232; 
+            border-bottom: 1px solid var(--card-border); 
             padding: 14px 24px; 
             display: flex; 
             justify-content: space-between; 
@@ -41,14 +46,32 @@
             position: sticky; 
             top: 0; 
             z-index: 1000; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
-        .navbar .user-info { font-size: 15px; font-weight: 600; }
-        .btn-logout { background: transparent; color: #ef4444; border: 1px solid #fca5a5; padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; }
-        .btn-logout:hover { background: #fef2f2; }
+        .brand-title {
+            font-size: 18px;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .brand-title span {
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 13px;
+            background: rgba(139, 92, 246, 0.15);
+            border: 1px solid rgba(139, 92, 246, 0.4);
+            padding: 2px 8px;
+            border-radius: 6px;
+        }
+        .navbar .user-info { font-size: 14px; font-weight: 600; color: var(--text-muted); }
+        .btn-logout { background: transparent; color: #ef4444; border: 1px solid #7f1d1d; padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn-logout:hover { background: #450a0a; color: #fca5a5; }
 
         .main-container { max-width: 960px; margin: 20px auto; padding: 0 20px; width: 100%; }
-        .section-title { font-size: 18px; font-weight: 600; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        .section-title { font-size: 18px; font-weight: 700; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; color: #f1f5f9; }
 
         /* BARRA SUPERIOR DE NAVEGAÇÃO / STATUS (CONGELADA NO TOPO) */
         .nav-top-bar {
@@ -65,32 +88,32 @@
 
         /* BOTÃO VOLTAR MAIOR, VERMELHO E CONGELADO */
         .btn-voltar-fixo { 
-            background: #ef4444; 
+            background: #dc2626; 
             color: white; 
             border: none; 
             padding: 10px 20px; 
             border-radius: 8px; 
-            font-size: 15px; 
+            font-size: 14px; 
             font-weight: 700; 
             cursor: pointer; 
-            box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.3);
+            box-shadow: 0 4px 10px rgba(220, 38, 38, 0.4);
             display: inline-flex;
             align-items: center;
             gap: 6px;
             transition: background 0.2s;
         }
-        .btn-voltar-fixo:hover { background: #dc2626; }
+        .btn-voltar-fixo:hover { background: #b91c1c; }
 
         /* BOTÃO INFORMATIVO NO LADO OPOSTO AO VOLTAR */
         .badge-info-progresso {
-            background: #1e293b;
-            color: #38bdf8;
-            border: 1px solid #0284c7;
+            background: #2e1065;
+            color: #c4b5fd;
+            border: 1px solid #7c3aed;
             padding: 10px 18px;
             border-radius: 8px;
             font-size: 14px;
             font-weight: 700;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 10px rgba(124, 58, 237, 0.25);
             display: inline-flex;
             align-items: center;
             gap: 6px;
@@ -98,9 +121,9 @@
 
         /* CABEÇALHO ESCURO DO BLOCO */
         .prova-destaque-header { 
-            background: #0f172a; 
+            background: #1e1b4b; 
             color: #ffffff;
-            border: 1px solid #1e293b; 
+            border: 1px solid #4338ca; 
             padding: 14px 20px; 
             border-radius: var(--radius); 
             margin-bottom: 20px; 
@@ -114,11 +137,11 @@
             position: sticky;
             top: 120px;
             z-index: 900;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
         }
 
         .timer-badge { 
-            background: #2563eb; 
+            background: var(--primary); 
             color: white; 
             padding: 5px 12px; 
             border-radius: 6px; 
@@ -144,76 +167,78 @@
         .btn-pausa-tempo:hover { background: #d97706; color: white; }
 
         .grid-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 18px; margin-bottom: 30px; }
-        .card-item { background: var(--card-bg); border: 1px solid var(--border-color); padding: 22px; border-radius: var(--radius); cursor: pointer; transition: all 0.2s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.05); text-align: left; }
-        .card-item:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08); background: #f0f7ff; }
+        .card-item { background: var(--card-bg); border: 1px solid var(--card-border); padding: 22px; border-radius: var(--radius); cursor: pointer; transition: all 0.2s ease; box-shadow: 0 2px 6px rgba(0,0,0,0.2); text-align: left; }
+        .card-item:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: 0 10px 20px rgba(139, 92, 246, 0.15); background: #26334d; }
         
-        .card-aula-destaque { font-size: 18px; font-weight: 700; color: #0f172a; margin-bottom: 4px; }
-        .card-desafio-menor { font-size: 12px; font-weight: 600; color: #64748b; background: #f1f5f9; padding: 2px 8px; border-radius: 4px; display: inline-block; margin-bottom: 10px; }
+        .card-aula-destaque { font-size: 18px; font-weight: 700; color: #f8fafc; margin-bottom: 4px; }
+        .card-desafio-menor { font-size: 12px; font-weight: 600; color: #a78bfa; background: rgba(139, 92, 246, 0.15); padding: 2px 8px; border-radius: 4px; display: inline-block; margin-bottom: 10px; border: 1px solid rgba(139, 92, 246, 0.3); }
 
-        .stats-box { background: #f8fafc; border: 1px solid var(--border-color); border-radius: 10px; padding: 14px; margin-top: 10px; font-size: 13.5px; color: #334155; display: flex; flex-direction: column; gap: 8px; }
+        .stats-box { background: #0f172a; border: 1px solid var(--card-border); border-radius: 10px; padding: 14px; margin-top: 10px; font-size: 13.5px; color: #cbd5e1; display: flex; flex-direction: column; gap: 8px; }
         .stats-line { display: flex; justify-content: space-between; align-items: center; font-weight: 500; }
 
         /* BARRAS DE PROGRESSO */
         .progress-container { margin-top: 4px; margin-bottom: 4px; }
-        .progress-bar-bg { width: 100%; height: 8px; background: #e2e8f0; border-radius: 6px; overflow: hidden; }
-        .progress-bar-green { height: 100%; background: linear-gradient(90deg, #22c55e, #16a34a); border-radius: 6px; }
-        .progress-bar-blue { height: 100%; background: linear-gradient(90deg, #3b82f6, #1d4ed8); border-radius: 6px; }
+        .progress-bar-bg { width: 100%; height: 8px; background: #334155; border-radius: 6px; overflow: hidden; }
+        .progress-bar-green { height: 100%; background: linear-gradient(90deg, #10b981, #059669); border-radius: 6px; }
+        .progress-bar-blue { height: 100%; background: linear-gradient(90deg, #8b5cf6, #6d28d9); border-radius: 6px; }
 
         .kpi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-bottom: 25px; }
-        .kpi-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; text-align: center; }
+        .kpi-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 10px; padding: 16px; text-align: center; }
         .kpi-card h5 { font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; margin-bottom: 6px; }
         .kpi-card .number { font-size: 22px; font-weight: 700; color: var(--text-main); }
 
-        .card-questao { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius); padding: 24px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .card-questao { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 24px; margin-bottom: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
         .questao-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 8px; }
-        .badge { background: #eff6ff; color: var(--primary); font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
-        .enunciado { font-size: 15px; font-weight: 500; color: #1e293b; line-height: 1.6; margin-bottom: 18px; }
+        .badge { background: rgba(139, 92, 246, 0.2); color: #c4b5fd; border: 1px solid rgba(139, 92, 246, 0.4); font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
+        .enunciado { font-size: 15px; font-weight: 500; color: #f1f5f9; line-height: 1.6; margin-bottom: 18px; }
 
         .alternativas-list { display: flex; flex-direction: column; gap: 8px; }
-        .alternativa-btn { padding: 12px 14px; border-radius: 8px; background: #f8fafc; border: 1px solid var(--border-color); font-size: 14px; color: #334155; text-align: left; cursor: pointer; transition: all 0.2s; width: 100%; display: flex; align-items: center; gap: 10px; }
-        .alternativa-btn:hover:not(:disabled) { background: #eff6ff; border-color: var(--primary); }
+        .alternativa-btn { padding: 12px 14px; border-radius: 8px; background: #0f172a; border: 1px solid var(--card-border); font-size: 14px; color: #cbd5e1; text-align: left; cursor: pointer; transition: all 0.2s; width: 100%; display: flex; align-items: center; gap: 10px; }
+        .alternativa-btn:hover:not(:disabled) { background: #26334d; border-color: var(--primary); color: #ffffff; }
         .alternativa-btn:disabled { cursor: default; opacity: 0.9; }
 
-        .alternativa-correta { background: #dcfce7 !important; border-color: #16a34a !important; color: #166534 !important; font-weight: 600; }
-        .alternativa-errada { background: #fee2e2 !important; border-color: #dc2626 !important; color: #991b1b !important; font-weight: 600; }
+        .alternativa-correta { background: #064e3b !important; border-color: #10b981 !important; color: #34d399 !important; font-weight: 600; }
+        .alternativa-errada { background: #7f1d1d !important; border-color: #ef4444 !important; color: #fca5a5 !important; font-weight: 600; }
 
         .painel-resposta-info { margin-top: 15px; padding: 12px; border-radius: 8px; font-size: 13.5px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
-        .status-acerto { background: var(--success-bg); color: var(--success-text); }
-        .status-erro { background: var(--error-bg); color: var(--error-text); }
+        .status-acerto { background: var(--success-bg); color: var(--success-text); border: 1px solid #059669; }
+        .status-erro { background: var(--error-bg); color: var(--error-text); border: 1px solid #dc2626; }
 
         /* BOTÃO DE DÚVIDA DESTACADO EM AMARELO */
-        .btn-duvida { background: #f1f5f9; border: 1px solid #cbd5e1; color: #475569; padding: 8px 14px; border-radius: 6px; font-size: 12.5px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
-        .btn-duvida.ativo { background: #eab308 !important; border-color: #ca8a04 !important; color: #000000 !important; font-weight: 700 !important; box-shadow: 0 2px 4px rgba(234, 179, 8, 0.4); }
+        .btn-duvida { background: #334155; border: 1px solid #475569; color: #cbd5e1; padding: 8px 14px; border-radius: 6px; font-size: 12.5px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
+        .btn-duvida.ativo { background: #eab308 !important; border-color: #ca8a04 !important; color: #000000 !important; font-weight: 700 !important; box-shadow: 0 2px 8px rgba(234, 179, 8, 0.4); }
 
         .btn-relatorio { background: #10b981; color: white; border: none; padding: 10px 18px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; margin-bottom: 20px; display: inline-flex; align-items: center; gap: 8px; }
         .btn-relatorio:hover { background: #059669; }
 
-        .login-wrapper { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); padding: 20px; }
-        .login-card { background: var(--card-bg); width: 100%; max-width: 420px; padding: 40px 30px; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3); text-align: center; }
+        /* LOGIN COM IDENTIDADE ROXA & CINZA */
+        .login-wrapper { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: radial-gradient(circle at top, #1e1b4b 0%, #0f172a 100%); padding: 20px; }
+        .login-card { background: var(--card-bg); border: 1px solid var(--card-border); width: 100%; max-width: 420px; padding: 40px 30px; border-radius: 16px; box-shadow: 0 20px 30px rgba(0, 0, 0, 0.5); text-align: center; }
         .login-card .logo-img { max-width: 110px; height: auto; margin: 0 auto 15px auto; display: block; object-fit: contain; }
-        .login-card h2 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
-        .login-card p { font-size: 14px; color: var(--text-muted); margin-bottom: 25px; }
+        .login-card h2 { font-size: 22px; font-weight: 800; margin-bottom: 4px; color: #ffffff; }
+        .login-card .sub-brand { font-size: 13px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; display: block; }
 
         .form-group { text-align: left; margin-bottom: 18px; }
-        .form-group label { display: block; font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 6px; }
-        .form-group input { width: 100%; padding: 12px 14px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 14px; outline: none; background: #f8fafc; }
-        .form-group input:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; color: #94a3b8; margin-bottom: 6px; }
+        .form-group input { width: 100%; padding: 12px 14px; border: 1px solid var(--card-border); border-radius: 8px; font-size: 14px; outline: none; background: #0f172a; color: #ffffff; }
+        .form-group input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.25); }
 
         .password-container { position: relative; display: flex; align-items: center; }
         .password-container input { padding-right: 45px; }
         .btn-toggle-pass { position: absolute; right: 12px; background: none; border: none; cursor: pointer; font-size: 18px; color: var(--text-muted); }
 
-        .btn-primary { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-top: 10px; }
+        .btn-primary { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 700; cursor: pointer; transition: background 0.2s; margin-top: 10px; box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3); }
         .btn-primary:hover { background: var(--primary-hover); }
 
-        .error-msg { color: #ef4444; font-size: 13px; margin-top: 12px; background: #fef2f2; padding: 10px; border-radius: 6px; border: 1px solid #fecaca; text-align: left; }
+        .error-msg { color: #fca5a5; font-size: 13px; margin-top: 12px; background: #450a0a; padding: 10px; border-radius: 6px; border: 1px solid #7f1d1d; text-align: left; }
 
         @media print {
             body { background: white; color: black; }
             .navbar, .nav-top-bar, .btn-relatorio, .btn-logout, .btn-duvida { display: none !important; }
             .main-container { max-width: 100%; margin: 0; padding: 0; }
-            .card-questao { border: 1px solid #ccc; page-break-inside: avoid; }
-            .prova-destaque-header { position: static; }
+            .card-questao { border: 1px solid #ccc; page-break-inside: avoid; background: white; color: black; }
+            .enunciado { color: black; }
+            .prova-destaque-header { position: static; background: #f1f5f9; color: black; }
         }
     </style>
 </head>
@@ -223,8 +248,8 @@
     <div id="login-screen" class="login-wrapper">
         <div class="login-card">
             <img src="policia-penal-pe.png" alt="Logo" class="logo-img" onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/arturalves5771-hue/questoes-consursos/main/policia-penal-pe.png';">
-            <h2>Bem-vindo de volta</h2>
-            <p>Acesse seu caderno de questões</p>
+            <h2>ESTRATÉGIA PENAL</h2>
+            <span class="sub-brand">Caderno Tático</span>
             
             <div class="form-group">
                 <label>Usuário</label>
@@ -247,7 +272,10 @@
     <!-- PAINEL PRINCIPAL -->
     <div id="main-screen" class="hidden">
         <nav class="navbar">
-            <div class="user-info">Olá, <span id="span-nome-usuario"></span> 👋</div>
+            <div class="brand-title">
+                🦅 ESTRATÉGIA PENAL <span>Caderno Tático</span>
+            </div>
+            <div class="user-info">Olá, <span id="span-nome-usuario" style="color: #ffffff;"></span> 👋</div>
             <button class="btn-logout" onclick="fazerLogout()">Sair</button>
         </nav>
 
@@ -465,8 +493,8 @@
                     <div class="stats-box">
                         <div class="stats-line"><span>🎯 Meta:</span><b>${metaQtd}</b></div>
                         <div class="stats-line"><span>📝 Resolvidas:</span><b>${resolvidas}</b></div>
-                        <div class="stats-line" style="color:#16a34a"><span>✅ Acertos:</span><b>${acertos}</b></div>
-                        <div class="stats-line" style="color:#dc2626"><span>❌ Erros:</span><b>${erros}</b></div>
+                        <div class="stats-line" style="color:#10b981"><span>✅ Acertos:</span><b>${acertos}</b></div>
+                        <div class="stats-line" style="color:#ef4444"><span>❌ Erros:</span><b>${erros}</b></div>
                         <div class="progress-container">
                             <div class="progress-label"><span>Aproveitamento:</span><span>${pAcerto}%</span></div>
                             <div class="progress-bar-bg"><div class="progress-bar-green" style="width:${pAcerto}%"></div></div>
@@ -544,15 +572,15 @@
                     <span class="card-desafio-menor">Código Desafio: ${dCod}</span>
                     <div class="stats-box">
                         <div class="stats-line"><span>📝 Total de Questões:</span><b>${info.total}</b></div>
-                        <div class="stats-line" style="color:#16a34a"><span>✅ Acertos:</span><b>${info.acertos} / ${info.total}</b></div>
+                        <div class="stats-line" style="color:#10b981"><span>✅ Acertos:</span><b>${info.acertos} / ${info.total}</b></div>
                         <div class="progress-container">
                             <div class="progress-bar-bg">
                                 <div class="progress-bar-green" style="width:${pctAcertos}%"></div>
                             </div>
                         </div>
-                        <div class="stats-line" style="color:#dc2626"><span>❌ Erros:</span><b>${info.erros}</b></div>
+                        <div class="stats-line" style="color:#ef4444"><span>❌ Erros:</span><b>${info.erros}</b></div>
                         <div class="stats-line"><span>✏️ Respondidas:</span><b>${info.respondidas} / ${info.total}</b></div>
-                        <div class="stats-line" style="color:#2563eb; font-weight:600; margin-top:2px;"><span>⏱️ Tempo Total:</span><b>${tempoExtensoStr}</b></div>
+                        <div class="stats-line" style="color:#c4b5fd; font-weight:600; margin-top:2px;"><span>⏱️ Tempo Total:</span><b>${tempoExtensoStr}</b></div>
                     </div>
                     <span style="margin-top:12px; color:var(--primary); font-weight:600; font-size:13px; display:block;">Ver Blocos de Exercícios ➔</span>
                 </div>`;
@@ -606,9 +634,9 @@
                     <h4>📦 Bloco ${bNum} (${b.total} Questões)</h4>
                     <div class="stats-box">
                         <div class="stats-line"><span>📝 Questões:</span><b>${b.total} (${b.respondidas} Feitas)</b></div>
-                        <div class="stats-line" style="color:#16a34a"><span>✅ Acertos:</span><b>${b.acertos} / ${b.total}</b></div>
-                        <div class="stats-line" style="color:#dc2626"><span>❌ Erros:</span><b>${b.erros}</b></div>
-                        <div class="stats-line" style="color:#d97706"><span>⭐ Dúvidas:</span><b>${b.duvidas}</b></div>
+                        <div class="stats-line" style="color:#10b981"><span>✅ Acertos:</span><b>${b.acertos} / ${b.total}</b></div>
+                        <div class="stats-line" style="color:#ef4444"><span>❌ Erros:</span><b>${b.erros}</b></div>
+                        <div class="stats-line" style="color:#f59e0b"><span>⭐ Dúvidas:</span><b>${b.duvidas}</b></div>
                     </div>
                     <span style="margin-top:12px; color:var(--primary); font-weight:600; font-size:13px; display:block;">Iniciar/Continuar Bloco ➔</span>
                 </div>`;
@@ -756,7 +784,7 @@
                                 <span>${isAcerto ? '✓ Acertou!' : '✕ Errou!'} | Sua Resposta: <b>${respAluno}</b> (Gabarito: <b>${gabaritoExibido}</b>)</span>
                                 <span style="font-size:11px; font-weight:normal;">Respondido em: ${q.data_resposta ? new Date(q.data_resposta).toLocaleString('pt-BR') : 'Agora'}</span>
                             </div>
-                            ${q.gabarito_comentado ? `<div style="margin-top: 12px; font-size: 13.5px; color: #334155; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px dashed var(--border-color); line-height:1.5;"><b>💡 Comentário:</b> ${q.gabarito_comentado}</div>` : ''}
+                            ${q.gabarito_comentado ? `<div style="margin-top: 12px; font-size: 13.5px; color: #cbd5e1; background: #0f172a; padding: 12px; border-radius: 8px; border: 1px dashed var(--card-border); line-height:1.5;"><b>💡 Comentário:</b> ${q.gabarito_comentado}</div>` : ''}
                         </div>
                     </div>
                 `;
@@ -810,7 +838,7 @@
 
             document.getElementById('header-bloco-info').innerHTML = `
                 <span>Aluno(a): <b>${nomeUsuario}</b></span>
-                <span>Acertos: <b style="color:#22c55e;">${acertosNoBloco}</b> / ${totalNoBloco}</span>
+                <span>Acertos: <b style="color:#10b981;">${acertosNoBloco}</b> / ${totalNoBloco}</span>
                 <span>Bloco: <b>${blocoSelecionado}</b></span>
                 <span class="timer-badge">
                     <span id="cronometro-display">⏱️ ${formatarMMSS(tempoSegundosBloco)}</span>
@@ -863,7 +891,7 @@
 
             let comentarioHtml = '';
             if (comentarioTxt && comentarioTxt.trim() !== '') {
-                comentarioHtml = `<div style="margin-top: 12px; font-size: 13.5px; color: #334155; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px dashed var(--border-color); line-height:1.5;"><b>💡 Comentário:</b> ${comentarioTxt}</div>`;
+                comentarioHtml = `<div style="margin-top: 12px; font-size: 13.5px; color: #cbd5e1; background: #0f172a; padding: 12px; border-radius: 8px; border: 1px dashed var(--card-border); line-height:1.5;"><b>💡 Comentário:</b> ${comentarioTxt}</div>`;
             }
 
             feedbackDiv.innerHTML = `
@@ -958,8 +986,8 @@
             questoesErradas.forEach(q => {
                 erradasHtml += `<div class="card-questao">
                     <p><b>[Bloco ${q.bloco || 1}] Questão:</b> ${q.questao}</p>
-                    <p style="color:#dc2626; margin-top:6px;">Sua Resposta: <b>${q.resposta_aluno || '-'}</b> | Gabarito: <b>${q.gabarito}</b></p>
-                    ${q.gabarito_comentado ? `<div style="margin-top:8px; font-size:13px; color:#475569;"><b>Comentário:</b> ${q.gabarito_comentado}</div>` : ''}
+                    <p style="color:#ef4444; margin-top:6px;">Sua Resposta: <b>${q.resposta_aluno || '-'}</b> | Gabarito: <b>${q.gabarito}</b></p>
+                    ${q.gabarito_comentado ? `<div style="margin-top:8px; font-size:13px; color:#cbd5e1;"><b>Comentário:</b> ${q.gabarito_comentado}</div>` : ''}
                 </div>`;
             });
 
@@ -967,8 +995,8 @@
             questoesDuvida.forEach(q => {
                 duvidasHtml += `<div class="card-questao">
                     <p><b>[Bloco ${q.bloco || 1}] Questão (Dúvida ⭐):</b> ${q.questao}</p>
-                    <p style="color:#2563eb; margin-top:6px;">Sua Resposta: <b>${q.resposta_aluno || '-'}</b> | Gabarito: <b>${q.gabarito}</b></p>
-                    ${q.gabarito_comentado ? `<div style="margin-top:8px; font-size:13px; color:#475569;"><b>Comentário:</b> ${q.gabarito_comentado}</div>` : ''}
+                    <p style="color:#c4b5fd; margin-top:6px;">Sua Resposta: <b>${q.resposta_aluno || '-'}</b> | Gabarito: <b>${q.gabarito}</b></p>
+                    ${q.gabarito_comentado ? `<div style="margin-top:8px; font-size:13px; color:#cbd5e1;"><b>Comentário:</b> ${q.gabarito_comentado}</div>` : ''}
                 </div>`;
             });
 
@@ -980,18 +1008,18 @@
                 </div>
 
                 <div class="kpi-grid">
-                    <div class="kpi-card"><h5>Aproveitamento</h5><div class="number" style="color:#2563eb;">${pAproveitamento}%</div></div>
+                    <div class="kpi-card"><h5>Aproveitamento</h5><div class="number" style="color:#a78bfa;">${pAproveitamento}%</div></div>
                     <div class="kpi-card"><h5>Tempo Total</h5><div class="number" style="font-size:15px;">⏱️ ${tempoTexto}</div></div>
                     <div class="kpi-card"><h5>Questões Feitas</h5><div class="number">${resolvidas}/${totalQ}</div></div>
-                    <div class="kpi-card"><h5>Acertos</h5><div class="number" style="color:#16a34a;">✅ ${acertos}</div></div>
-                    <div class="kpi-card"><h5>Erros</h5><div class="number" style="color:#dc2626;">❌ ${erros}</div></div>
-                    <div class="kpi-card"><h5>Dúvidas</h5><div class="number" style="color:#d97706;">⭐ ${duvidas}</div></div>
+                    <div class="kpi-card"><h5>Acertos</h5><div class="number" style="color:#10b981;">✅ ${acertos}</div></div>
+                    <div class="kpi-card"><h5>Erros</h5><div class="number" style="color:#ef4444;">❌ ${erros}</div></div>
+                    <div class="kpi-card"><h5>Dúvidas</h5><div class="number" style="color:#f59e0b;">⭐ ${duvidas}</div></div>
                 </div>
 
-                <h3 style="margin:20px 0 10px 0; color:#dc2626;">❌ Todas as Questões Erradas (${questoesErradas.length})</h3>
+                <h3 style="margin:20px 0 10px 0; color:#ef4444;">❌ Todas as Questões Erradas (${questoesErradas.length})</h3>
                 ${erradasHtml || '<p style="color:var(--text-muted);">Nenhuma questão errada! Excelente!</p>'}
 
-                <h3 style="margin:20px 0 10px 0; color:#d97706;">⭐ Questões Marcadas com Dúvida (${questoesDuvida.length})</h3>
+                <h3 style="margin:20px 0 10px 0; color:#f59e0b;">⭐ Questões Marcadas com Dúvida (${questoesDuvida.length})</h3>
                 ${duvidasHtml || '<p style="color:var(--text-muted);">Nenhuma dúvida sinalizada.</p>'}
             `;
         }
@@ -1025,7 +1053,6 @@
         }
 
         function voltarNivel() {
-            // Aciona o botão de voltar do histórico do navegador, disparando o evento popstate de forma unificada
             window.history.back();
         }
     </script>
