@@ -30,7 +30,7 @@
 
         .hidden { display: none !important; }
 
-        /* NAVBAR CONGELADA / STICKY TOP */
+        /* NAVBAR STICKY */
         .navbar { 
             background: var(--card-bg); 
             border-bottom: 1px solid var(--border-color); 
@@ -53,7 +53,7 @@
         .btn-voltar { background: #e2e8f0; color: #334155; border: none; padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; margin-bottom: 20px; }
         .btn-voltar:hover { background: #cbd5e1; }
 
-        /* CABEÇALHO DA PROVA / DESAFIO FIXO NO NÍVEL DE QUESTÕES */
+        /* HEADER FIXO */
         .prova-destaque-header { 
             background: #eff6ff; 
             border: 1px solid #bfdbfe; 
@@ -74,6 +74,15 @@
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
         }
 
+        .timer-badge {
+            background: #1e40af;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 13px;
+        }
+
         .grid-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 18px; margin-bottom: 30px; }
         .card-item { background: var(--card-bg); border: 1px solid var(--border-color); padding: 22px; border-radius: var(--radius); cursor: pointer; transition: all 0.2s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.05); text-align: left; }
         .card-item:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08); background: #f0f7ff; }
@@ -82,7 +91,6 @@
         .stats-box { background: #f8fafc; border: 1px solid var(--border-color); border-radius: 10px; padding: 14px; margin-top: 10px; font-size: 13.5px; color: #334155; display: flex; flex-direction: column; gap: 8px; }
         .stats-line { display: flex; justify-content: space-between; align-items: center; font-weight: 500; }
 
-        /* CARDS DE RELATÓRIO / KPIs */
         .kpi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-bottom: 25px; }
         .kpi-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; text-align: center; }
         .kpi-card h5 { font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; margin-bottom: 6px; }
@@ -192,7 +200,7 @@
 
             <!-- NÍVEL 3: DESAFIOS -->
             <div id="nivel-desafios" class="hidden">
-                <h3 class="section-title" id="titulo-disciplina-atual">Desafios</h3>
+                <h3 class="section-title" id="titulo-disciplina-atual">Desafios / Aulas</h3>
                 <div id="grid-desafios" class="grid-cards"></div>
             </div>
 
@@ -230,8 +238,11 @@
         let provaSelecionadaObj = null;
         let disciplinaSelecionada = null;
         let desafioSelecionado = null;
+        let aulaSelecionada = null;
         let blocoSelecionado = null;
         let nivelAtual = 1;
+        let timerInterval = null;
+        let inicioBlocoTime = null;
 
         function togglePassword() {
             const passInput = document.getElementById('login-pass');
@@ -262,6 +273,7 @@
 
         function fazerLogout() {
             usuarioAtual = null; nivelAtual = 1;
+            clearInterval(timerInterval);
             document.getElementById('main-screen').classList.add('hidden');
             document.getElementById('login-screen').classList.remove('hidden');
         }
@@ -328,16 +340,16 @@
             gridDisc.innerHTML = html;
         }
 
-        // ================= NÍVEL 3: DESAFIOS (COM CONTAGEM DE QUESTÕES E BLOCOS) =================
+        // ================= NÍVEL 3: DESAFIOS (EXIBE AULA TAMBÉM) =================
         async function selecionarDisciplina(disc) {
             disciplinaSelecionada = disc;
             nivelAtual = 3; atualizarNavegacaoTela();
-            document.getElementById('titulo-disciplina-atual').innerText = `⚡ Desafios de ${disc}`;
+            document.getElementById('titulo-disciplina-atual').innerText = `⚡ Desafios / Aulas de ${disc}`;
             const grid = document.getElementById('grid-desafios');
-            grid.innerHTML = '<p>Buscando desafios...</p>';
+            grid.innerHTML = '<p>Buscando desafios e aulas...</p>';
 
             const { data } = await supabaseClient.from('questoes_desafios')
-                .select('coddesafio, bloco')
+                .select('coddesafio, aula, bloco')
                 .ilike('username', usuarioAtual.username)
                 .eq('tipoprova', provaSelecionadaObj.prova)
                 .eq('disciplina', disc);
@@ -347,7 +359,7 @@
             const desafiosMap = {};
             data.forEach(item => {
                 if (!desafiosMap[item.coddesafio]) {
-                    desafiosMap[item.coddesafio] = { total: 0, blocosSet: new Set() };
+                    desafiosMap[item.coddesafio] = { total: 0, aula: item.aula || 'Aula Geral', blocosSet: new Set() };
                 }
                 desafiosMap[item.coddesafio].total++;
                 if (item.bloco) desafiosMap[item.coddesafio].blocosSet.add(item.bloco);
@@ -358,8 +370,9 @@
                 const info = desafiosMap[dCod];
                 const qtdBlocos = info.blocosSet.size || 1;
 
-                html += `<div class="card-item" onclick="selecionarDesafio('${dCod}')">
+                html += `<div class="card-item" onclick="selecionarDesafio('${dCod}', '${info.aula}')">
                     <h4>🎯 ${dCod}</h4>
+                    <p style="font-size:13.5px; color:#1e40af; font-weight:600; margin-bottom:8px;">📖 ${info.aula}</p>
                     <div class="stats-box">
                         <div class="stats-line"><span>📝 Total de Questões:</span><b>${info.total}</b></div>
                         <div class="stats-line"><span>📦 Dividido em:</span><b>${qtdBlocos} bloco(s)</b></div>
@@ -370,11 +383,12 @@
             grid.innerHTML = html;
         }
 
-        // ================= NÍVEL 3.5: BLOCOS (COM MÉTRICAS DE QUESTÕES, ERROS, ACERTOS E DÚVIDAS) =================
-        async function selecionarDesafio(desafioCod) {
+        // ================= NÍVEL 3.5: BLOCOS =================
+        async function selecionarDesafio(desafioCod, aulaNome) {
             desafioSelecionado = desafioCod;
+            aulaSelecionada = aulaNome || 'Aula Geral';
             nivelAtual = 3.5; atualizarNavegacaoTela();
-            document.getElementById('titulo-desafio-blocos').innerText = `📦 Blocos do ${desafioCod} (${disciplinaSelecionada})`;
+            document.getElementById('titulo-desafio-blocos').innerText = `📦 ${desafioCod} - ${aulaSelecionada}`;
 
             const grid = document.getElementById('grid-blocos');
             grid.innerHTML = '<p>Buscando estatísticas dos blocos...</p>';
@@ -433,8 +447,15 @@
                 .eq('bloco', blocoNum)
                 .is('inicio_desafio', null);
 
+            inicioBlocoTime = new Date().getTime();
+            clearInterval(timerInterval);
+            timerInterval = setInterval(atualizarTimer, 1000);
+
             document.getElementById('titulo-questao-atual').innerText = `📝 Bloco ${blocoNum} - Questões`;
-            document.getElementById('header-bloco-info').innerHTML = `<span>🎯 Desafio: <b>${desafioSelecionado}</b></span><span>📦 Bloco: <b>${blocoNum}</b></span>`;
+            document.getElementById('header-bloco-info').innerHTML = `
+                <span>🎯 <b>${desafioSelecionado}</b> | 📖 <b>${aulaSelecionada}</b> | 📦 Bloco: <b>${blocoNum}</b></span>
+                <span id="cronometro-header" class="timer-badge">⏱️ Tempo: 00:00</span>
+            `;
 
             const container = document.getElementById('resultado-questoes');
             container.innerHTML = '<p style="text-align:center;">Carregando questões...</p>';
@@ -445,10 +466,10 @@
 
             let html = '';
             data.forEach((q, idx) => {
-                const jaRespondido = q.resposta_aluno ? true : false;
-                const respAluno = q.resposta_aluno || '';
+                const jaRespondido = Boolean(q.resposta_aluno);
+                const respAluno = q.resposta_aluno ? String(q.resposta_aluno).trim().toUpperCase() : '';
 
-                let gabaritoExibido = q.gabarito ? q.gabarito.toUpperCase() : 'A';
+                let gabaritoExibido = q.gabarito ? String(q.gabarito).trim().toUpperCase() : 'A';
                 if (gabaritoExibido === 'CERTO' || gabaritoExibido === 'C') gabaritoExibido = 'A';
                 if (gabaritoExibido === 'ERRADO' || gabaritoExibido === 'E') gabaritoExibido = 'B';
 
@@ -458,8 +479,8 @@
                 if (isCertoErrado) {
                     alternativasHtml = `
                         <div class="alternativas-list">
-                            <button class="alternativa-btn ${jaRespondido && respAluno === 'A' ? (gabaritoExibido==='A'?'alternativa-correta':'alternativa-errada') : (jaRespondido && gabaritoExibido==='A'?'alternativa-correta':'')}" ${jaRespondido ? 'disabled' : ''} onclick="responderQuestao('${q.id}', 'A', '${gabaritoExibido}', this)"><b>A)</b> Certo</button>
-                            <button class="alternativa-btn ${jaRespondido && respAluno === 'B' ? (gabaritoExibido==='B'?'alternativa-correta':'alternativa-errada') : (jaRespondido && gabaritoExibido==='B'?'alternativa-correta':'')}" ${jaRespondido ? 'disabled' : ''} onclick="responderQuestao('${q.id}', 'B', '${gabaritoExibido}', this)"><b>B)</b> Errado</button>
+                            <button class="alternativa-btn ${jaRespondido && respAluno === 'A' ? (gabaritoExibido==='A'?'alternativa-correta':'alternativa-errada') : (jaRespondido && gabaritoExibido==='A'?'alternativa-correta':'')}" ${jaRespondido ? 'disabled' : ''} onclick="responderQuestao('${q.id}', 'A', '${gabaritoExibido}')"><b>A)</b> Certo</button>
+                            <button class="alternativa-btn ${jaRespondido && respAluno === 'B' ? (gabaritoExibido==='B'?'alternativa-correta':'alternativa-errada') : (jaRespondido && gabaritoExibido==='B'?'alternativa-correta':'')}" ${jaRespondido ? 'disabled' : ''} onclick="responderQuestao('${q.id}', 'B', '${gabaritoExibido}')"><b>B)</b> Errado</button>
                         </div>
                     `;
                 } else {
@@ -470,10 +491,12 @@
                                 if (letra.toUpperCase() === gabaritoExibido) classeExtra = 'alternativa-correta';
                                 else if (respAluno === letra.toUpperCase()) classeExtra = 'alternativa-errada';
                             }
-                            alternativasHtml += `<button class="alternativa-btn ${classeExtra}" ${jaRespondido ? 'disabled' : ''} onclick="responderQuestao('${q.id}', '${letra.toUpperCase()}', '${gabaritoExibido}', this)"><b>${letra.toUpperCase()}</b> ${q['alternativa' + letra]}</button>`;
+                            alternativasHtml += `<button class="alternativa-btn ${classeExtra}" ${jaRespondido ? 'disabled' : ''} onclick="responderQuestao('${q.id}', '${letra.toUpperCase()}', '${gabaritoExibido}')"><b>${letra.toUpperCase()}</b> ${q['alternativa' + letra]}</button>`;
                         }
                     });
                 }
+
+                const isAcerto = jaRespondido && (respAluno === gabaritoExibido);
 
                 html += `
                     <div class="card-questao" id="questao-${q.id}">
@@ -485,8 +508,8 @@
                         ${alternativasHtml}
                         
                         <div id="feedback-${q.id}" class="${jaRespondido ? '' : 'hidden'}">
-                            <div class="painel-resposta-info ${q.acerto_erro === 'Acerto' ? 'status-acerto' : 'status-erro'}" style="margin-top: 15px;">
-                                <span>${q.acerto_erro === 'Acerto' ? '✓ Acertou!' : '✕ Errou!'} | Sua Resposta: ${respAluno} (Gabarito: ${gabaritoExibido})</span>
+                            <div class="painel-resposta-info ${isAcerto ? 'status-acerto' : 'status-erro'}" style="margin-top: 15px;">
+                                <span>${isAcerto ? '✓ Acertou!' : '✕ Errou!'} | Sua Resposta: <b>${respAluno}</b> (Gabarito: <b>${gabaritoExibido}</b>)</span>
                                 <span style="font-size:11px; font-weight:normal;">Respondido em: ${q.data_resposta ? new Date(q.data_resposta).toLocaleString('pt-BR') : 'Agora'}</span>
                             </div>
                             ${q.gabarito_comentado ? `<div style="margin-top: 12px; font-size: 13.5px; color: #334155; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px dashed var(--border-color); line-height:1.5;"><b>💡 Comentário:</b> ${q.gabarito_comentado}</div>` : ''}
@@ -497,16 +520,27 @@
             container.innerHTML = html;
         }
 
-        async function responderQuestao(idQuestao, respostaEscolha, gabaritoOficial, btnElement) {
+        function atualizarTimer() {
+            if (!inicioBlocoTime) return;
+            const diffMs = new Date().getTime() - inicioBlocoTime;
+            const min = Math.floor(diffMs / 60000);
+            const seg = Math.floor((diffMs % 60000) / 1000);
+            const strMin = String(min).padStart(2, '0');
+            const strSeg = String(seg).padStart(2, '0');
+            const timerSpan = document.getElementById('cronometro-header');
+            if (timerSpan) timerSpan.innerHTML = `⏱️ Tempo: ${strMin}:${strSeg}`;
+        }
+
+        async function responderQuestao(idQuestao, respostaEscolha, gabaritoOficial) {
             const card = document.getElementById(`questao-${idQuestao}`);
             const botoes = card.querySelectorAll('.alternativa-btn');
             botoes.forEach(b => b.disabled = true);
 
-            let gabaritoLetra = gabaritoOficial.toUpperCase();
+            let gabaritoLetra = String(gabaritoOficial).trim().toUpperCase();
             if (gabaritoLetra === 'CERTO' || gabaritoLetra === 'C') gabaritoLetra = 'A';
             if (gabaritoLetra === 'ERRADO' || gabaritoLetra === 'E') gabaritoLetra = 'B';
 
-            const acertou = respostaEscolha.toUpperCase() === gabaritoLetra;
+            const acertou = (respostaEscolha.toUpperCase() === gabaritoLetra);
             const statusAcertoErro = acertou ? 'Acerto' : 'Erro';
             const dataHoraAtual = new Date().toISOString();
 
@@ -530,8 +564,15 @@
 
             let feedbackDiv = document.getElementById(`feedback-${idQuestao}`);
             feedbackDiv.classList.remove('hidden');
+            feedbackDiv.innerHTML = `
+                <div class="painel-resposta-info ${acertou ? 'status-acerto' : 'status-erro'}" style="margin-top: 15px;">
+                    <span>${acertou ? '✓ Acertou!' : '✕ Errou!'} | Sua Resposta: <b>${respostaEscolha}</b> (Gabarito: <b>${gabaritoLetra}</b>)</span>
+                    <span style="font-size:11px; font-weight:normal;">Respondido em: Agora</span>
+                </div>
+            `;
         }
 
+        // ================= CORREÇÃO DO REGISTRO DE DÚVIDA =================
         async function marcarDuvida(idQuestao, btn) {
             const isAtivo = btn.classList.contains('ativo');
             const novoEstado = isAtivo ? null : 'Sim';
@@ -542,9 +583,10 @@
                 .eq('id', idQuestao);
         }
 
-        // ================= RELATÓRIO GERAL DO DESAFIO COMPLETO =================
+        // ================= RELATÓRIO DO DESAFIO COM DÚVIDAS CORRIGIDAS =================
         async function gerarRelatorioDesafio() {
             nivelAtual = 5; atualizarNavegacaoTela();
+            clearInterval(timerInterval);
             const relatorioDiv = document.getElementById('conteudo-relatorio');
             relatorioDiv.innerHTML = '<p>Calculando relatório completo do desafio...</p>';
 
@@ -564,7 +606,6 @@
             const duvidas = data.filter(q => q.acertou_duvida === 'Sim').length;
             const pAproveitamento = resolvidas > 0 ? ((acertos / resolvidas) * 100).toFixed(0) : 0;
 
-            // Tempo total gasto no Desafio inteiro
             let tempoTexto = 'Não registrado';
             const inicioTimes = data.map(q => q.inicio_desafio ? new Date(q.inicio_desafio).getTime() : null).filter(Boolean);
             const fimTimes = data.map(q => q.data_resposta ? new Date(q.data_resposta).getTime() : null).filter(Boolean);
@@ -595,12 +636,13 @@
                 duvidasHtml += `<div class="card-questao">
                     <p><b>[Bloco ${q.bloco || 1}] Questão (Dúvida ⭐):</b> ${q.questao}</p>
                     <p style="color:#2563eb; margin-top:6px;">Sua Resposta: <b>${q.resposta_aluno || '-'}</b> | Gabarito: <b>${q.gabarito}</b></p>
+                    ${q.gabarito_comentado ? `<div style="margin-top:8px; font-size:13px; color:#475569;"><b>Comentário:</b> ${q.gabarito_comentado}</div>` : ''}
                 </div>`;
             });
 
             relatorioDiv.innerHTML = `
                 <div class="prova-destaque-header" style="flex-direction:column; align-items:flex-start; position:static;">
-                    <h2>📊 Relatório Geral do ${desafioSelecionado}</h2>
+                    <h2>📊 Relatório Geral - ${desafioSelecionado} (${aulaSelecionada || 'Aula Geral'})</h2>
                     <p><b>Aluno:</b> ${usuarioAtual.nome_completo} | <b>Disciplina:</b> ${disciplinaSelecionada}</p>
                     <p><b>🏛️ Prova:</b> ${provaSelecionadaObj.prova}</p>
                 </div>
@@ -638,8 +680,9 @@
         }
 
         function voltarNivel() {
-            if (nivelAtual === 5) selecionarDesafio(desafioSelecionado);
-            else if (nivelAtual === 4) selecionarDesafio(desafioSelecionado);
+            clearInterval(timerInterval);
+            if (nivelAtual === 5) selecionarDesafio(desafioSelecionado, aulaSelecionada);
+            else if (nivelAtual === 4) selecionarDesafio(desafioSelecionado, aulaSelecionada);
             else if (nivelAtual === 3.5) selecionarDisciplina(disciplinaSelecionada);
             else if (nivelAtual === 3) selecionarProva(provaSelecionadaObj);
             else if (nivelAtual === 2) carregarProvas();
