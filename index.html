@@ -101,7 +101,23 @@
             font-weight: 700; 
             font-size: 13px; 
             letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
+
+        .btn-pausa-tempo {
+            background: #f59e0b;
+            color: #000;
+            border: none;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-pausa-tempo:hover { background: #d97706; color: white; }
 
         .grid-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 18px; margin-bottom: 30px; }
         .card-item { background: var(--card-bg); border: 1px solid var(--border-color); padding: 22px; border-radius: var(--radius); cursor: pointer; transition: all 0.2s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.05); text-align: left; }
@@ -271,9 +287,23 @@
         let aulaSelecionada = null;
         let blocoSelecionado = null;
         let nivelAtual = 1;
+
+        /* CONTROLE DE TEMPO EM SEGUNDOS */
         let timerInterval = null;
-        let inicioBlocoTime = null;
+        let tempoSegundosBloco = 0;
+        let timerPausado = false;
+
         let bancoQuestoesBloco = {};
+
+        function formatarTempoExtenso(segundos) {
+            if (!segundos || segundos <= 0) return '0 segundos';
+            const min = Math.floor(segundos / 60);
+            const seg = segundos % 60;
+            let partes = [];
+            if (min > 0) partes.push(`${min} ${min === 1 ? 'minuto' : 'minutos'}`);
+            if (seg > 0 || min === 0) partes.push(`${seg} ${seg === 1 ? 'segundo' : 'segundos'}`);
+            return partes.join(' e ');
+        }
 
         function togglePassword() {
             const passInput = document.getElementById('login-pass');
@@ -303,6 +333,7 @@
         }
 
         function fazerLogout() {
+            salvarTempoBlocoAtual();
             usuarioAtual = null; nivelAtual = 1;
             clearInterval(timerInterval);
             document.getElementById('main-screen').classList.add('hidden');
@@ -377,7 +408,7 @@
             gridDisc.innerHTML = html;
         }
 
-        // ================= NÍVEL 3: AULAS COM RESPONDIDAS E BARRA VERDE DE ACERTOS =================
+        // ================= NÍVEL 3: AULAS COM TEMPO TOTAL CALCULADO NO CARD =================
         async function selecionarDisciplina(disc) {
             disciplinaSelecionada = disc;
             nivelAtual = 3; atualizarNavegacaoTela();
@@ -392,6 +423,20 @@
                 .eq('disciplina', disc);
 
             if (!data || !data.length) { grid.innerHTML = '<p>Nenhuma aula encontrada.</p>'; return; }
+
+            const { data: temposData } = await supabaseClient.from('tempos_blocos_usuario')
+                .select('coddesafio, tempo_segundos')
+                .ilike('username', usuarioAtual.username)
+                .eq('tipoprova', provaSelecionadaObj.prova)
+                .eq('disciplina', disc);
+
+            const temposDesafioMap = {};
+            if (temposData) {
+                temposData.forEach(t => {
+                    if (!temposDesafioMap[t.coddesafio]) temposDesafioMap[t.coddesafio] = 0;
+                    temposDesafioMap[t.coddesafio] += (t.tempo_segundos || 0);
+                });
+            }
 
             const desafiosMap = {};
             data.forEach(item => {
@@ -414,6 +459,8 @@
             Object.keys(desafiosMap).forEach(dCod => {
                 const info = desafiosMap[dCod];
                 const pctAcertos = info.total > 0 ? Math.round((info.acertos / info.total) * 100) : 0;
+                const tempoTotalSeg = temposDesafioMap[dCod] || 0;
+                const tempoExtensoStr = formatarTempoExtenso(tempoTotalSeg);
 
                 html += `<div class="card-item" onclick="selecionarDesafio('${dCod}', '${info.aula.replace(/'/g, "\\'")}')">
                     <div class="card-aula-destaque">📖 ${info.aula}</div>
@@ -428,6 +475,7 @@
                         </div>
                         <div class="stats-line" style="color:#dc2626"><span>❌ Erros:</span><b>${info.erros}</b></div>
                         <div class="stats-line"><span>✏️ Respondidas:</span><b>${info.respondidas} / ${info.total}</b></div>
+                        <div class="stats-line" style="color:#2563eb; font-weight:600; margin-top:2px;"><span>⏱️ Tempo Total:</span><b>${tempoExtensoStr}</b></div>
                     </div>
                     <span style="margin-top:12px; color:var(--primary); font-weight:600; font-size:13px; display:block;">Ver Blocos de Exercícios ➔</span>
                 </div>`;
@@ -486,31 +534,91 @@
             grid.innerHTML = html;
         }
 
-        // ================= NÍVEL 4: QUESTÕES COM CABEÇALHO ATUALIZADO =================
+        // ================= FUNÇÕES DO TEMPO INDEXADO POR BLOCO =================
+        function gerarChaveBloco() {
+            const user = usuarioAtual ? usuarioAtual.username : 'user';
+            const disc = disciplinaSelecionada ? disciplinaSelecionada.replace(/\s+/g, '_') : 'DISC';
+            const des = desafioSelecionado ? desafioSelecionado.replace(/\s+/g, '_') : 'DES';
+            return `${user}_${des}_${disc}_${blocoSelecionado}`.toUpperCase();
+        }
+
+        async function carregarTempoBloco() {
+            const chave = gerarChaveBloco();
+            const { data } = await supabaseClient
+                .from('tempos_blocos_usuario')
+                .select('tempo_segundos')
+                .eq('id', chave)
+                .maybeSingle();
+
+            if (data && data.tempo_segundos) {
+                tempoSegundosBloco = data.tempo_segundos;
+            } else {
+                tempoSegundosBloco = 0;
+            }
+        }
+
+        async function salvarTempoBlocoAtual() {
+            if (nivelAtual !== 4 || !blocoSelecionado) return;
+
+            const chave = gerarChaveBloco();
+            await supabaseClient
+                .from('tempos_blocos_usuario')
+                .upsert({
+                    id: chave,
+                    username: usuarioAtual.username,
+                    tipoprova: provaSelecionadaObj.prova,
+                    disciplina: disciplinaSelecionada,
+                    coddesafio: desafioSelecionado,
+                    bloco: blocoSelecionado,
+                    tempo_segundos: tempoSegundosBloco,
+                    updated_at: new Date().toISOString()
+                });
+        }
+
+        function alternarPausaTempo() {
+            timerPausado = !timerPausado;
+            const resDiv = document.getElementById('resultado-questoes');
+            const btnPausa = document.getElementById('btn-pausa-toggle');
+
+            if (timerPausado) {
+                resDiv.classList.add('hidden');
+                if (btnPausa) btnPausa.innerText = '▶️ Play';
+                salvarTempoBlocoAtual();
+            } else {
+                resDiv.classList.remove('hidden');
+                if (btnPausa) btnPausa.innerText = '⏸️ Pausar';
+            }
+        }
+
+        function verificarTodasRespondidasNoBloco() {
+            let totalNoBloco = Object.keys(bancoQuestoesBloco).length;
+            if (totalNoBloco === 0) return false;
+            let respondidasCount = 0;
+            Object.values(bancoQuestoesBloco).forEach(q => {
+                if (q.resposta_aluno) respondidasCount++;
+            });
+            return respondidasCount === totalNoBloco;
+        }
+
+        // ================= NÍVEL 4: QUESTÕES COM PAUSA AUTOMÁTICA =================
         async function selecionarBloco(blocoNum) {
             blocoSelecionado = blocoNum;
-            nivelAtual = 4; atualizarNavegacaoTela();
+            timerPausado = false;
+            nivelAtual = 4; 
+            atualizarNavegacaoTela();
 
-            const agora = new Date().toISOString();
-            await supabaseClient.from('questoes_desafios')
-                .update({ inicio_desafio: agora })
-                .ilike('username', usuarioAtual.username)
-                .eq('tipoprova', provaSelecionadaObj.prova)
-                .eq('disciplina', disciplinaSelecionada)
-                .eq('coddesafio', desafioSelecionado)
-                .eq('bloco', blocoNum)
-                .is('inicio_desafio', null);
-
-            inicioBlocoTime = new Date().getTime();
-            clearInterval(timerInterval);
-            timerInterval = setInterval(atualizarTimer, 1000);
-
-            document.getElementById('titulo-questao-atual').innerText = `📝 Bloco ${blocoNum} - Questões`;
+            await carregarTempoBloco();
 
             const container = document.getElementById('resultado-questoes');
             container.innerHTML = '<p style="text-align:center;">Carregando questões...</p>';
 
-            const { data } = await supabaseClient.from('questoes_desafios').select('*').ilike('username', usuarioAtual.username).eq('tipoprova', provaSelecionadaObj.prova).eq('disciplina', disciplinaSelecionada).eq('coddesafio', desafioSelecionado).eq('bloco', blocoNum);
+            const { data } = await supabaseClient.from('questoes_desafios')
+                .select('*')
+                .ilike('username', usuarioAtual.username)
+                .eq('tipoprova', provaSelecionadaObj.prova)
+                .eq('disciplina', disciplinaSelecionada)
+                .eq('coddesafio', desafioSelecionado)
+                .eq('bloco', blocoNum);
 
             if (!data || !data.length) { container.innerHTML = '<p>Nenhuma questão neste bloco.</p>'; return; }
 
@@ -572,6 +680,30 @@
             });
             container.innerHTML = html;
             atualizarCabecalhoBlocoDinamico();
+
+            clearInterval(timerInterval);
+            const todasProntas = verificarTodasRespondidasNoBloco();
+            if (!todasProntas) {
+                timerInterval = setInterval(() => {
+                    if (!timerPausado) {
+                        tempoSegundosBloco++;
+                        atualizarExibicaoTimer();
+                    }
+                }, 1000);
+            }
+        }
+
+        function formatarMMSS(segundos) {
+            const min = Math.floor(segundos / 60);
+            const seg = segundos % 60;
+            return `${String(min).padStart(2, '0')}:${String(seg).padStart(2, '0')}`;
+        }
+
+        function atualizarExibicaoTimer() {
+            const timerSpan = document.getElementById('cronometro-display');
+            if (timerSpan) {
+                timerSpan.innerText = `⏱️ ${formatarMMSS(tempoSegundosBloco)}`;
+            }
         }
 
         function atualizarCabecalhoBlocoDinamico() {
@@ -587,19 +719,11 @@
                 <span>Jogadora: <b>${nomeUsuario}</b></span>
                 <span>Acertos: <b style="color:#22c55e;">${acertosNoBloco}</b> / ${totalNoBloco}</span>
                 <span>Bloco: <b>${blocoSelecionado}</b></span>
-                <span id="cronometro-header" class="timer-badge">⏱️ 00:00</span>
+                <span class="timer-badge">
+                    <span id="cronometro-display">⏱️ ${formatarMMSS(tempoSegundosBloco)}</span>
+                    <button class="btn-pausa-tempo" id="btn-pausa-toggle" onclick="alternarPausaTempo()">⏸️ Pausar</button>
+                </span>
             `;
-        }
-
-        function atualizarTimer() {
-            if (!inicioBlocoTime) return;
-            const diffMs = new Date().getTime() - inicioBlocoTime;
-            const min = Math.floor(diffMs / 60000);
-            const seg = Math.floor((diffMs % 60000) / 1000);
-            const strMin = String(min).padStart(2, '0');
-            const strSeg = String(seg).padStart(2, '0');
-            const timerSpan = document.getElementById('cronometro-header');
-            if (timerSpan) timerSpan.innerHTML = `⏱️ ${strMin}:${strSeg}`;
         }
 
         async function responderQuestao(idQuestao, respostaEscolha, gabaritoOficial) {
@@ -657,6 +781,13 @@
                 ${comentarioHtml}
             `;
 
+            if (verificarTodasRespondidasNoBloco()) {
+                clearInterval(timerInterval);
+                salvarTempoBlocoAtual();
+            } else {
+                salvarTempoBlocoAtual();
+            }
+
             atualizarCabecalhoBlocoDinamico();
         }
 
@@ -684,6 +815,8 @@
         async function gerarRelatorioDesafio() {
             nivelAtual = 5; atualizarNavegacaoTela();
             clearInterval(timerInterval);
+            salvarTempoBlocoAtual();
+
             const relatorioDiv = document.getElementById('conteudo-relatorio');
             relatorioDiv.innerHTML = '<p>Calculando relatório completo...</p>';
 
@@ -706,18 +839,20 @@
 
             const pAproveitamento = resolvidas > 0 ? ((acertos / resolvidas) * 100).toFixed(0) : 0;
 
-            let tempoTexto = 'Não registrado';
-            const inicioTimes = data.map(q => q.inicio_desafio ? new Date(q.inicio_desafio).getTime() : null).filter(Boolean);
-            const fimTimes = data.map(q => q.data_resposta ? new Date(q.data_resposta).getTime() : null).filter(Boolean);
+            const { data: tempos } = await supabaseClient
+                .from('tempos_blocos_usuario')
+                .select('tempo_segundos')
+                .ilike('username', usuarioAtual.username)
+                .eq('tipoprova', provaSelecionadaObj.prova)
+                .eq('disciplina', disciplinaSelecionada)
+                .eq('coddesafio', desafioSelecionado);
 
-            if (inicioTimes.length && fimTimes.length) {
-                const minInicio = Math.min(...inicioTimes);
-                const maxFim = Math.max(...fimTimes);
-                const diffMs = maxFim - minInicio;
-                const min = Math.floor(diffMs / 60000);
-                const seg = Math.floor((diffMs % 60000) / 1000);
-                tempoTexto = `${min} min e ${seg} seg`;
+            let somaSegundos = 0;
+            if (tempos && tempos.length) {
+                somaSegundos = tempos.reduce((acc, t) => acc + (t.tempo_segundos || 0), 0);
             }
+
+            let tempoTexto = formatarTempoExtenso(somaSegundos);
 
             const questoesErradas = data.filter(q => q.acerto_erro === 'Erro');
 
@@ -748,7 +883,7 @@
 
                 <div class="kpi-grid">
                     <div class="kpi-card"><h5>Aproveitamento</h5><div class="number" style="color:#2563eb;">${pAproveitamento}%</div></div>
-                    <div class="kpi-card"><h5>Tempo Total</h5><div class="number" style="font-size:16px;">⏱️ ${tempoTexto}</div></div>
+                    <div class="kpi-card"><h5>Tempo Total</h5><div class="number" style="font-size:15px;">⏱️ ${tempoTexto}</div></div>
                     <div class="kpi-card"><h5>Questões Feitas</h5><div class="number">${resolvidas}/${totalQ}</div></div>
                     <div class="kpi-card"><h5>Acertos</h5><div class="number" style="color:#16a34a;">✅ ${acertos}</div></div>
                     <div class="kpi-card"><h5>Erros</h5><div class="number" style="color:#dc2626;">❌ ${erros}</div></div>
@@ -778,8 +913,12 @@
             if (nivelAtual === 5) document.getElementById('nivel-relatorio').classList.remove('hidden');
         }
 
-        function voltarNivel() {
+        async function voltarNivel() {
+            if (nivelAtual === 4) {
+                await salvarTempoBlocoAtual();
+            }
             clearInterval(timerInterval);
+
             if (nivelAtual === 5) selecionarDesafio(desafioSelecionado, aulaSelecionada);
             else if (nivelAtual === 4) selecionarDesafio(desafioSelecionado, aulaSelecionada);
             else if (nivelAtual === 3.5) selecionarDisciplina(disciplinaSelecionada);
