@@ -53,7 +53,7 @@
         .btn-voltar { background: #e2e8f0; color: #334155; border: none; padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; margin-bottom: 20px; }
         .btn-voltar:hover { background: #cbd5e1; }
 
-        /* HEADER FIXO COM DESTAQUE DE AULA */
+        /* HEADER FIXO */
         .prova-destaque-header { 
             background: #eff6ff; 
             border: 1px solid #bfdbfe; 
@@ -74,41 +74,27 @@
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
         }
 
-        .header-aula-titulo {
-            font-size: 18px;
-            font-weight: 700;
-            color: #1e3a8a;
-            display: block;
-        }
+        .header-aula-titulo { font-size: 18px; font-weight: 700; color: #1e3a8a; display: block; }
+        .header-desafio-sub { font-size: 12px; font-weight: 600; color: #475569; background: #cbd5e1; padding: 2px 8px; border-radius: 4px; }
 
-        .header-desafio-sub {
-            font-size: 12px;
-            font-weight: 600;
-            color: #64748b;
-            background: #e2e8f0;
-            padding: 2px 8px;
-            border-radius: 4px;
-            margin-left: 6px;
-        }
-
-        .timer-badge {
-            background: #1e40af;
-            color: white;
-            padding: 5px 14px;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 13px;
-        }
+        .timer-badge { background: #1e40af; color: white; padding: 5px 14px; border-radius: 20px; font-weight: 700; font-size: 13px; }
 
         .grid-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 18px; margin-bottom: 30px; }
         .card-item { background: var(--card-bg); border: 1px solid var(--border-color); padding: 22px; border-radius: var(--radius); cursor: pointer; transition: all 0.2s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.05); text-align: left; }
         .card-item:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08); background: #f0f7ff; }
         
         .card-aula-destaque { font-size: 18px; font-weight: 700; color: #0f172a; margin-bottom: 4px; }
-        .card-desafio-menor { font-size: 12px; font-weight: 600; color: #64748b; background: #f1f5f9; padding: 2px 8px; border-radius: 4px; display: inline-block; margin-bottom: 12px; }
+        .card-desafio-menor { font-size: 12px; font-weight: 600; color: #64748b; background: #f1f5f9; padding: 2px 8px; border-radius: 4px; display: inline-block; margin-bottom: 10px; }
 
         .stats-box { background: #f8fafc; border: 1px solid var(--border-color); border-radius: 10px; padding: 14px; margin-top: 10px; font-size: 13.5px; color: #334155; display: flex; flex-direction: column; gap: 8px; }
         .stats-line { display: flex; justify-content: space-between; align-items: center; font-weight: 500; }
+
+        /* BARRAS DE PROGRESSO */
+        .progress-container { margin-top: 2px; margin-bottom: 6px; }
+        .progress-label { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 4px; }
+        .progress-bar-bg { width: 100%; height: 10px; background: #e2e8f0; border-radius: 6px; overflow: hidden; }
+        .progress-bar-green { height: 100%; background: linear-gradient(90deg, #22c55e, #16a34a); border-radius: 6px; }
+        .progress-bar-blue { height: 100%; background: linear-gradient(90deg, #3b82f6, #1d4ed8); border-radius: 6px; }
 
         .kpi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-bottom: 25px; }
         .kpi-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; text-align: center; }
@@ -210,14 +196,14 @@
                 <div id="grid-provas" class="grid-cards"></div>
             </div>
 
-            <!-- NÍVEL 2: DISCIPLINAS -->
+            <!-- NÍVEL 2: DISCIPLINAS COM BARRAS DE PROGRESSO RESTAURADAS -->
             <div id="nivel-disciplinas" class="hidden">
                 <div id="detalhes-prova-header" class="prova-destaque-header"></div>
                 <h3 class="section-title" id="titulo-prova-atual">Disciplinas e Desempenho</h3>
                 <div id="grid-disciplinas" class="grid-cards"></div>
             </div>
 
-            <!-- NÍVEL 3: AULAS / DESAFIOS -->
+            <!-- NÍVEL 3: AULAS / DESAFIOS COM NÚMEROS E DADOS RESTAURADOS -->
             <div id="nivel-desafios" class="hidden">
                 <h3 class="section-title" id="titulo-disciplina-atual">Aulas Disponíveis</h3>
                 <div id="grid-desafios" class="grid-cards"></div>
@@ -317,6 +303,7 @@
             gridProvas.innerHTML = html;
         }
 
+        // ================= NÍVEL 2: DISCIPLINAS COM BARRAS VISUAIS DE PROGRESSO =================
         async function selecionarProva(itemProva) {
             provaSelecionadaObj = itemProva;
             nivelAtual = 2; atualizarNavegacaoTela();
@@ -351,15 +338,21 @@
                         <div class="stats-line"><span>📝 Resolvidas:</span><b>${resolvidas}</b></div>
                         <div class="stats-line" style="color:#16a34a"><span>✅ Acertos:</span><b>${acertos}</b></div>
                         <div class="stats-line" style="color:#dc2626"><span>❌ Erros:</span><b>${erros}</b></div>
-                        <div class="progress-container"><div class="progress-label"><span>Aproveitamento:</span><span>${pAcerto}%</span></div><div class="progress-bar-bg"><div class="progress-bar-green" style="width:${pAcerto}%"></div></div></div>
-                        <div class="progress-container"><div class="progress-label"><span>Conclusão Meta:</span><span>${pMeta}%</span></div><div class="progress-bar-bg"><div class="progress-bar-blue" style="width:${pMeta}%"></div></div></div>
+                        <div class="progress-container">
+                            <div class="progress-label"><span>Aproveitamento:</span><span>${pAcerto}%</span></div>
+                            <div class="progress-bar-bg"><div class="progress-bar-green" style="width:${pAcerto}%"></div></div>
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-label"><span>Conclusão Meta:</span><span>${pMeta}%</span></div>
+                            <div class="progress-bar-bg"><div class="progress-bar-blue" style="width:${pMeta}%"></div></div>
+                        </div>
                     </div>
                 </div>`;
             });
             gridDisc.innerHTML = html;
         }
 
-        // ================= NÍVEL 3: AULAS EM DESTAQUE E DESAFIO EM SEGUNDO PLANO =================
+        // ================= NÍVEL 3: AULAS COM NÚMEROS E QUANTITATIVOS DE QUESTÕES/BLOCOS =================
         async function selecionarDisciplina(disc) {
             disciplinaSelecionada = disc;
             nivelAtual = 3; atualizarNavegacaoTela();
@@ -391,7 +384,7 @@
 
                 html += `<div class="card-item" onclick="selecionarDesafio('${dCod}', '${info.aula.replace(/'/g, "\\'")}')">
                     <div class="card-aula-destaque">📖 ${info.aula}</div>
-                    <span class="card-desafio-menor">Código: ${dCod}</span>
+                    <span class="card-desafio-menor">Código Desafio: ${dCod}</span>
                     <div class="stats-box">
                         <div class="stats-line"><span>📝 Total de Questões:</span><b>${info.total}</b></div>
                         <div class="stats-line"><span>📦 Dividido em:</span><b>${qtdBlocos} bloco(s)</b></div>
@@ -432,9 +425,10 @@
                 if (item.acerto_erro === 'Acerto') blocosMap[b].acertos++;
                 if (item.acerto_erro === 'Erro') blocosMap[b].erros++;
 
-                // Tratamento universal de dúvida (Sim, sim, true, TRUE)
-                const isDuvida = item.acertou_duvida && (String(item.acertou_duvida).toLowerCase() === 'sim' || String(item.acertou_duvida).toLowerCase() === 'true');
-                if (isDuvida) blocosMap[b].duvidas++;
+                const vDuvida = item.acertou_duvida ? String(item.acertou_duvida).trim().toLowerCase() : '';
+                if (vDuvida === 'sim' || vDuvida === 'true' || vDuvida === '1') {
+                    blocosMap[b].duvidas++;
+                }
             });
 
             let html = '';
@@ -522,7 +516,8 @@
                 }
 
                 const isAcerto = jaRespondido && (respAluno === gabaritoExibido);
-                const temDuvida = q.acertou_duvida && (String(q.acertou_duvida).toLowerCase() === 'sim' || String(q.acertou_duvida).toLowerCase() === 'true');
+                const vDuvida = q.acertou_duvida ? String(q.acertou_duvida).trim().toLowerCase() : '';
+                const temDuvida = (vDuvida === 'sim' || vDuvida === 'true' || vDuvida === '1');
 
                 html += `
                     <div class="card-questao" id="questao-${q.id}">
@@ -603,28 +598,25 @@
             const btn = document.getElementById(`btn-duvida-${idQuestao}`);
             const estaAtivo = btn.classList.contains('ativo');
             
-            // Inverte o estado
             const novoValor = estaAtivo ? null : 'Sim';
             btn.classList.toggle('ativo', !estaAtivo);
 
-            // Atualiza direto no Supabase
             const { error } = await supabaseClient.from('questoes_desafios')
                 .update({ acertou_duvida: novoValor })
                 .eq('id', idQuestao);
 
             if (error) {
-                console.error("Erro ao atualizar dúvida:", error);
-                // Reverte em caso de erro no banco
+                console.error("Erro ao registrar dúvida no banco:", error);
                 btn.classList.toggle('ativo', estaAtivo);
             }
         }
 
-        // ================= RELATÓRIO DO DESAFIO COMPLETO COM DÚVIDAS CORRIGIDAS =================
+        // ================= RELATÓRIO DO DESAFIO COMPLETO COM DÚVIDAS E ESTATÍSTICAS =================
         async function gerarRelatorioDesafio() {
             nivelAtual = 5; atualizarNavegacaoTela();
             clearInterval(timerInterval);
             const relatorioDiv = document.getElementById('conteudo-relatorio');
-            relatorioDiv.innerHTML = '<p>Calculando relatório completo da aula...</p>';
+            relatorioDiv.innerHTML = '<p>Calculando relatório completo...</p>';
 
             const { data } = await supabaseClient.from('questoes_desafios')
                 .select('*')
@@ -640,8 +632,11 @@
             const acertos = data.filter(q => q.acerto_erro === 'Acerto').length;
             const erros = data.filter(q => q.acerto_erro === 'Erro').length;
             
-            // Filtro absoluto de dúvida
-            const questoesDuvida = data.filter(q => q.acertou_duvida && (String(q.acertou_duvida).toLowerCase() === 'sim' || String(q.acertou_duvida).toLowerCase() === 'true'));
+            // Filtro dinâmico de Dúvida no Relatório (sim, true, 1)
+            const questoesDuvida = data.filter(q => {
+                const v = q.acertou_duvida ? String(q.acertou_duvida).trim().toLowerCase() : '';
+                return (v === 'sim' || v === 'true' || v === '1');
+            });
             const duvidas = questoesDuvida.length;
 
             const pAproveitamento = resolvidas > 0 ? ((acertos / resolvidas) * 100).toFixed(0) : 0;
