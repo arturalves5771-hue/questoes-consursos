@@ -30,44 +30,49 @@
 
         .hidden { display: none !important; }
 
-        .login-wrapper {
-            display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); padding: 20px;
+        /* NAVBAR CONGELADA / STICKY TOP */
+        .navbar { 
+            background: var(--card-bg); 
+            border-bottom: 1px solid var(--border-color); 
+            padding: 14px 24px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
         }
-
-        .login-card {
-            background: var(--card-bg); width: 100%; max-width: 420px; padding: 40px 30px; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3); text-align: center;
-        }
-
-        .login-card .logo-img { max-width: 110px; height: auto; margin: 0 auto 15px auto; display: block; object-fit: contain; }
-        .login-card h2 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
-        .login-card p { font-size: 14px; color: var(--text-muted); margin-bottom: 25px; }
-
-        .form-group { text-align: left; margin-bottom: 18px; }
-        .form-group label { display: block; font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 6px; }
-        .form-group input { width: 100%; padding: 12px 14px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 14px; outline: none; background: #f8fafc; }
-        .form-group input:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
-
-        .password-container { position: relative; display: flex; align-items: center; }
-        .password-container input { padding-right: 45px; }
-        .btn-toggle-pass { position: absolute; right: 12px; background: none; border: none; cursor: pointer; font-size: 18px; color: var(--text-muted); }
-
-        .btn-primary { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-top: 10px; }
-        .btn-primary:hover { background: var(--primary-hover); }
-
-        .error-msg { color: #ef4444; font-size: 13px; margin-top: 12px; background: #fef2f2; padding: 10px; border-radius: 6px; border: 1px solid #fecaca; text-align: left; }
-
-        .navbar { background: var(--card-bg); border-bottom: 1px solid var(--border-color); padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
         .navbar .user-info { font-size: 15px; font-weight: 600; }
         .btn-logout { background: transparent; color: #ef4444; border: 1px solid #fca5a5; padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; }
         .btn-logout:hover { background: #fef2f2; }
 
-        .main-container { max-width: 960px; margin: 30px auto; padding: 0 20px; width: 100%; }
+        .main-container { max-width: 960px; margin: 20px auto; padding: 0 20px; width: 100%; }
         .section-title { font-size: 18px; font-weight: 600; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
 
         .btn-voltar { background: #e2e8f0; color: #334155; border: none; padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; margin-bottom: 20px; }
         .btn-voltar:hover { background: #cbd5e1; }
 
-        .prova-destaque-header { background: #eff6ff; border: 1px solid #bfdbfe; padding: 14px 18px; border-radius: var(--radius); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; color: #1e40af; font-weight: 500; flex-wrap: wrap; gap: 10px; }
+        /* CABEÇALHO DA PROVA / DESAFIO FIXO NO NÍVEL DE QUESTÕES */
+        .prova-destaque-header { 
+            background: #eff6ff; 
+            border: 1px solid #bfdbfe; 
+            padding: 14px 18px; 
+            border-radius: var(--radius); 
+            margin-bottom: 20px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            font-size: 14px; 
+            color: #1e40af; 
+            font-weight: 500; 
+            flex-wrap: wrap; 
+            gap: 10px; 
+            position: sticky;
+            top: 65px;
+            z-index: 900;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
 
         .grid-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 18px; margin-bottom: 30px; }
         .card-item { background: var(--card-bg); border: 1px solid var(--border-color); padding: 22px; border-radius: var(--radius); cursor: pointer; transition: all 0.2s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.05); text-align: left; }
@@ -76,11 +81,12 @@
 
         .stats-box { background: #f8fafc; border: 1px solid var(--border-color); border-radius: 10px; padding: 14px; margin-top: 10px; font-size: 13.5px; color: #334155; display: flex; flex-direction: column; gap: 8px; }
         .stats-line { display: flex; justify-content: space-between; align-items: center; font-weight: 500; }
-        .progress-container { margin-top: 2px; margin-bottom: 6px; }
-        .progress-label { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 4px; }
-        .progress-bar-bg { width: 100%; height: 10px; background: #e2e8f0; border-radius: 6px; overflow: hidden; }
-        .progress-bar-green { height: 100%; background: linear-gradient(90deg, #22c55e, #16a34a); border-radius: 6px; }
-        .progress-bar-blue { height: 100%; background: linear-gradient(90deg, #3b82f6, #1d4ed8); border-radius: 6px; }
+
+        /* CARDS DE RELATÓRIO / KPIs */
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-bottom: 25px; }
+        .kpi-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; text-align: center; }
+        .kpi-card h5 { font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; margin-bottom: 6px; }
+        .kpi-card .number { font-size: 22px; font-weight: 700; color: var(--text-main); }
 
         .card-questao { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius); padding: 24px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
         .questao-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 8px; }
@@ -105,12 +111,32 @@
         .btn-relatorio { background: #10b981; color: white; border: none; padding: 10px 18px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; margin-bottom: 20px; display: inline-flex; align-items: center; gap: 8px; }
         .btn-relatorio:hover { background: #059669; }
 
-        /* ESTILOS DE IMPRESSÃO DO RELATÓRIO */
+        .login-wrapper { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); padding: 20px; }
+        .login-card { background: var(--card-bg); width: 100%; max-width: 420px; padding: 40px 30px; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3); text-align: center; }
+        .login-card .logo-img { max-width: 110px; height: auto; margin: 0 auto 15px auto; display: block; object-fit: contain; }
+        .login-card h2 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+        .login-card p { font-size: 14px; color: var(--text-muted); margin-bottom: 25px; }
+
+        .form-group { text-align: left; margin-bottom: 18px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 6px; }
+        .form-group input { width: 100%; padding: 12px 14px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 14px; outline: none; background: #f8fafc; }
+        .form-group input:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
+
+        .password-container { position: relative; display: flex; align-items: center; }
+        .password-container input { padding-right: 45px; }
+        .btn-toggle-pass { position: absolute; right: 12px; background: none; border: none; cursor: pointer; font-size: 18px; color: var(--text-muted); }
+
+        .btn-primary { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-top: 10px; }
+        .btn-primary:hover { background: var(--primary-hover); }
+
+        .error-msg { color: #ef4444; font-size: 13px; margin-top: 12px; background: #fef2f2; padding: 10px; border-radius: 6px; border: 1px solid #fecaca; text-align: left; }
+
         @media print {
             body { background: white; color: black; }
             .navbar, .btn-voltar, .btn-relatorio, .btn-logout, .btn-duvida { display: none !important; }
             .main-container { max-width: 100%; margin: 0; padding: 0; }
             .card-questao { border: 1px solid #ccc; page-break-inside: avoid; }
+            .prova-destaque-header { position: static; }
         }
     </style>
 </head>
@@ -172,19 +198,21 @@
 
             <!-- NÍVEL 3.5: BLOCOS -->
             <div id="nivel-blocos" class="hidden">
-                <h3 class="section-title" id="titulo-desafio-blocos">Selecione o Bloco</h3>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
+                    <h3 class="section-title" id="titulo-desafio-blocos" style="margin-bottom:0;">Blocos do Desafio</h3>
+                    <button class="btn-relatorio" style="margin-bottom:0;" onclick="gerarRelatorioDesafio()">📊 Relatório Geral do Desafio</button>
+                </div>
                 <div id="grid-blocos" class="grid-cards"></div>
             </div>
 
             <!-- NÍVEL 4: QUESTÕES -->
             <div id="nivel-questoes" class="hidden">
                 <div id="header-bloco-info" class="prova-destaque-header"></div>
-                <button class="btn-relatorio" onclick="gerarRelatorioBloco()">📊 Gerar Relatório do Bloco / Imprimir</button>
                 <h3 class="section-title" id="titulo-questao-atual">Questões</h3>
                 <div id="resultado-questoes"></div>
             </div>
 
-            <!-- TELA DE RELATÓRIO DO BLOCO -->
+            <!-- TELA DE RELATÓRIO DO DESAFIO GERAL -->
             <div id="nivel-relatorio" class="hidden">
                 <button class="btn-relatorio" onclick="window.print()">🖨️ Imprimir / Salvar PDF</button>
                 <div id="conteudo-relatorio"></div>
@@ -300,47 +328,97 @@
             gridDisc.innerHTML = html;
         }
 
+        // ================= NÍVEL 3: DESAFIOS (COM CONTAGEM DE QUESTÕES E BLOCOS) =================
         async function selecionarDisciplina(disc) {
             disciplinaSelecionada = disc;
             nivelAtual = 3; atualizarNavegacaoTela();
             document.getElementById('titulo-disciplina-atual').innerText = `⚡ Desafios de ${disc}`;
             const grid = document.getElementById('grid-desafios');
-            grid.innerHTML = '<p>Buscando...</p>';
+            grid.innerHTML = '<p>Buscando desafios...</p>';
 
-            const { data } = await supabaseClient.from('questoes_desafios').select('coddesafio').ilike('username', usuarioAtual.username).eq('tipoprova', provaSelecionadaObj.prova).eq('disciplina', disc);
-            const desafios = [...new Set(data.map(i => i.coddesafio))].filter(Boolean);
+            const { data } = await supabaseClient.from('questoes_desafios')
+                .select('coddesafio, bloco')
+                .ilike('username', usuarioAtual.username)
+                .eq('tipoprova', provaSelecionadaObj.prova)
+                .eq('disciplina', disc);
+
+            if (!data || !data.length) { grid.innerHTML = '<p>Nenhum desafio encontrado.</p>'; return; }
+
+            const desafiosMap = {};
+            data.forEach(item => {
+                if (!desafiosMap[item.coddesafio]) {
+                    desafiosMap[item.coddesafio] = { total: 0, blocosSet: new Set() };
+                }
+                desafiosMap[item.coddesafio].total++;
+                if (item.bloco) desafiosMap[item.coddesafio].blocosSet.add(item.bloco);
+            });
 
             let html = '';
-            desafios.forEach(d => {
-                html += `<div class="card-item" onclick="selecionarDesafio('${d}')">
-                    <h4>🎯 ${d}</h4>
-                    <span>Clique para ver os blocos ➔</span>
+            Object.keys(desafiosMap).forEach(dCod => {
+                const info = desafiosMap[dCod];
+                const qtdBlocos = info.blocosSet.size || 1;
+
+                html += `<div class="card-item" onclick="selecionarDesafio('${dCod}')">
+                    <h4>🎯 ${dCod}</h4>
+                    <div class="stats-box">
+                        <div class="stats-line"><span>📝 Total de Questões:</span><b>${info.total}</b></div>
+                        <div class="stats-line"><span>📦 Dividido em:</span><b>${qtdBlocos} bloco(s)</b></div>
+                    </div>
+                    <span style="margin-top:12px; color:var(--primary); font-weight:600; font-size:13px; display:block;">Acessar Blocos ➔</span>
                 </div>`;
             });
             grid.innerHTML = html;
         }
 
+        // ================= NÍVEL 3.5: BLOCOS (COM MÉTRICAS DE QUESTÕES, ERROS, ACERTOS E DÚVIDAS) =================
         async function selecionarDesafio(desafioCod) {
             desafioSelecionado = desafioCod;
             nivelAtual = 3.5; atualizarNavegacaoTela();
             document.getElementById('titulo-desafio-blocos').innerText = `📦 Blocos do ${desafioCod} (${disciplinaSelecionada})`;
 
             const grid = document.getElementById('grid-blocos');
-            grid.innerHTML = '<p>Buscando blocos...</p>';
+            grid.innerHTML = '<p>Buscando estatísticas dos blocos...</p>';
 
-            const { data } = await supabaseClient.from('questoes_desafios').select('bloco').ilike('username', usuarioAtual.username).eq('tipoprova', provaSelecionadaObj.prova).eq('disciplina', disciplinaSelecionada).eq('coddesafio', desafioCod);
-            const blocos = [...new Set(data.map(i => i.bloco))].filter(Boolean).sort((a,b)=>a-b);
+            const { data } = await supabaseClient.from('questoes_desafios')
+                .select('bloco, acerto_erro, acertou_duvida, resposta_aluno')
+                .ilike('username', usuarioAtual.username)
+                .eq('tipoprova', provaSelecionadaObj.prova)
+                .eq('disciplina', disciplinaSelecionada)
+                .eq('coddesafio', desafioCod);
+
+            if (!data || !data.length) { grid.innerHTML = '<p>Nenhum bloco encontrado.</p>'; return; }
+
+            const blocosMap = {};
+            data.forEach(item => {
+                const b = item.bloco || 1;
+                if (!blocosMap[b]) {
+                    blocosMap[b] = { total: 0, acertos: 0, erros: 0, duvidas: 0, respondidas: 0 };
+                }
+                blocosMap[b].total++;
+                if (item.resposta_aluno) blocosMap[b].respondidas++;
+                if (item.acerto_erro === 'Acerto') blocosMap[b].acertos++;
+                if (item.acerto_erro === 'Erro') blocosMap[b].erros++;
+                if (item.acertou_duvida === 'Sim') blocosMap[b].duvidas++;
+            });
 
             let html = '';
-            blocos.forEach(b => {
-                html += `<div class="card-item" onclick="selecionarBloco(${b})">
-                    <h4>📦 Bloco ${b} (10 Questões)</h4>
-                    <span>Clique para iniciar o bloco ➔</span>
+            Object.keys(blocosMap).sort((a,b)=>a-b).forEach(bNum => {
+                const b = blocosMap[bNum];
+                html += `<div class="card-item" onclick="selecionarBloco(${bNum})">
+                    <h4>📦 Bloco ${bNum} (${b.total} Questões)</h4>
+                    <div class="stats-box">
+                        <div class="stats-line"><span>📝 Questões:</span><b>${b.total} (${b.respondidas} Feitas)</b></div>
+                        <div class="stats-line" style="color:#16a34a"><span>✅ Acertos:</span><b>${b.acertos}</b></div>
+                        <div class="stats-line" style="color:#dc2626"><span>❌ Erros:</span><b>${b.erros}</b></div>
+                        <div class="stats-line" style="color:#d97706"><span>⭐ Dúvidas:</span><b>${b.duvidas}</b></div>
+                    </div>
+                    <span style="margin-top:12px; color:var(--primary); font-weight:600; font-size:13px; display:block;">Iniciar/Continuar Bloco ➔</span>
                 </div>`;
             });
             grid.innerHTML = html;
         }
 
+        // ================= NÍVEL 4: CARREGAR QUESTÕES DO BLOCO =================
         async function selecionarBloco(blocoNum) {
             blocoSelecionado = blocoNum;
             nivelAtual = 4; atualizarNavegacaoTela();
@@ -370,7 +448,6 @@
                 const jaRespondido = q.resposta_aluno ? true : false;
                 const respAluno = q.resposta_aluno || '';
 
-                // Padroniza o gabarito exibido (Certo ➔ A, Errado ➔ B)
                 let gabaritoExibido = q.gabarito ? q.gabarito.toUpperCase() : 'A';
                 if (gabaritoExibido === 'CERTO' || gabaritoExibido === 'C') gabaritoExibido = 'A';
                 if (gabaritoExibido === 'ERRADO' || gabaritoExibido === 'E') gabaritoExibido = 'B';
@@ -465,27 +542,29 @@
                 .eq('id', idQuestao);
         }
 
-        // ================= RELATÓRIO DO BLOCO COM TEMPO E QUESTÕES ERRADAS =================
-        async function gerarRelatorioBloco() {
+        // ================= RELATÓRIO GERAL DO DESAFIO COMPLETO =================
+        async function gerarRelatorioDesafio() {
             nivelAtual = 5; atualizarNavegacaoTela();
             const relatorioDiv = document.getElementById('conteudo-relatorio');
-            relatorioDiv.innerHTML = '<p>Gerando relatório do bloco...</p>';
+            relatorioDiv.innerHTML = '<p>Calculando relatório completo do desafio...</p>';
 
             const { data } = await supabaseClient.from('questoes_desafios')
                 .select('*')
                 .ilike('username', usuarioAtual.username)
                 .eq('tipoprova', provaSelecionadaObj.prova)
                 .eq('disciplina', disciplinaSelecionada)
-                .eq('coddesafio', desafioSelecionado)
-                .eq('bloco', blocoSelecionado);
+                .eq('coddesafio', desafioSelecionado);
 
             if (!data || !data.length) { relatorioDiv.innerHTML = '<p>Sem dados.</p>'; return; }
 
+            const totalQ = data.length;
+            const resolvidas = data.filter(q => q.resposta_aluno).length;
             const acertos = data.filter(q => q.acerto_erro === 'Acerto').length;
             const erros = data.filter(q => q.acerto_erro === 'Erro').length;
             const duvidas = data.filter(q => q.acertou_duvida === 'Sim').length;
+            const pAproveitamento = resolvidas > 0 ? ((acertos / resolvidas) * 100).toFixed(0) : 0;
 
-            // Cálculo do tempo total
+            // Tempo total gasto no Desafio inteiro
             let tempoTexto = 'Não registrado';
             const inicioTimes = data.map(q => q.inicio_desafio ? new Date(q.inicio_desafio).getTime() : null).filter(Boolean);
             const fimTimes = data.map(q => q.data_resposta ? new Date(q.data_resposta).getTime() : null).filter(Boolean);
@@ -505,7 +584,7 @@
             let erradasHtml = '';
             questoesErradas.forEach(q => {
                 erradasHtml += `<div class="card-questao">
-                    <p><b>Questão:</b> ${q.questao}</p>
+                    <p><b>[Bloco ${q.bloco || 1}] Questão:</b> ${q.questao}</p>
                     <p style="color:#dc2626; margin-top:6px;">Sua Resposta: <b>${q.resposta_aluno || '-'}</b> | Gabarito: <b>${q.gabarito}</b></p>
                     ${q.gabarito_comentado ? `<div style="margin-top:8px; font-size:13px; color:#475569;"><b>Comentário:</b> ${q.gabarito_comentado}</div>` : ''}
                 </div>`;
@@ -514,24 +593,32 @@
             let duvidasHtml = '';
             questoesDuvida.forEach(q => {
                 duvidasHtml += `<div class="card-questao">
-                    <p><b>Questão (Dúvida ⭐):</b> ${q.questao}</p>
+                    <p><b>[Bloco ${q.bloco || 1}] Questão (Dúvida ⭐):</b> ${q.questao}</p>
                     <p style="color:#2563eb; margin-top:6px;">Sua Resposta: <b>${q.resposta_aluno || '-'}</b> | Gabarito: <b>${q.gabarito}</b></p>
                 </div>`;
             });
 
             relatorioDiv.innerHTML = `
-                <div class="prova-destaque-header" style="flex-direction:column; align-items:flex-start;">
-                    <h2>📊 Relatório de Desempenho do Bloco ${blocoSelecionado}</h2>
+                <div class="prova-destaque-header" style="flex-direction:column; align-items:flex-start; position:static;">
+                    <h2>📊 Relatório Geral do ${desafioSelecionado}</h2>
                     <p><b>Aluno:</b> ${usuarioAtual.nome_completo} | <b>Disciplina:</b> ${disciplinaSelecionada}</p>
-                    <p><b>⏱️ Tempo Gasto:</b> ${tempoTexto}</p>
-                    <p><b>✅ Acertos:</b> ${acertos} | <b>❌ Erros:</b> ${erros} | <b>⭐ Dúvidas:</b> ${duvidas}</p>
+                    <p><b>🏛️ Prova:</b> ${provaSelecionadaObj.prova}</p>
                 </div>
 
-                <h3 style="margin:20px 0 10px 0; color:#dc2626;">❌ Questões Erradas (${questoesErradas.length})</h3>
-                ${erradasHtml || '<p style="color:var(--text-muted);">Nenhuma questão errada neste bloco! Parabéns!</p>'}
+                <div class="kpi-grid">
+                    <div class="kpi-card"><h5>Aproveitamento</h5><div class="number" style="color:#2563eb;">${pAproveitamento}%</div></div>
+                    <div class="kpi-card"><h5>Tempo Total</h5><div class="number" style="font-size:16px;">⏱️ ${tempoTexto}</div></div>
+                    <div class="kpi-card"><h5>Questões Feitas</h5><div class="number">${resolvidas}/${totalQ}</div></div>
+                    <div class="kpi-card"><h5>Acertos</h5><div class="number" style="color:#16a34a;">✅ ${acertos}</div></div>
+                    <div class="kpi-card"><h5>Erros</h5><div class="number" style="color:#dc2626;">❌ ${erros}</div></div>
+                    <div class="kpi-card"><h5>Dúvidas</h5><div class="number" style="color:#d97706;">⭐ ${duvidas}</div></div>
+                </div>
 
-                <h3 style="margin:20px 0 10px 0; color:#d97706;">⭐ Questões com Dúvida (${questoesDuvida.length})</h3>
-                ${duvidasHtml || '<p style="color:var(--text-muted);">Nenhuma dúvida sinalizada neste bloco.</p>'}
+                <h3 style="margin:20px 0 10px 0; color:#dc2626;">❌ Todas as Questões Erradas do Desafio (${questoesErradas.length})</h3>
+                ${erradasHtml || '<p style="color:var(--text-muted);">Nenhuma questão errada neste desafio! Excelente!</p>'}
+
+                <h3 style="margin:20px 0 10px 0; color:#d97706;">⭐ Questões Marcadas com Dúvida (${questoesDuvida.length})</h3>
+                ${duvidasHtml || '<p style="color:var(--text-muted);">Nenhuma dúvida sinalizada neste desafio.</p>'}
             `;
         }
 
@@ -551,7 +638,7 @@
         }
 
         function voltarNivel() {
-            if (nivelAtual === 5) selecionarBloco(blocoSelecionado);
+            if (nivelAtual === 5) selecionarDesafio(desafioSelecionado);
             else if (nivelAtual === 4) selecionarDesafio(desafioSelecionado);
             else if (nivelAtual === 3.5) selecionarDisciplina(disciplinaSelecionada);
             else if (nivelAtual === 3) selecionarProva(provaSelecionadaObj);
