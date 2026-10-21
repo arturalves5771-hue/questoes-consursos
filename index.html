@@ -50,11 +50,21 @@
         .main-container { max-width: 960px; margin: 20px auto; padding: 0 20px; width: 100%; }
         .section-title { font-size: 18px; font-weight: 600; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
 
+        /* BARRA SUPERIOR DE NAVEGAÇÃO / STATUS (CONGELADA NO TOPO) */
+        .nav-top-bar {
+            position: sticky;
+            top: 65px;
+            z-index: 950;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
         /* BOTÃO VOLTAR MAIOR, VERMELHO E CONGELADO */
         .btn-voltar-fixo { 
-            position: sticky; 
-            top: 65px; 
-            z-index: 950; 
             background: #ef4444; 
             color: white; 
             border: none; 
@@ -63,7 +73,6 @@
             font-size: 15px; 
             font-weight: 700; 
             cursor: pointer; 
-            margin-bottom: 20px; 
             box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.3);
             display: inline-flex;
             align-items: center;
@@ -71,6 +80,21 @@
             transition: background 0.2s;
         }
         .btn-voltar-fixo:hover { background: #dc2626; }
+
+        /* BOTÃO INFORMATIVO NO LADO OPOSTO AO VOLTAR */
+        .badge-info-progresso {
+            background: #1e293b;
+            color: #38bdf8;
+            border: 1px solid #0284c7;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
 
         /* CABEÇALHO ESCURO DO BLOCO */
         .prova-destaque-header { 
@@ -186,7 +210,7 @@
 
         @media print {
             body { background: white; color: black; }
-            .navbar, .btn-voltar-fixo, .btn-relatorio, .btn-logout, .btn-duvida { display: none !important; }
+            .navbar, .nav-top-bar, .btn-relatorio, .btn-logout, .btn-duvida { display: none !important; }
             .main-container { max-width: 100%; margin: 0; padding: 0; }
             .card-questao { border: 1px solid #ccc; page-break-inside: avoid; }
             .prova-destaque-header { position: static; }
@@ -228,8 +252,11 @@
         </nav>
 
         <div class="main-container">
-            <!-- BOTÃO VOLTAR CONGELADO, MAIOR E EM VERMELHO -->
-            <button id="btn-voltar" class="btn-voltar-fixo hidden" onclick="voltarNivel()">⬅ Voltar para a Tela Anterior</button>
+            <!-- BARRA FIXA DE NAVEGAÇÃO E BOTÃO INFORMATIVO -->
+            <div id="nav-top-container" class="nav-top-bar hidden">
+                <button id="btn-voltar" class="btn-voltar-fixo" onclick="voltarNivel()">⬅ Voltar para a Tela Anterior</button>
+                <div id="badge-progresso-bloco" class="badge-info-progresso hidden">✏️ Resolveu 0 de 0 | Restam 0</div>
+            </div>
 
             <!-- NÍVEL 1: PROVAS -->
             <div id="nivel-provas">
@@ -600,7 +627,7 @@
             return respondidasCount === totalNoBloco;
         }
 
-        // ================= NÍVEL 4: QUESTÕES COM PAUSA AUTOMÁTICA =================
+        // ================= NÍVEL 4: QUESTÕES COM ALUNO(A) NO CABEÇALHO =================
         async function selecionarBloco(blocoNum) {
             blocoSelecionado = blocoNum;
             timerPausado = false;
@@ -709,14 +736,24 @@
         function atualizarCabecalhoBlocoDinamico() {
             let totalNoBloco = Object.keys(bancoQuestoesBloco).length;
             let acertosNoBloco = 0;
+            let respondidasNoBloco = 0;
+
             Object.values(bancoQuestoesBloco).forEach(q => {
                 if (q.acerto_erro === 'Acerto') acertosNoBloco++;
+                if (q.resposta_aluno) respondidasNoBloco++;
             });
+
+            let restantes = totalNoBloco - respondidasNoBloco;
+
+            const badgeProgresso = document.getElementById('badge-progresso-bloco');
+            if (badgeProgresso) {
+                badgeProgresso.innerText = `✏️ Resolveu ${respondidasNoBloco} de ${totalNoBloco} | Restam ${restantes}`;
+            }
 
             const nomeUsuario = usuarioAtual ? usuarioAtual.nome_completo.toUpperCase() : 'ALUNO';
 
             document.getElementById('header-bloco-info').innerHTML = `
-                <span>Jogadora: <b>${nomeUsuario}</b></span>
+                <span>Aluno(a): <b>${nomeUsuario}</b></span>
                 <span>Acertos: <b style="color:#22c55e;">${acertosNoBloco}</b> / ${totalNoBloco}</span>
                 <span>Bloco: <b>${blocoSelecionado}</b></span>
                 <span class="timer-badge">
@@ -902,8 +939,21 @@
             ['nivel-provas', 'nivel-disciplinas', 'nivel-desafios', 'nivel-blocos', 'nivel-questoes', 'nivel-relatorio'].forEach(id => {
                 document.getElementById(id).classList.add('hidden');
             });
-            const btnVoltar = document.getElementById('btn-voltar');
-            btnVoltar.classList.toggle('hidden', nivelAtual === 1);
+
+            const topNavContainer = document.getElementById('nav-top-container');
+            const badgeProgresso = document.getElementById('badge-progresso-bloco');
+
+            if (nivelAtual === 1) {
+                topNavContainer.classList.add('hidden');
+            } else {
+                topNavContainer.classList.remove('hidden');
+            }
+
+            if (nivelAtual === 4) {
+                badgeProgresso.classList.remove('hidden');
+            } else {
+                badgeProgresso.classList.add('hidden');
+            }
 
             if (nivelAtual === 1) document.getElementById('nivel-provas').classList.remove('hidden');
             if (nivelAtual === 2) document.getElementById('nivel-disciplinas').classList.remove('hidden');
