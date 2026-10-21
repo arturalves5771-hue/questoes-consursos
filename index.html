@@ -47,10 +47,10 @@
         .btn-logout { background: transparent; color: #ef4444; border: 1px solid #fca5a5; padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; }
         .btn-logout:hover { background: #fef2f2; }
 
-        .main-container { max-width: 960px; margin: 20px auto; padding: 0 20px; width: 100%; }
+        .main-container { max-width: 960px; margin: 20px auto; padding: 0 20px; width: 100%. }
         .section-title { font-size: 18px; font-weight: 600; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
 
-        /* BOTÃO VOLTAR MAIOR, VERMELHO E CONGELADO */
+        /* BOTÃO VOLTAR CONGELADO, MAIOR E EM VERMELHO */
         .btn-voltar-fixo { 
             position: sticky; 
             top: 65px; 
@@ -72,31 +72,36 @@
         }
         .btn-voltar-fixo:hover { background: #dc2626; }
 
-        /* HEADER FIXO DO BLOCO */
+        /* NOVO FORMATO DO CABEÇALHO DO BLOCO (BASEADO NA SUA IMAGEM) */
         .prova-destaque-header { 
-            background: #eff6ff; 
-            border: 1px solid #bfdbfe; 
-            padding: 14px 18px; 
+            background: #0f172a; 
+            color: #ffffff;
+            border: 1px solid #1e293b; 
+            padding: 14px 20px; 
             border-radius: var(--radius); 
             margin-bottom: 20px; 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
             font-size: 14px; 
-            color: #1e40af; 
             font-weight: 500; 
             flex-wrap: wrap; 
-            gap: 10px; 
+            gap: 15px; 
             position: sticky;
             top: 120px;
             z-index: 900;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.15);
         }
 
-        .header-aula-titulo { font-size: 18px; font-weight: 700; color: #1e3a8a; display: block; }
-        .header-desafio-sub { font-size: 12px; font-weight: 600; color: #475569; background: #cbd5e1; padding: 2px 8px; border-radius: 4px; }
-
-        .timer-badge { background: #1e40af; color: white; padding: 5px 14px; border-radius: 20px; font-weight: 700; font-size: 13px; }
+        .timer-badge { 
+            background: #2563eb; 
+            color: white; 
+            padding: 5px 12px; 
+            border-radius: 6px; 
+            font-weight: 700; 
+            font-size: 13px; 
+            letter-spacing: 0.5px;
+        }
 
         .grid-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 18px; margin-bottom: 30px; }
         .card-item { background: var(--card-bg); border: 1px solid var(--border-color); padding: 22px; border-radius: var(--radius); cursor: pointer; transition: all 0.2s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.05); text-align: left; }
@@ -232,7 +237,7 @@
 
             <!-- NÍVEL 3.5: BLOCOS -->
             <div id="nivel-blocos" class="hidden">
-                <div style="display:flex; justify-space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
                     <h3 class="section-title" id="titulo-desafio-blocos" style="margin-bottom:0;">Blocos de Exercícios</h3>
                     <button class="btn-relatorio" style="margin-bottom:0;" onclick="gerarRelatorioDesafio()">📊 Relatório Geral do Desafio</button>
                 </div>
@@ -373,6 +378,7 @@
             gridDisc.innerHTML = html;
         }
 
+        // ================= NÍVEL 3: AULAS COM ACERTOS, ERROS E TOTAL NO CARD =================
         async function selecionarDisciplina(disc) {
             disciplinaSelecionada = disc;
             nivelAtual = 3; atualizarNavegacaoTela();
@@ -381,7 +387,7 @@
             grid.innerHTML = '<p>Buscando aulas...</p>';
 
             const { data } = await supabaseClient.from('questoes_desafios')
-                .select('coddesafio, aula, bloco')
+                .select('coddesafio, aula, acerto_erro, resposta_aluno')
                 .ilike('username', usuarioAtual.username)
                 .eq('tipoprova', provaSelecionadaObj.prova)
                 .eq('disciplina', disc);
@@ -391,9 +397,17 @@
             const desafiosMap = {};
             data.forEach(item => {
                 if (!desafiosMap[item.coddesafio]) {
-                    desafiosMap[item.coddesafio] = { total: 0, aula: item.aula || 'Aula Geral', blocosSet: new Set() };
+                    desafiosMap[item.coddesafio] = { 
+                        total: 0, 
+                        aula: item.aula || 'Aula Geral', 
+                        acertos: 0, 
+                        erros: 0, 
+                        blocosSet: new Set() 
+                    };
                 }
                 desafiosMap[item.coddesafio].total++;
+                if (item.acerto_erro === 'Acerto') desafiosMap[item.coddesafio].acertos++;
+                if (item.acerto_erro === 'Erro') desafiosMap[item.coddesafio].erros++;
                 if (item.bloco) desafiosMap[item.coddesafio].blocosSet.add(item.bloco);
             });
 
@@ -407,7 +421,9 @@
                     <span class="card-desafio-menor">Código Desafio: ${dCod}</span>
                     <div class="stats-box">
                         <div class="stats-line"><span>📝 Total de Questões:</span><b>${info.total}</b></div>
-                        <div class="stats-line"><span>📦 Dividido em:</span><b>${qtdBlocos} bloco(s)</b></div>
+                        <div class="stats-line" style="color:#16a34a"><span>✅ Acertos:</span><b>${info.acertos} / ${info.total}</b></div>
+                        <div class="stats-line" style="color:#dc2626"><span>❌ Erros:</span><b>${info.erros}</b></div>
+                        <div class="stats-line"><span>📦 Blocos:</span><b>${qtdBlocos}</b></div>
                     </div>
                     <span style="margin-top:12px; color:var(--primary); font-weight:600; font-size:13px; display:block;">Ver Blocos de Exercícios ➔</span>
                 </div>`;
@@ -456,7 +472,7 @@
                     <h4>📦 Bloco ${bNum} (${b.total} Questões)</h4>
                     <div class="stats-box">
                         <div class="stats-line"><span>📝 Questões:</span><b>${b.total} (${b.respondidas} Feitas)</b></div>
-                        <div class="stats-line" style="color:#16a34a"><span>✅ Acertos:</span><b>${b.acertos}</b></div>
+                        <div class="stats-line" style="color:#16a34a"><span>✅ Acertos:</span><b>${b.acertos} / ${b.total}</b></div>
                         <div class="stats-line" style="color:#dc2626"><span>❌ Erros:</span><b>${b.erros}</b></div>
                         <div class="stats-line" style="color:#d97706"><span>⭐ Dúvidas:</span><b>${b.duvidas}</b></div>
                     </div>
@@ -466,6 +482,7 @@
             grid.innerHTML = html;
         }
 
+        // ================= NÍVEL 4: QUESTÕES COM CABEÇALHO ATUALIZADO =================
         async function selecionarBloco(blocoNum) {
             blocoSelecionado = blocoNum;
             nivelAtual = 4; atualizarNavegacaoTela();
@@ -485,13 +502,6 @@
             timerInterval = setInterval(atualizarTimer, 1000);
 
             document.getElementById('titulo-questao-atual').innerText = `📝 Bloco ${blocoNum} - Questões`;
-            document.getElementById('header-bloco-info').innerHTML = `
-                <div>
-                    <span class="header-aula-titulo">📖 ${aulaSelecionada}</span>
-                    <span style="font-size:12px; color:#475569;">Desafio: <span class="header-desafio-sub">${desafioSelecionado}</span> | Bloco: <b>${blocoNum}</b></span>
-                </div>
-                <span id="cronometro-header" class="timer-badge">⏱️ Tempo: 00:00</span>
-            `;
 
             const container = document.getElementById('resultado-questoes');
             container.innerHTML = '<p style="text-align:center;">Carregando questões...</p>';
@@ -557,6 +567,24 @@
                 `;
             });
             container.innerHTML = html;
+            atualizarCabecalhoBlocoDinamico();
+        }
+
+        function atualizarCabecalhoBlocoDinamico() {
+            let totalNoBloco = Object.keys(bancoQuestoesBloco).length;
+            let acertosNoBloco = 0;
+            Object.values(bancoQuestoesBloco).forEach(q => {
+                if (q.acerto_erro === 'Acerto') acertosNoBloco++;
+            });
+
+            const nomeUsuario = usuarioAtual ? usuarioAtual.nome_completo.toUpperCase() : 'ALUNO';
+
+            document.getElementById('header-bloco-info').innerHTML = `
+                <span>Jogadora: <b>${nomeUsuario}</b></span>
+                <span>Acertos: <b style="color:#22c55e;">${acertosNoBloco}</b> / ${totalNoBloco}</span>
+                <span>Bloco: <b>${blocoSelecionado}</b></span>
+                <span id="cronometro-header" class="timer-badge">⏱️ 00:00</span>
+            `;
         }
 
         function atualizarTimer() {
@@ -567,7 +595,7 @@
             const strMin = String(min).padStart(2, '0');
             const strSeg = String(seg).padStart(2, '0');
             const timerSpan = document.getElementById('cronometro-header');
-            if (timerSpan) timerSpan.innerHTML = `⏱️ Tempo: ${strMin}:${strSeg}`;
+            if (timerSpan) timerSpan.innerHTML = `⏱️ ${strMin}:${strSeg}`;
         }
 
         async function responderQuestao(idQuestao, respostaEscolha, gabaritoOficial) {
@@ -582,6 +610,11 @@
             const acertou = (respostaEscolha.toUpperCase() === gabaritoLetra);
             const statusAcertoErro = acertou ? 'Acerto' : 'Erro';
             const dataHoraAtual = new Date().toISOString();
+
+            if (bancoQuestoesBloco[idQuestao]) {
+                bancoQuestoesBloco[idQuestao].resposta_aluno = respostaEscolha;
+                bancoQuestoesBloco[idQuestao].acerto_erro = statusAcertoErro;
+            }
 
             await supabaseClient.from('questoes_desafios')
                 .update({
@@ -619,6 +652,8 @@
                 </div>
                 ${comentarioHtml}
             `;
+
+            atualizarCabecalhoBlocoDinamico();
         }
 
         async function marcarDuvida(idQuestao) {
@@ -627,6 +662,10 @@
             
             const novoValorBooleano = !estaAtivo;
             btn.classList.toggle('ativo', novoValorBooleano);
+
+            if (bancoQuestoesBloco[idQuestao]) {
+                bancoQuestoesBloco[idQuestao].acertou_duvida = novoValorBooleano;
+            }
 
             const { error } = await supabaseClient.from('questoes_desafios')
                 .update({ acertou_duvida: novoValorBooleano })
