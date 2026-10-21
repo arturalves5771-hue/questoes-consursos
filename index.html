@@ -53,7 +53,7 @@
         .btn-voltar { background: #e2e8f0; color: #334155; border: none; padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; margin-bottom: 20px; }
         .btn-voltar:hover { background: #cbd5e1; }
 
-        /* HEADER FIXO */
+        /* HEADER FIXO COM DESTAQUE DE AULA */
         .prova-destaque-header { 
             background: #eff6ff; 
             border: 1px solid #bfdbfe; 
@@ -74,10 +74,27 @@
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
         }
 
+        .header-aula-titulo {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e3a8a;
+            display: block;
+        }
+
+        .header-desafio-sub {
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748b;
+            background: #e2e8f0;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-left: 6px;
+        }
+
         .timer-badge {
             background: #1e40af;
             color: white;
-            padding: 4px 12px;
+            padding: 5px 14px;
             border-radius: 20px;
             font-weight: 700;
             font-size: 13px;
@@ -86,7 +103,9 @@
         .grid-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 18px; margin-bottom: 30px; }
         .card-item { background: var(--card-bg); border: 1px solid var(--border-color); padding: 22px; border-radius: var(--radius); cursor: pointer; transition: all 0.2s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.05); text-align: left; }
         .card-item:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08); background: #f0f7ff; }
-        .card-item h4 { font-size: 17px; color: var(--text-main); margin-bottom: 12px; font-weight: 700; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
+        
+        .card-aula-destaque { font-size: 18px; font-weight: 700; color: #0f172a; margin-bottom: 4px; }
+        .card-desafio-menor { font-size: 12px; font-weight: 600; color: #64748b; background: #f1f5f9; padding: 2px 8px; border-radius: 4px; display: inline-block; margin-bottom: 12px; }
 
         .stats-box { background: #f8fafc; border: 1px solid var(--border-color); border-radius: 10px; padding: 14px; margin-top: 10px; font-size: 13.5px; color: #334155; display: flex; flex-direction: column; gap: 8px; }
         .stats-line { display: flex; justify-content: space-between; align-items: center; font-weight: 500; }
@@ -113,8 +132,8 @@
         .status-acerto { background: var(--success-bg); color: var(--success-text); }
         .status-erro { background: var(--error-bg); color: var(--error-text); }
 
-        .btn-duvida { background: #f1f5f9; border: 1px solid #cbd5e1; color: #475569; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: 600; }
-        .btn-duvida.ativo { background: #f59e0b; border-color: #d97706; color: white; }
+        .btn-duvida { background: #f1f5f9; border: 1px solid #cbd5e1; color: #475569; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
+        .btn-duvida.ativo { background: #f59e0b !important; border-color: #d97706 !important; color: white !important; font-weight: 700; }
 
         .btn-relatorio { background: #10b981; color: white; border: none; padding: 10px 18px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; margin-bottom: 20px; display: inline-flex; align-items: center; gap: 8px; }
         .btn-relatorio:hover { background: #059669; }
@@ -198,16 +217,16 @@
                 <div id="grid-disciplinas" class="grid-cards"></div>
             </div>
 
-            <!-- NÍVEL 3: DESAFIOS -->
+            <!-- NÍVEL 3: AULAS / DESAFIOS -->
             <div id="nivel-desafios" class="hidden">
-                <h3 class="section-title" id="titulo-disciplina-atual">Desafios / Aulas</h3>
+                <h3 class="section-title" id="titulo-disciplina-atual">Aulas Disponíveis</h3>
                 <div id="grid-desafios" class="grid-cards"></div>
             </div>
 
             <!-- NÍVEL 3.5: BLOCOS -->
             <div id="nivel-blocos" class="hidden">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
-                    <h3 class="section-title" id="titulo-desafio-blocos" style="margin-bottom:0;">Blocos do Desafio</h3>
+                    <h3 class="section-title" id="titulo-desafio-blocos" style="margin-bottom:0;">Blocos de Exercícios</h3>
                     <button class="btn-relatorio" style="margin-bottom:0;" onclick="gerarRelatorioDesafio()">📊 Relatório Geral do Desafio</button>
                 </div>
                 <div id="grid-blocos" class="grid-cards"></div>
@@ -292,7 +311,7 @@
                 html += `<div class="card-item" onclick='selecionarProva(${JSON.stringify(item)})'>
                     <h4>🏛️ ${item.prova}</h4>
                     <span>📅 Data da Prova: <b>${dt}</b></span>
-                    <span style="margin-top:10px; color:var(--primary); font-weight:600; font-size:13px;">Ver Disciplinas ➔</span>
+                    <span style="margin-top:10px; color:var(--primary); font-weight:600; font-size:13px; display:block;">Ver Disciplinas ➔</span>
                 </div>`;
             });
             gridProvas.innerHTML = html;
@@ -340,13 +359,13 @@
             gridDisc.innerHTML = html;
         }
 
-        // ================= NÍVEL 3: DESAFIOS (EXIBE AULA TAMBÉM) =================
+        // ================= NÍVEL 3: AULAS EM DESTAQUE E DESAFIO EM SEGUNDO PLANO =================
         async function selecionarDisciplina(disc) {
             disciplinaSelecionada = disc;
             nivelAtual = 3; atualizarNavegacaoTela();
-            document.getElementById('titulo-disciplina-atual').innerText = `⚡ Desafios / Aulas de ${disc}`;
+            document.getElementById('titulo-disciplina-atual').innerText = `⚡ Aulas de ${disc}`;
             const grid = document.getElementById('grid-desafios');
-            grid.innerHTML = '<p>Buscando desafios e aulas...</p>';
+            grid.innerHTML = '<p>Buscando aulas...</p>';
 
             const { data } = await supabaseClient.from('questoes_desafios')
                 .select('coddesafio, aula, bloco')
@@ -354,7 +373,7 @@
                 .eq('tipoprova', provaSelecionadaObj.prova)
                 .eq('disciplina', disc);
 
-            if (!data || !data.length) { grid.innerHTML = '<p>Nenhum desafio encontrado.</p>'; return; }
+            if (!data || !data.length) { grid.innerHTML = '<p>Nenhuma aula encontrada.</p>'; return; }
 
             const desafiosMap = {};
             data.forEach(item => {
@@ -370,28 +389,28 @@
                 const info = desafiosMap[dCod];
                 const qtdBlocos = info.blocosSet.size || 1;
 
-                html += `<div class="card-item" onclick="selecionarDesafio('${dCod}', '${info.aula}')">
-                    <h4>🎯 ${dCod}</h4>
-                    <p style="font-size:13.5px; color:#1e40af; font-weight:600; margin-bottom:8px;">📖 ${info.aula}</p>
+                html += `<div class="card-item" onclick="selecionarDesafio('${dCod}', '${info.aula.replace(/'/g, "\\'")}')">
+                    <div class="card-aula-destaque">📖 ${info.aula}</div>
+                    <span class="card-desafio-menor">Código: ${dCod}</span>
                     <div class="stats-box">
                         <div class="stats-line"><span>📝 Total de Questões:</span><b>${info.total}</b></div>
                         <div class="stats-line"><span>📦 Dividido em:</span><b>${qtdBlocos} bloco(s)</b></div>
                     </div>
-                    <span style="margin-top:12px; color:var(--primary); font-weight:600; font-size:13px; display:block;">Acessar Blocos ➔</span>
+                    <span style="margin-top:12px; color:var(--primary); font-weight:600; font-size:13px; display:block;">Ver Blocos de Exercícios ➔</span>
                 </div>`;
             });
             grid.innerHTML = html;
         }
 
-        // ================= NÍVEL 3.5: BLOCOS =================
+        // ================= NÍVEL 3.5: BLOCOS DE CADA DESAFIO/AULA =================
         async function selecionarDesafio(desafioCod, aulaNome) {
             desafioSelecionado = desafioCod;
             aulaSelecionada = aulaNome || 'Aula Geral';
             nivelAtual = 3.5; atualizarNavegacaoTela();
-            document.getElementById('titulo-desafio-blocos').innerText = `📦 ${desafioCod} - ${aulaSelecionada}`;
+            document.getElementById('titulo-desafio-blocos').innerText = `📦 ${aulaSelecionada}`;
 
             const grid = document.getElementById('grid-blocos');
-            grid.innerHTML = '<p>Buscando estatísticas dos blocos...</p>';
+            grid.innerHTML = '<p>Buscando blocos...</p>';
 
             const { data } = await supabaseClient.from('questoes_desafios')
                 .select('bloco, acerto_erro, acertou_duvida, resposta_aluno')
@@ -412,7 +431,10 @@
                 if (item.resposta_aluno) blocosMap[b].respondidas++;
                 if (item.acerto_erro === 'Acerto') blocosMap[b].acertos++;
                 if (item.acerto_erro === 'Erro') blocosMap[b].erros++;
-                if (item.acertou_duvida === 'Sim') blocosMap[b].duvidas++;
+
+                // Tratamento universal de dúvida (Sim, sim, true, TRUE)
+                const isDuvida = item.acertou_duvida && (String(item.acertou_duvida).toLowerCase() === 'sim' || String(item.acertou_duvida).toLowerCase() === 'true');
+                if (isDuvida) blocosMap[b].duvidas++;
             });
 
             let html = '';
@@ -432,7 +454,7 @@
             grid.innerHTML = html;
         }
 
-        // ================= NÍVEL 4: CARREGAR QUESTÕES DO BLOCO =================
+        // ================= NÍVEL 4: QUESTÕES =================
         async function selecionarBloco(blocoNum) {
             blocoSelecionado = blocoNum;
             nivelAtual = 4; atualizarNavegacaoTela();
@@ -453,7 +475,10 @@
 
             document.getElementById('titulo-questao-atual').innerText = `📝 Bloco ${blocoNum} - Questões`;
             document.getElementById('header-bloco-info').innerHTML = `
-                <span>🎯 <b>${desafioSelecionado}</b> | 📖 <b>${aulaSelecionada}</b> | 📦 Bloco: <b>${blocoNum}</b></span>
+                <div>
+                    <span class="header-aula-titulo">📖 ${aulaSelecionada}</span>
+                    <span style="font-size:12px; color:#475569;">Desafio: <span class="header-desafio-sub">${desafioSelecionado}</span> | Bloco: <b>${blocoNum}</b></span>
+                </div>
                 <span id="cronometro-header" class="timer-badge">⏱️ Tempo: 00:00</span>
             `;
 
@@ -497,12 +522,13 @@
                 }
 
                 const isAcerto = jaRespondido && (respAluno === gabaritoExibido);
+                const temDuvida = q.acertou_duvida && (String(q.acertou_duvida).toLowerCase() === 'sim' || String(q.acertou_duvida).toLowerCase() === 'true');
 
                 html += `
                     <div class="card-questao" id="questao-${q.id}">
                         <div class="questao-header">
                             <span class="badge">Questão ${idx + 1} (${q.coddesafio})</span>
-                            <button class="btn-duvida ${q.acertou_duvida === 'Sim' ? 'ativo' : ''}" onclick="marcarDuvida('${q.id}', this)">⭐ Fiquei em Dúvida</button>
+                            <button class="btn-duvida ${temDuvida ? 'ativo' : ''}" id="btn-duvida-${q.id}" onclick="marcarDuvida('${q.id}')">⭐ Fiquei em Dúvida</button>
                         </div>
                         <div class="enunciado">${q.questao}</div>
                         ${alternativasHtml}
@@ -572,23 +598,33 @@
             `;
         }
 
-        // ================= CORREÇÃO DO REGISTRO DE DÚVIDA =================
-        async function marcarDuvida(idQuestao, btn) {
-            const isAtivo = btn.classList.contains('ativo');
-            const novoEstado = isAtivo ? null : 'Sim';
-            btn.classList.toggle('ativo', !isAtivo);
+        // ================= MÉTODOS CORRIGIDOS PARA REGISTRO DE DÚVIDA =================
+        async function marcarDuvida(idQuestao) {
+            const btn = document.getElementById(`btn-duvida-${idQuestao}`);
+            const estaAtivo = btn.classList.contains('ativo');
+            
+            // Inverte o estado
+            const novoValor = estaAtivo ? null : 'Sim';
+            btn.classList.toggle('ativo', !estaAtivo);
 
-            await supabaseClient.from('questoes_desafios')
-                .update({ acertou_duvida: novoEstado })
+            // Atualiza direto no Supabase
+            const { error } = await supabaseClient.from('questoes_desafios')
+                .update({ acertou_duvida: novoValor })
                 .eq('id', idQuestao);
+
+            if (error) {
+                console.error("Erro ao atualizar dúvida:", error);
+                // Reverte em caso de erro no banco
+                btn.classList.toggle('ativo', estaAtivo);
+            }
         }
 
-        // ================= RELATÓRIO DO DESAFIO COM DÚVIDAS CORRIGIDAS =================
+        // ================= RELATÓRIO DO DESAFIO COMPLETO COM DÚVIDAS CORRIGIDAS =================
         async function gerarRelatorioDesafio() {
             nivelAtual = 5; atualizarNavegacaoTela();
             clearInterval(timerInterval);
             const relatorioDiv = document.getElementById('conteudo-relatorio');
-            relatorioDiv.innerHTML = '<p>Calculando relatório completo do desafio...</p>';
+            relatorioDiv.innerHTML = '<p>Calculando relatório completo da aula...</p>';
 
             const { data } = await supabaseClient.from('questoes_desafios')
                 .select('*')
@@ -603,7 +639,11 @@
             const resolvidas = data.filter(q => q.resposta_aluno).length;
             const acertos = data.filter(q => q.acerto_erro === 'Acerto').length;
             const erros = data.filter(q => q.acerto_erro === 'Erro').length;
-            const duvidas = data.filter(q => q.acertou_duvida === 'Sim').length;
+            
+            // Filtro absoluto de dúvida
+            const questoesDuvida = data.filter(q => q.acertou_duvida && (String(q.acertou_duvida).toLowerCase() === 'sim' || String(q.acertou_duvida).toLowerCase() === 'true'));
+            const duvidas = questoesDuvida.length;
+
             const pAproveitamento = resolvidas > 0 ? ((acertos / resolvidas) * 100).toFixed(0) : 0;
 
             let tempoTexto = 'Não registrado';
@@ -620,7 +660,6 @@
             }
 
             const questoesErradas = data.filter(q => q.acerto_erro === 'Erro');
-            const questoesDuvida = data.filter(q => q.acertou_duvida === 'Sim');
 
             let erradasHtml = '';
             questoesErradas.forEach(q => {
@@ -642,9 +681,9 @@
 
             relatorioDiv.innerHTML = `
                 <div class="prova-destaque-header" style="flex-direction:column; align-items:flex-start; position:static;">
-                    <h2>📊 Relatório Geral - ${desafioSelecionado} (${aulaSelecionada || 'Aula Geral'})</h2>
-                    <p><b>Aluno:</b> ${usuarioAtual.nome_completo} | <b>Disciplina:</b> ${disciplinaSelecionada}</p>
-                    <p><b>🏛️ Prova:</b> ${provaSelecionadaObj.prova}</p>
+                    <h2>📊 Relatório Geral - ${aulaSelecionada}</h2>
+                    <p><b>Código Desafio:</b> ${desafioSelecionado} | <b>Aluno:</b> ${usuarioAtual.nome_completo}</p>
+                    <p><b>📖 Disciplina:</b> ${disciplinaSelecionada} | <b>🏛️ Prova:</b> ${provaSelecionadaObj.prova}</p>
                 </div>
 
                 <div class="kpi-grid">
@@ -656,11 +695,11 @@
                     <div class="kpi-card"><h5>Dúvidas</h5><div class="number" style="color:#d97706;">⭐ ${duvidas}</div></div>
                 </div>
 
-                <h3 style="margin:20px 0 10px 0; color:#dc2626;">❌ Todas as Questões Erradas do Desafio (${questoesErradas.length})</h3>
-                ${erradasHtml || '<p style="color:var(--text-muted);">Nenhuma questão errada neste desafio! Excelente!</p>'}
+                <h3 style="margin:20px 0 10px 0; color:#dc2626;">❌ Todas as Questões Erradas (${questoesErradas.length})</h3>
+                ${erradasHtml || '<p style="color:var(--text-muted);">Nenhuma questão errada! Excelente!</p>'}
 
                 <h3 style="margin:20px 0 10px 0; color:#d97706;">⭐ Questões Marcadas com Dúvida (${questoesDuvida.length})</h3>
-                ${duvidasHtml || '<p style="color:var(--text-muted);">Nenhuma dúvida sinalizada neste desafio.</p>'}
+                ${duvidasHtml || '<p style="color:var(--text-muted);">Nenhuma dúvida sinalizada.</p>'}
             `;
         }
 
