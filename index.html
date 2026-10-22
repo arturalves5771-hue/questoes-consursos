@@ -960,57 +960,68 @@
             }
         }
 
-        async function selecionarProva(itemProva, skipPush = false) {
-            provaSelecionadaObj = itemProva;
-            nivelAtual = 2; 
-            atualizarNavegacaoTela();
-            if (!skipPush) history.pushState({ nivel: 2, provaObj: itemProva }, '');
+async function selecionarProva(itemProva, skipPush = false) {
+    provaSelecionadaObj = itemProva;
+    nivelAtual = 2; 
+    atualizarNavegacaoTela();
+    if (!skipPush) history.pushState({ nivel: 2, provaObj: itemProva }, '');
 
-            document.getElementById('titulo-prova-atual').innerText = `📚 Disciplinas: ${itemProva.prova}`;
-            document.getElementById('detalhes-prova-header').innerHTML = `<span>🏛️ <b>${itemProva.prova}</b></span><span>📅 Data da Prova: <b>${itemProva.data_prova ? new Date(itemProva.data_prova).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) : 'Não informada'}</b></span>`;
+    document.getElementById('titulo-prova-atual').innerText = `📚 Disciplinas: ${itemProva.prova}`;
+    document.getElementById('detalhes-prova-header').innerHTML = `<span>🏛️ <b>${itemProva.prova}</b></span><span>📅 Data da Prova: <b>${itemProva.data_prova ? new Date(itemProva.data_prova).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) : 'Não informada'}</b></span>`;
 
-            const gridDisc = document.getElementById('grid-disciplinas');
-            gridDisc.innerHTML = '<p>Carregando...</p>';
+    const gridDisc = document.getElementById('grid-disciplinas');
+    gridDisc.innerHTML = '<p>Carregando...</p>';
 
-            const { data: metas } = await supabaseClient.from('disciplinas_meta').select('*').ilike('username', usuarioAtual.username).eq('prova', itemProva.prova);
-            const { data: questoes } = await supabaseClient.from('questoes_desafios').select('disciplina, acerto_erro').ilike('username', usuarioAtual.username).eq('tipoprova', itemProva.prova);
+    const { data: metas } = await supabaseClient.from('disciplinas_meta').select('*').ilike('username', usuarioAtual.username).eq('prova', itemProva.prova);
+    const { data: questoes } = await supabaseClient.from('questoes_desafios').select('disciplina, acerto_erro, resposta_aluno').ilike('username', usuarioAtual.username).eq('tipoprova', itemProva.prova);
 
-            const discSet = new Set();
-            if (metas) metas.forEach(m => discSet.add(m.disciplina));
-            if (questoes) questoes.forEach(q => { if(q.disciplina) discSet.add(q.disciplina); });
+    const discSet = new Set();
+    if (metas) metas.forEach(m => discSet.add(m.disciplina));
+    if (questoes) questoes.forEach(q => { if(q.disciplina) discSet.add(q.disciplina); });
 
-            let html = '';
-            [...discSet].forEach(disc => {
-                const mInfo = metas ? metas.find(m => m.disciplina === disc) : null;
-                const metaQtd = mInfo ? mInfo.meta_questoes : 50;
-                const qDisc = questoes ? questoes.filter(q => q.disciplina === disc) : [];
-                const resolvidas = qDisc.length;
-                const acertos = qDisc.filter(q => q.acerto_erro === 'Acerto').length;
-                const erros = qDisc.filter(q => q.acerto_erro === 'Erro').length;
-                const pAcerto = resolvidas > 0 ? ((acertos / resolvidas) * 100).toFixed(0) : 0;
-                const pMeta = Math.min(((resolvidas / metaQtd) * 100), 100).toFixed(0);
+    let html = '';
+    [...discSet].forEach(disc => {
+        const mInfo = metas ? metas.find(m => m.disciplina === disc) : null;
+        const metaQtd = mInfo ? mInfo.meta_questoes : 50;
+        
+        // Todas as questões cadastradas na disciplina
+        const qDisc = questoes ? questoes.filter(q => q.disciplina === disc) : [];
+        const totalQuestoesDisc = qDisc.length; 
+        
+        // Apenas questões efetivamente RESPONDIDAS pelo aluno
+        const qRespondidas = qDisc.filter(q => q.resposta_aluno !== null && q.resposta_aluno !== '');
+        const resolvidas = qRespondidas.length;
+        
+        const acertos = qRespondidas.filter(q => q.acerto_erro === 'Acerto').length;
+        const erros = qRespondidas.filter(q => q.acerto_erro === 'Erro').length;
+        
+        // Cálculo do aproveitamento sobre as respondidas
+        const pAcerto = resolvidas > 0 ? ((acertos / resolvidas) * 100).toFixed(0) : 0;
+        
+        // Cálculo da Meta sobre as RESOLVIDAS de fato
+        const pMeta = Math.min(((resolvidas / metaQtd) * 100), 100).toFixed(0);
 
-                html += `<div class="card-item" onclick="selecionarDisciplina('${disc}')">
-                    <h4>📖 ${disc}</h4>
-                    <div class="stats-box">
-                        <div class="stats-line"><span>🎯 Meta:</span><b>${metaQtd}</b></div>
-                        <div class="stats-line"><span>📝 Resolvidas:</span><b>${resolvidas}</b></div>
-                        <div class="stats-line" style="color:#16a34a"><span>✅ Acertos:</span><b>${acertos}</b></div>
-                        <div class="stats-line" style="color:#dc2626"><span>❌ Erros:</span><b>${erros}</b></div>
-                        <div class="progress-container">
-                            <div class="progress-label"><span>Aproveitamento:</span><span>${pAcerto}%</span></div>
-                            <div class="progress-bar-bg"><div class="progress-bar-green" style="width:${pAcerto}%"></div></div>
-                        </div>
-                        <div class="progress-container">
-                            <div class="progress-label"><span>Conclusão Meta:</span><span>${pMeta}%</span></div>
-                            <div class="progress-bar-bg"><div class="progress-bar-blue" style="width:${pMeta}%"></div></div>
-                        </div>
-                    </div>
-                </div>`;
-            });
-            gridDisc.innerHTML = html;
-        }
-
+        html += `<div class="card-item" onclick="selecionarDisciplina('${disc}')">
+            <h4>📖 ${disc}</h4>
+            <div class="stats-box">
+                <div class="stats-line"><span>🎯 Meta:</span><b>${metaQtd}</b></div>
+                <div class="stats-line"><span>📚 Total de Questões:</span><b>${totalQuestoesDisc}</b></div>
+                <div class="stats-line"><span>📝 Resolvidas:</span><b>${resolvidas}</b></div>
+                <div class="stats-line" style="color:#16a34a"><span>✅ Acertos:</span><b>${acertos}</b></div>
+                <div class="stats-line" style="color:#dc2626"><span>❌ Erros:</span><b>${erros}</b></div>
+                <div class="progress-container">
+                    <div class="progress-label"><span>Aproveitamento:</span><span>${pAcerto}%</span></div>
+                    <div class="progress-bar-bg"><div class="progress-bar-green" style="width:${pAcerto}%"></div></div>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-label"><span>Conclusão Meta:</span><span>${pMeta}%</span></div>
+                    <div class="progress-bar-bg"><div class="progress-bar-blue" style="width:${pMeta}%"></div></div>
+                </div>
+            </div>
+        </div>`;
+    });
+    gridDisc.innerHTML = html;
+}
         async function selecionarDisciplina(disc, skipPush = false) {
             disciplinaSelecionada = disc;
             nivelAtual = 3; 
