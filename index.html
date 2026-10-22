@@ -36,6 +36,7 @@
 
         .hidden { display: none !important; }
 
+        /* NAVBAR */
         .navbar { 
             background: #ffffff; 
             border-bottom: 2px solid #e2e8f0; 
@@ -57,6 +58,7 @@
         .main-container { max-width: 960px; margin: 20px auto; padding: 0 20px; width: 100%; }
         .section-title { font-size: 18px; font-weight: 700; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; color: #0f172a; }
 
+        /* NAVEGAÇÃO FIXA E BLOCOS */
         .nav-top-bar { position: sticky; top: 65px; z-index: 950; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 10px; flex-wrap: wrap; }
         .btn-voltar-fixo { background: #ef4444; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.25); display: inline-flex; align-items: center; gap: 6px; }
         .btn-voltar-fixo:hover { background: #dc2626; }
@@ -68,6 +70,7 @@
         .timer-badge { background: var(--primary); color: white; padding: 5px 12px; border-radius: 6px; font-weight: 700; font-size: 13px; display: inline-flex; align-items: center; gap: 8px; }
         .btn-pausa-tempo { background: #f59e0b; color: #000; border: none; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: 700; cursor: pointer; }
 
+        /* CARDS E LISTAGENS */
         .grid-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 18px; margin-bottom: 30px; }
         .card-item { background: var(--card-bg); border: 1px solid var(--card-border); padding: 22px; border-radius: var(--radius); cursor: pointer; transition: all 0.2s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.05); text-align: left; }
         .card-item:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: 0 10px 15px rgba(124, 58, 237, 0.1); background: var(--primary-light); }
@@ -81,8 +84,8 @@
         .progress-container { margin-top: 4px; margin-bottom: 4px; }
         .progress-bar-bg { width: 100%; height: 8px; background: #e2e8f0; border-radius: 6px; overflow: hidden; }
         .progress-bar-green { height: 100%; background: linear-gradient(90deg, #10b981, #059669); border-radius: 6px; }
-        .progress-bar-blue { height: 100%; background: linear-gradient(90deg, #7c3aed, #6d28d9); border-radius: 6px; }
 
+        /* QUESTÕES */
         .card-questao { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 24px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
         .questao-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 8px; }
         .badge { background: var(--primary-light); color: var(--primary); border: 1px solid rgba(124, 58, 237, 0.3); font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
@@ -100,12 +103,12 @@
         .status-erro { background: var(--error-bg); color: var(--error-text); }
 
         .btn-duvida { background: #f1f5f9; border: 1px solid #cbd5e1; color: #475569; padding: 8px 14px; border-radius: 6px; font-size: 12.5px; cursor: pointer; font-weight: 600; }
-        .btn-duvida.ativo { background: #eab308 !important; border-color: #ca8a04 !important; color: #000000 !important; font-weight: 700 !important; }
+        .btn-duvida.ativo { background: #eab308 !important; border-color: #ca8a04 !important; color: #000000 !important; font-weight: 700 !important; box-shadow: 0 2px 4px rgba(234, 179, 8, 0.4); }
 
         .btn-relatorio { background: #10b981; color: white; border: none; padding: 10px 18px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; margin-bottom: 20px; display: inline-flex; align-items: center; gap: 8px; }
         .btn-relatorio:hover { background: #059669; }
 
-        /* ESTILOS DO DASHBOARD EXECUTIVO */
+        /* DASHBOARD EXECUTIVO */
         .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; margin-top: 15px; }
         .dashboard-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
         .controls-bar { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
@@ -116,29 +119,50 @@
         .ranking-table th { color: #64748b; font-weight: 600; font-size: 12px; text-transform: uppercase; }
         .ranking-pos { font-weight: 800; color: #7c3aed; width: 30px; }
 
-        /* LOGIN */
+        /* TELA DE LOGIN COM CAMPO MOSTRAR SENHA */
         .login-wrapper { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: radial-gradient(circle at top, #1e1b4b 0%, #0f172a 100%); padding: 20px; }
         .login-card { background: #1e293b; border: 1px solid #334155; width: 100%; max-width: 420px; padding: 40px 30px; border-radius: 16px; box-shadow: 0 20px 30px rgba(0, 0, 0, 0.5); text-align: center; }
         .login-card .logo-img { max-width: 110px; height: auto; margin: 0 auto 15px auto; display: block; object-fit: contain; }
         .login-card h2 { font-size: 22px; font-weight: 800; margin-bottom: 4px; color: #ffffff; }
         .login-card .sub-brand { font-size: 13px; font-weight: 700; color: #a78bfa; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; display: block; }
+        
         .form-group { text-align: left; margin-bottom: 18px; }
         .form-group label { display: block; font-size: 13px; font-weight: 600; color: #94a3b8; margin-bottom: 6px; }
         .form-group input { width: 100%; padding: 12px 14px; border: 1px solid #334155; border-radius: 8px; font-size: 14px; outline: none; background: #0f172a; color: #ffffff; }
-        .btn-primary { width: 100%; padding: 12px; background: #7c3aed; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 10px; }
+        .form-group input:focus { border-color: #7c3aed; box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.25); }
+
+        /* CONTAINER DA SENHA COM BOTÃO OLHO (👁️) RESTAURADO */
+        .password-container { position: relative; display: flex; align-items: center; }
+        .password-container input { padding-right: 45px; }
+        .btn-toggle-pass { position: absolute; right: 12px; background: none; border: none; cursor: pointer; font-size: 18px; color: #94a3b8; user-select: none; }
+
+        .btn-primary { width: 100%; padding: 12px; background: #7c3aed; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 700; cursor: pointer; transition: background 0.2s; margin-top: 10px; }
+        .btn-primary:hover { background: #6d28d9; }
         .error-msg { color: #fca5a5; font-size: 13px; margin-top: 12px; background: #450a0a; padding: 10px; border-radius: 6px; text-align: left; }
     </style>
 </head>
 <body>
 
-    <!-- TELA DE LOGIN -->
+    <!-- TELA DE LOGIN COM MOSTRAR SENHA (👁️) RESTAURADO -->
     <div id="login-screen" class="login-wrapper">
         <div class="login-card">
             <img src="policia-penal-pe.png" alt="Logo" class="logo-img" onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/arturalves5771-hue/questoes-consursos/main/policia-penal-pe.png';">
             <h2>ESTRATÉGIA PENAL</h2>
             <span class="sub-brand">Caderno Tático</span>
-            <div class="form-group"><label>Usuário</label><input type="text" id="login-user" value="waleska"></div>
-            <div class="form-group"><label>Senha</label><input type="password" id="login-pass" value="123456"></div>
+            
+            <div class="form-group">
+                <label>Usuário</label>
+                <input type="text" id="login-user" placeholder="Digite seu usuário" value="waleska">
+            </div>
+            
+            <div class="form-group">
+                <label>Senha</label>
+                <div class="password-container">
+                    <input type="password" id="login-pass" placeholder="••••••••" value="123456">
+                    <button type="button" class="btn-toggle-pass" onclick="togglePassword()" id="btn-eye">👁️</button>
+                </div>
+            </div>
+            
             <button class="btn-primary" onclick="fazerLogin()">Entrar na Plataforma</button>
             <div id="login-error" class="error-msg hidden"></div>
         </div>
@@ -160,7 +184,6 @@
 
             <!-- NÍVEL 1: PROVAS + DASHBOARD EXECUTIVO -->
             <div id="nivel-provas">
-                <!-- DASHBOARD INTEGRADO NA SELEÇÃO DE PROVAS -->
                 <div style="margin-bottom: 25px;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                         <h3 class="section-title" style="margin-bottom:0;">📊 Dashboard & Métricas de Desempenho</h3>
@@ -248,7 +271,8 @@
 
     <script>
         const SUPABASE_URL = 'https://npedrsbixoaqupljsnpt.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_FPqn3Oi3P-2IWXIJSPdJg_JVldT...'; // Insira sua chave publishable aqui
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5wZWRyc2JpeG9hcXVwbGpzbnB0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI1MTUzNTIsImV4cCI6MjEwODA5MTM1Mn0.Sthx6-Owgs4cz-jj3wVmUxxQX3V8wq4aQqiMJmnxtjw';
+        
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let usuarioAtual = null;
@@ -259,17 +283,31 @@
         let blocoSelecionado = null;
         let nivelAtual = 1;
 
+        /* CRONÔMETRO DE BLOCO */
         let timerInterval = null;
         let tempoSegundosBloco = 0;
         let timerPausado = false;
         let bancoQuestoesBloco = {};
 
-        // Variáveis do Dashboard Executivo
+        /* DASHBOARD EXECUTIVO */
         let modoDataAtual = 'semana';
         let dataInicioOffset = new Date();
         dataInicioOffset.setHours(0,0,0,0);
         let chartEvolucaoInstancia = null;
         let chartPizzaInstancia = null;
+
+        /* FUNÇÃO RESTAURADA: ALTERNAR VISIBILIDADE DA SENHA (👁️) */
+        function togglePassword() {
+            const passInput = document.getElementById('login-pass');
+            const btnEye = document.getElementById('btn-eye');
+            if (passInput.type === 'password') { 
+                passInput.type = 'text'; 
+                btnEye.textContent = '🙈'; 
+            } else { 
+                passInput.type = 'password'; 
+                btnEye.textContent = '👁️'; 
+            }
+        }
 
         window.addEventListener('popstate', async (event) => {
             if (nivelAtual === 4) await salvarTempoBlocoAtual();
@@ -334,17 +372,15 @@
                 const dt = item.data_prova ? new Date(item.data_prova).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) : 'Não informada';
                 html += `<div class="card-item" onclick='selecionarProva(${JSON.stringify(item)})'>
                     <h4>🏛️ ${item.prova}</h4>
-                    <span>📅 Data: <b>${dt}</b></span>
-                    <span style="margin-top:10px; color:var(--primary); font-weight:600; font-size:13px; display:block;">Ver Disciplinas & Dashboard ➔</span>
+                    <span>📅 Data da Prova: <b>${dt}</b></span>
+                    <span style="margin-top:10px; color:var(--primary); font-weight:600; font-size:13px; display:block;">Ver Disciplinas ➔</span>
                 </div>`;
             });
             gridProvas.innerHTML = html;
 
-            // Carrega o Dashboard Geral do Usuário ao abrir o Nível 1
             setTimeout(() => carregarDashboardDinamico(), 200);
         }
 
-        // LÓGICA DO DASHBOARD DINÂMICO
         function obterIntervaloDatas() {
             let inicio = new Date(dataInicioOffset);
             let fim = new Date(dataInicioOffset);
@@ -459,7 +495,7 @@
             if (!skipPush) history.pushState({ nivel: 2, provaObj: itemProva }, '');
 
             document.getElementById('titulo-prova-atual').innerText = `📚 Disciplinas: ${itemProva.prova}`;
-            document.getElementById('detalhes-prova-header').innerHTML = `<span>🏛️ <b>${itemProva.prova}</b></span><span>📅 Data: <b>${itemProva.data_prova ? new Date(itemProva.data_prova).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) : 'Não informada'}</b></span>`;
+            document.getElementById('detalhes-prova-header').innerHTML = `<span>🏛️ <b>${itemProva.prova}</b></span><span>📅 Data da Prova: <b>${itemProva.data_prova ? new Date(itemProva.data_prova).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) : 'Não informada'}</b></span>`;
 
             const gridDisc = document.getElementById('grid-disciplinas');
             gridDisc.innerHTML = '<p>Carregando...</p>';
@@ -522,7 +558,7 @@
                 let info = desafiosMap[dCod];
                 html += `<div class="card-item" onclick="selecionarDesafio('${dCod}', '${info.aula.replace(/'/g, "\\'")}')">
                     <div class="card-aula-destaque">📖 ${info.aula}</div>
-                    <span class="card-desafio-menor">Código: ${dCod}</span>
+                    <span class="card-desafio-menor">Código Desafio: ${dCod}</span>
                     <div class="stats-box"><div class="stats-line"><span>📝 Questões:</span><b>${info.total}</b></div></div>
                     <span style="margin-top:12px; color:var(--primary); font-weight:600; font-size:13px; display:block;">Ver Blocos ➔</span>
                 </div>`;
@@ -564,16 +600,107 @@
             grid.innerHTML = html;
         }
 
+        function gerarChaveBloco() {
+            const user = usuarioAtual ? usuarioAtual.username : 'user';
+            const disc = disciplinaSelecionada ? disciplinaSelecionada.replace(/\s+/g, '_') : 'DISC';
+            const des = desafioSelecionado ? desafioSelecionado.replace(/\s+/g, '_') : 'DES';
+            return `${user}_${des}_${disc}_${blocoSelecionado}`.toUpperCase();
+        }
+
+        async function carregarTempoBloco() {
+            const chave = gerarChaveBloco();
+            const { data } = await supabaseClient.from('tempos_blocos_usuario').select('tempo_segundos').eq('id', chave).maybeSingle();
+            tempoSegundosBloco = (data && data.tempo_segundos) ? data.tempo_segundos : 0;
+        }
+
+        async function salvarTempoBlocoAtual() {
+            if (nivelAtual !== 4 || !blocoSelecionado) return;
+            const chave = gerarChaveBloco();
+            await supabaseClient.from('tempos_blocos_usuario').upsert({
+                id: chave,
+                username: usuarioAtual.username,
+                tipoprova: provaSelecionadaObj.prova,
+                disciplina: disciplinaSelecionada,
+                coddesafio: desafioSelecionado,
+                bloco: blocoSelecionado,
+                tempo_segundos: tempoSegundosBloco,
+                updated_at: new Date().toISOString()
+            });
+        }
+
+        function alternarPausaTempo() {
+            timerPausado = !timerPausado;
+            const resDiv = document.getElementById('resultado-questoes');
+            const btnPausa = document.getElementById('btn-pausa-toggle');
+            if (timerPausado) {
+                resDiv.classList.add('hidden');
+                if (btnPausa) btnPausa.innerText = '▶️ Play';
+                salvarTempoBlocoAtual();
+            } else {
+                resDiv.classList.remove('hidden');
+                if (btnPausa) btnPausa.innerText = '⏸️ Pausar';
+            }
+        }
+
+        function formatarMMSS(segundos) {
+            const min = Math.floor(segundos / 60);
+            const seg = segundos % 60;
+            return `${String(min).padStart(2, '0')}:${String(seg).padStart(2, '0')}`;
+        }
+
+        function atualizarExibicaoTimer() {
+            const timerSpan = document.getElementById('cronometro-display');
+            if (timerSpan) timerSpan.innerText = `⏱️ ${formatarMMSS(tempoSegundosBloco)}`;
+        }
+
+        function atualizarCabecalhoBlocoDinamico() {
+            let totalNoBloco = Object.keys(bancoQuestoesBloco).length;
+            let acertosNoBloco = 0;
+            let respondidasNoBloco = 0;
+
+            Object.values(bancoQuestoesBloco).forEach(q => {
+                if (q.acerto_erro === 'Acerto') acertosNoBloco++;
+                if (q.resposta_aluno) respondidasNoBloco++;
+            });
+
+            let restantes = totalNoBloco - respondidasNoBloco;
+            const badgeProgresso = document.getElementById('badge-progresso-bloco');
+            if (badgeProgresso) badgeProgresso.innerText = `✏️ Resolveu ${respondidasNoBloco} de ${totalNoBloco} | Restam ${restantes}`;
+
+            const nomeUsuario = usuarioAtual ? usuarioAtual.nome_completo.toUpperCase() : 'ALUNO';
+
+            document.getElementById('header-bloco-info').innerHTML = `
+                <span>Aluno(a): <b>${nomeUsuario}</b></span>
+                <span>Acertos: <b style="color:#22c55e;">${acertosNoBloco}</b> / ${totalNoBloco}</span>
+                <span>Bloco: <b>${blocoSelecionado}</b></span>
+                <span class="timer-badge">
+                    <span id="cronometro-display">⏱️ ${formatarMMSS(tempoSegundosBloco)}</span>
+                    <button class="btn-pausa-tempo" id="btn-pausa-toggle" onclick="alternarPausaTempo()">⏸️ Pausar</button>
+                </span>
+            `;
+        }
+
         async function selecionarBloco(blocoNum, skipPush = false) {
             blocoSelecionado = blocoNum;
+            timerPausado = false;
             nivelAtual = 4; 
             atualizarNavegacaoTela();
             if (!skipPush) history.pushState({ nivel: 4, bloco: blocoNum }, '');
 
-            const container = document.getElementById('resultado-questoes');
-            container.innerHTML = '<p>Carregando questões...</p>';
+            await carregarTempoBloco();
 
-            const { data } = await supabaseClient.from('questoes_desafios').select('*').ilike('username', usuarioAtual.username).eq('tipoprova', provaSelecionadaObj.prova).eq('disciplina', disciplinaSelecionada).eq('coddesafio', desafioSelecionado).eq('bloco', blocoNum);
+            const container = document.getElementById('resultado-questoes');
+            container.innerHTML = '<p style="text-align:center;">Carregando questões...</p>';
+
+            const { data } = await supabaseClient.from('questoes_desafios')
+                .select('*')
+                .ilike('username', usuarioAtual.username)
+                .eq('tipoprova', provaSelecionadaObj.prova)
+                .eq('disciplina', disciplinaSelecionada)
+                .eq('coddesafio', desafioSelecionado)
+                .eq('bloco', blocoNum);
+
+            if (!data || !data.length) { container.innerHTML = '<p>Nenhuma questão neste bloco.</p>'; return; }
 
             bancoQuestoesBloco = {};
             let html = '';
@@ -581,39 +708,142 @@
                 bancoQuestoesBloco[q.id] = q;
                 const jaRespondido = Boolean(q.resposta_aluno);
                 const respAluno = q.resposta_aluno ? String(q.resposta_aluno).trim().toUpperCase() : '';
-                let gabarito = q.gabarito ? String(q.gabarito).trim().toUpperCase() : 'A';
+
+                let gabaritoExibido = q.gabarito ? String(q.gabarito).trim().toUpperCase() : 'A';
+                if (gabaritoExibido === 'CERTO' || gabaritoExibido === 'C') gabaritoExibido = 'A';
+                if (gabaritoExibido === 'ERRADO' || gabaritoExibido === 'E') gabaritoExibido = 'B';
+
+                const isCertoErrado = (!q.alternativac || q.alternativaa === 'Certo' || q.alternativab === 'Errado');
 
                 let alternativasHtml = '';
-                if (!q.alternativac || q.alternativaa === 'Certo') {
-                    alternativasHtml = `<button class="alternativa-btn" ${jaRespondido?'disabled':''} onclick="responderQuestao('${q.id}', 'A', '${gabarito}')"><b>A)</b> Certo</button>
-                                        <button class="alternativa-btn" ${jaRespondido?'disabled':''} onclick="responderQuestao('${q.id}', 'B', '${gabarito}')"><b>B)</b> Errado</button>`;
+                if (isCertoErrado) {
+                    alternativasHtml = `
+                        <div class="alternativas-list">
+                            <button class="alternativa-btn ${jaRespondido && respAluno === 'A' ? (gabaritoExibido==='A'?'alternativa-correta':'alternativa-errada') : (jaRespondido && gabaritoExibido==='A'?'alternativa-correta':'')}" ${jaRespondido ? 'disabled' : ''} onclick="responderQuestao('${q.id}', 'A', '${gabaritoExibido}')"><b>A)</b> Certo</button>
+                            <button class="alternativa-btn ${jaRespondido && respAluno === 'B' ? (gabaritoExibido==='B'?'alternativa-correta':'alternativa-errada') : (jaRespondido && gabaritoExibido==='B'?'alternativa-correta':'')}" ${jaRespondido ? 'disabled' : ''} onclick="responderQuestao('${q.id}', 'B', '${gabaritoExibido}')"><b>B)</b> Errado</button>
+                        </div>
+                    `;
                 } else {
-                    ['a','b','c','d','e'].forEach(l => {
-                        if (q['alternativa'+l]) alternativasHtml += `<button class="alternativa-btn" ${jaRespondido?'disabled':''} onclick="responderQuestao('${q.id}', '${l.toUpperCase()}', '${gabarito}')"><b>${l.toUpperCase()}</b> ${q['alternativa'+l]}</button>`;
+                    ['a','b','c','d','e'].forEach(letra => {
+                        if (q['alternativa' + letra]) {
+                            let classeExtra = '';
+                            if (jaRespondido) {
+                                if (letra.toUpperCase() === gabaritoExibido) classeExtra = 'alternativa-correta';
+                                else if (respAluno === letra.toUpperCase()) classeExtra = 'alternativa-errada';
+                            }
+                            alternativasHtml += `<button class="alternativa-btn ${classeExtra}" ${jaRespondido ? 'disabled' : ''} onclick="responderQuestao('${q.id}', '${letra.toUpperCase()}', '${gabaritoExibido}')"><b>${letra.toUpperCase()}</b> ${q['alternativa' + letra]}</button>`;
+                        }
                     });
                 }
 
-                html += `<div class="card-questao" id="questao-${q.id}">
-                    <div class="questao-header"><span class="badge">Questão ${idx+1}</span></div>
-                    <div class="enunciado">${q.questao}</div>
-                    ${alternativasHtml}
-                    <div id="feedback-${q.id}" class="${jaRespondido?'':'hidden'}"></div>
-                </div>`;
+                const isAcerto = jaRespondido && (respAluno === gabaritoExibido);
+                const temDuvida = (q.acertou_duvida === true);
+
+                html += `
+                    <div class="card-questao" id="questao-${q.id}">
+                        <div class="questao-header">
+                            <span class="badge">Questão ${idx + 1} (${q.coddesafio})</span>
+                            <button class="btn-duvida ${temDuvida ? 'ativo' : ''}" id="btn-duvida-${q.id}" onclick="marcarDuvida('${q.id}')">⭐ Fiquei em Dúvida</button>
+                        </div>
+                        <div class="enunciado">${q.questao}</div>
+                        ${alternativasHtml}
+                        
+                        <div id="feedback-${q.id}" class="${jaRespondido ? '' : 'hidden'}">
+                            <div class="painel-resposta-info ${isAcerto ? 'status-acerto' : 'status-erro'}" style="margin-top: 15px;">
+                                <span>${isAcerto ? '✓ Acertou!' : '✕ Errou!'} | Sua Resposta: <b>${respAluno}</b> (Gabarito: <b>${gabaritoExibido}</b>)</span>
+                                <span style="font-size:11px; font-weight:normal;">Respondido em: ${q.data_resposta ? new Date(q.data_resposta).toLocaleString('pt-BR') : 'Agora'}</span>
+                            </div>
+                            ${q.gabarito_comentado ? `<div style="margin-top: 12px; font-size: 13.5px; color: #334155; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px dashed var(--card-border); line-height:1.5;"><b>💡 Comentário:</b> ${q.gabarito_comentado}</div>` : ''}
+                        </div>
+                    </div>
+                `;
             });
             container.innerHTML = html;
+            atualizarCabecalhoBlocoDinamico();
+
+            clearInterval(timerInterval);
+            let totalNoBloco = Object.keys(bancoQuestoesBloco).length;
+            let respondidasCount = Object.values(bancoQuestoesBloco).filter(q => q.resposta_aluno).length;
+
+            if (respondidasCount < totalNoBloco) {
+                timerInterval = setInterval(() => {
+                    if (!timerPausado) {
+                        tempoSegundosBloco++;
+                        atualizarExibicaoTimer();
+                    }
+                }, 1000);
+            }
         }
 
-        async function responderQuestao(id, escolha, gabarito) {
-            const acertou = (escolha.toUpperCase() === gabarito.toUpperCase());
-            await supabaseClient.from('questoes_desafios').update({ resposta_aluno: escolha, acerto_erro: acertou ? 'Acerto' : 'Erro', data_resposta: new Date().toISOString() }).eq('id', id);
+        async function responderQuestao(idQuestao, respostaEscolha, gabaritoOficial) {
+            let gabaritoLetra = String(gabaritoOficial).trim().toUpperCase();
+            if (gabaritoLetra === 'CERTO' || gabaritoLetra === 'C') gabaritoLetra = 'A';
+            if (gabaritoLetra === 'ERRADO' || gabaritoLetra === 'E') gabaritoLetra = 'B';
+
+            const acertou = (respostaEscolha.toUpperCase() === gabaritoLetra);
+            const statusAcertoErro = acertou ? 'Acerto' : 'Erro';
+            const dataHoraAtual = new Date().toISOString();
+
+            if (bancoQuestoesBloco[idQuestao]) {
+                bancoQuestoesBloco[idQuestao].resposta_aluno = respostaEscolha;
+                bancoQuestoesBloco[idQuestao].acerto_erro = statusAcertoErro;
+            }
+
+            await supabaseClient.from('questoes_desafios')
+                .update({ resposta_aluno: respostaEscolha, acerto_erro: statusAcertoErro, data_resposta: dataHoraAtual })
+                .eq('id', idQuestao);
+
+            salvarTempoBlocoAtual();
             selecionarBloco(blocoSelecionado, true);
+        }
+
+        async function marcarDuvida(idQuestao) {
+            const btn = document.getElementById(`btn-duvida-${idQuestao}`);
+            const estaAtivo = btn.classList.contains('ativo');
+            const novoValorBooleano = !estaAtivo;
+            btn.classList.toggle('ativo', novoValorBooleano);
+
+            if (bancoQuestoesBloco[idQuestao]) bancoQuestoesBloco[idQuestao].acertou_duvida = novoValorBooleano;
+
+            await supabaseClient.from('questoes_desafios').update({ acertou_duvida: novoValorBooleano }).eq('id', idQuestao);
         }
 
         async function gerarRelatorioDesafio(skipPush = false) {
             nivelAtual = 5; 
             atualizarNavegacaoTela();
             if (!skipPush) history.pushState({ nivel: 5 }, '');
-            document.getElementById('conteudo-relatorio').innerHTML = '<h2>Relatório do Desafio</h2>';
+
+            clearInterval(timerInterval);
+            salvarTempoBlocoAtual();
+
+            const relatorioDiv = document.getElementById('conteudo-relatorio');
+            relatorioDiv.innerHTML = '<p>Calculando relatório completo...</p>';
+
+            const { data } = await supabaseClient.from('questoes_desafios')
+                .select('*')
+                .ilike('username', usuarioAtual.username)
+                .eq('tipoprova', provaSelecionadaObj.prova)
+                .eq('disciplina', disciplinaSelecionada)
+                .eq('coddesafio', desafioSelecionado);
+
+            if (!data || !data.length) { relatorioDiv.innerHTML = '<p>Sem dados.</p>'; return; }
+
+            const totalQ = data.length;
+            const resolvidas = data.filter(q => q.resposta_aluno).length;
+            const acertos = data.filter(q => q.acerto_erro === 'Acerto').length;
+            const erros = data.filter(q => q.acerto_erro === 'Erro').length;
+            const questoesDuvida = data.filter(q => q.acertou_duvida === true);
+            const pAproveitamento = resolvidas > 0 ? ((acertos / resolvidas) * 100).toFixed(0) : 0;
+
+            relatorioDiv.innerHTML = `
+                <div class="prova-destaque-header" style="flex-direction:column; align-items:flex-start; position:static;">
+                    <h2>📊 Relatório Geral - ${aulaSelecionada}</h2>
+                    <p><b>Desafio:</b> ${desafioSelecionado} | <b>Aluno:</b> ${usuarioAtual.nome_completo}</p>
+                </div>
+                <div style="margin-top:15px; font-size:15px;">
+                    <p><b>Aproveitamento:</b> ${pAproveitamento}% | <b>Resolvidas:</b> ${resolvidas}/${totalQ} | <b>Acertos:</b> ✅ ${acertos} | <b>Erros:</b> ❌ ${erros} | <b>Dúvidas:</b> ⭐ ${questoesDuvida.length}</p>
+                </div>
+            `;
         }
 
         function atualizarNavegacaoTela() {
@@ -630,7 +860,6 @@
         }
 
         function voltarNivel() { window.history.back(); }
-        async function salvarTempoBlocoAtual() {}
     </script>
 </body>
 </html>
