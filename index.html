@@ -67,19 +67,19 @@
         .timer-badge { background: var(--primary); color: white; padding: 5px 12px; border-radius: 6px; font-weight: 700; font-size: 13px; display: inline-flex; align-items: center; gap: 8px; }
         .btn-pausa-tempo { background: #f59e0b; color: #000; border: none; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: 700; cursor: pointer; }
 
-        /* CARDS E LISTAGENS */
+        /* CARDS E ESTATÍSTICAS */
         .grid-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 18px; margin-bottom: 30px; }
         .card-item { background: var(--card-bg); border: 1px solid var(--card-border); padding: 22px; border-radius: var(--radius); cursor: pointer; transition: all 0.2s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.05); text-align: left; }
         .card-item:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: 0 10px 15px rgba(124, 58, 237, 0.1); background: var(--primary-light); }
         
-        .card-aula-destaque { font-size: 18px; font-weight: 700; color: #0f172a; margin-bottom: 4px; }
-        .card-desafio-menor { font-size: 12px; font-weight: 600; color: var(--primary); background: var(--primary-light); padding: 2px 8px; border-radius: 4px; display: inline-block; margin-bottom: 10px; border: 1px solid rgba(124, 58, 237, 0.2); }
+        .card-aula-destaque { font-size: 17px; font-weight: 700; color: #0f172a; margin-bottom: 4px; }
+        .card-desafio-menor { font-size: 12px; font-weight: 600; color: var(--primary); background: var(--primary-light); padding: 2px 8px; border-radius: 4px; display: inline-block; margin-bottom: 8px; border: 1px solid rgba(124, 58, 237, 0.2); }
 
-        .stats-box { background: #f8fafc; border: 1px solid var(--card-border); border-radius: 10px; padding: 14px; margin-top: 10px; font-size: 13.5px; color: #334155; display: flex; flex-direction: column; gap: 8px; }
+        .stats-box { background: #f8fafc; border: 1px solid var(--card-border); border-radius: 10px; padding: 12px; margin-top: 10px; font-size: 13px; color: #334155; display: flex; flex-direction: column; gap: 6px; }
         .stats-line { display: flex; justify-content: space-between; align-items: center; font-weight: 500; }
 
-        .progress-container { margin-top: 4px; margin-bottom: 4px; }
-        .progress-bar-bg { width: 100%; height: 8px; background: #e2e8f0; border-radius: 6px; overflow: hidden; }
+        .progress-container { margin-top: 4px; }
+        .progress-bar-bg { width: 100%; height: 7px; background: #e2e8f0; border-radius: 6px; overflow: hidden; }
         .progress-bar-green { height: 100%; background: linear-gradient(90deg, #10b981, #059669); border-radius: 6px; }
 
         /* QUESTÕES */
@@ -186,7 +186,7 @@
 
                 <hr style="border:0; border-top:1px solid var(--card-border); margin: 30px 0;">
 
-                <!-- 2. DASHBOARD EXECUTIVO POSICIONADO ABAIXO DE SELECIONE A PROVA -->
+                <!-- 2. DASHBOARD EXECUTIVO POSICIONADO ABAIXO -->
                 <div style="margin-top: 10px;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                         <h3 class="section-title" style="margin-bottom:0;">📊 Dashboard & Métricas de Desempenho</h3>
@@ -217,7 +217,6 @@
                         </div>
                     </div>
 
-                    <!-- RANKING POR DISCIPLINA (EXCLUSIVO WALESKA) -->
                     <div class="dashboard-grid" style="margin-top:15px;">
                         <div class="dashboard-card">
                             <h4 style="margin-bottom:8px; font-size:14px;">🔥 Resolvidas Top (Disciplinas)</h4>
@@ -244,13 +243,13 @@
                 <div id="grid-disciplinas" class="grid-cards"></div>
             </div>
 
-            <!-- NÍVEL 3: AULAS -->
+            <!-- NÍVEL 3: AULAS (COM ESTATÍSTICAS COMPLETAS RESTAURADAS) -->
             <div id="nivel-desafios" class="hidden">
                 <h3 class="section-title" id="titulo-disciplina-atual">Aulas Disponíveis</h3>
                 <div id="grid-desafios" class="grid-cards"></div>
             </div>
 
-            <!-- NÍVEL 3.5: BLOCOS -->
+            <!-- NÍVEL 3.5: BLOCOS (COM ESTATÍSTICAS COMPLETAS RESTAURADAS) -->
             <div id="nivel-blocos" class="hidden">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
                     <h3 class="section-title" id="titulo-desafio-blocos" style="margin-bottom:0;">Blocos de Exercícios</h3>
@@ -423,12 +422,10 @@
             carregarDashboardDinamico();
         }
 
-        /* CARREGAMENTO DO DASHBOARD EXCLUSIVO DA WALESKA E GRÁFICO CORRIGIDO */
         async function carregarDashboardDinamico() {
             const { inicio, fim } = obterIntervaloDatas();
             document.getElementById('label-intervalo-datas').innerText = `${inicio.toLocaleDateString('pt-BR')} até ${fim.toLocaleDateString('pt-BR')}`;
 
-            // Filtra obrigatoriamente apenas os dados da usuária logada
             const { data: registros } = await supabaseClient
                 .from('questoes_desafios')
                 .select('disciplina, acerto_erro, data_resposta')
@@ -438,7 +435,6 @@
                 .lte('data_resposta', fim.toISOString());
 
             const dados = registros || [];
-
             let certas = dados.filter(r => r.acerto_erro === 'Acerto').length;
             let erradas = dados.filter(r => r.acerto_erro === 'Erro').length;
 
@@ -457,7 +453,6 @@
             });
         }
 
-        /* RENDERIZAÇÃO CORRETA DO GRÁFICO DE EVOLUÇÃO (LINHA DE TEMPO CONTÍNUA) */
         function renderizarGraficoEvolucaoCorreto(registros, inicio, fim) {
             const ctx = document.getElementById('chartEvolucao').getContext('2d');
             if (chartEvolucaoInstancia) chartEvolucaoInstancia.destroy();
@@ -465,7 +460,6 @@
             let datasMap = {};
             let curr = new Date(inicio);
 
-            // Preenche todas as datas do intervalo selecionado com valor inicial 0
             while (curr <= fim) {
                 let key = curr.toLocaleDateString('pt-BR');
                 datasMap[key] = 0;
@@ -473,13 +467,10 @@
                 curr.setDate(curr.getDate() + 1);
             }
 
-            // Soma a contagem real das questões resolvidas nas datas correspondentes
             registros.forEach(r => {
                 if (r.data_resposta) {
                     let dtKey = new Date(r.data_resposta).toLocaleDateString('pt-BR');
-                    if (datasMap.hasOwnProperty(dtKey)) {
-                        datasMap[dtKey]++;
-                    }
+                    if (datasMap.hasOwnProperty(dtKey)) datasMap[dtKey]++;
                 }
             });
 
@@ -501,17 +492,13 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    scales: {
-                        y: { beginAtZero: true, ticks: { stepSize: 1 } }
-                    }
+                    scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
                 }
             });
         }
 
-        /* RANKINGS POR DISCIPLINAS (APENAS PARA A WALESKA) */
         function processarRankingsDisciplinas(registros) {
             let discMap = {};
-
             registros.forEach(r => {
                 let disc = r.disciplina || 'Outras';
                 if (!discMap[disc]) discMap[disc] = { total: 0, acertos: 0 };
@@ -526,19 +513,15 @@
                 return { disciplina: d, total: tot, acertos: ace, porcentagem: perc };
             });
 
-            // 1. Resolvidas Top (Volume)
             let rankVolume = [...lista].sort((a,b) => b.total - a.total);
-            let htmlVolume = rankVolume.map((item, idx) => 
+            document.getElementById('tbody-ranking-volume').innerHTML = rankVolume.map((item, idx) => 
                 `<tr><td class="ranking-pos">${idx+1}º</td><td><b>${item.disciplina}</b></td><td><b>${item.total}</b> q</td></tr>`
-            ).join('');
-            document.getElementById('tbody-ranking-volume').innerHTML = htmlVolume || '<tr><td colspan="3">Nenhum registro no período</td></tr>';
+            ).join('') || '<tr><td colspan="3">Nenhum registro no período</td></tr>';
 
-            // 2. Acertos Top (Porcentagem de Precisão %)
             let rankAcertos = [...lista].sort((a,b) => b.porcentagem - a.porcentagem);
-            let htmlAcertos = rankAcertos.map((item, idx) => 
+            document.getElementById('tbody-ranking-acertos').innerHTML = rankAcertos.map((item, idx) => 
                 `<tr><td class="ranking-pos">${idx+1}º</td><td><b>${item.disciplina}</b></td><td style="color:#10b981;"><b>${item.porcentagem}%</b></td></tr>`
-            ).join('');
-            document.getElementById('tbody-ranking-acertos').innerHTML = htmlAcertos || '<tr><td colspan="3">Nenhum registro no período</td></tr>';
+            ).join('') || '<tr><td colspan="3">Nenhum registro no período</td></tr>';
         }
 
         async function selecionarProva(itemProva, skipPush = false) {
@@ -577,13 +560,14 @@
                         <div class="stats-line"><span>📝 Resolvidas:</span><b>${resolvidas}</b></div>
                         <div class="stats-line" style="color:#16a34a"><span>✅ Acertos:</span><b>${acertos}</b></div>
                         <div class="stats-line" style="color:#dc2626"><span>❌ Erros:</span><b>${erros}</b></div>
-                        <div class="progress-container"><div class="progress-label"><span>Aproveitamento: ${pAcerto}%</span></div><div class="progress-bar-bg"><div class="progress-bar-green" style="width:${pAcerto}%"></div></div></div>
+                        <div class="progress-container"><div class="progress-label" style="font-size:11px; margin-bottom:2px;">Aproveitamento: ${pAcerto}%</div><div class="progress-bar-bg"><div class="progress-bar-green" style="width:${pAcerto}%"></div></div></div>
                     </div>
                 </div>`;
             });
             gridDisc.innerHTML = html;
         }
 
+        // AULAS COM ESTATÍSTICAS COMPLETAS RESTAURADAS
         async function selecionarDisciplina(disc, skipPush = false) {
             disciplinaSelecionada = disc;
             nivelAtual = 3; 
@@ -594,30 +578,52 @@
             const grid = document.getElementById('grid-desafios');
             grid.innerHTML = '<p>Buscando aulas...</p>';
 
-            const { data } = await supabaseClient.from('questoes_desafios').select('coddesafio, aula, acerto_erro, resposta_aluno').ilike('username', usuarioAtual.username).eq('tipoprova', provaSelecionadaObj.prova).eq('disciplina', disc);
+            const { data } = await supabaseClient.from('questoes_desafios')
+                .select('coddesafio, aula, acerto_erro, resposta_aluno')
+                .ilike('username', usuarioAtual.username)
+                .eq('tipoprova', provaSelecionadaObj.prova)
+                .eq('disciplina', disc);
+
             if (!data || !data.length) { grid.innerHTML = '<p>Nenhuma aula encontrada.</p>'; return; }
 
             const desafiosMap = {};
             data.forEach(item => {
-                if (!desafiosMap[item.coddesafio]) desafiosMap[item.coddesafio] = { total: 0, aula: item.aula || 'Aula Geral', acertos: 0, respondidas: 0 };
-                desafiosMap[item.coddesafio].total++;
-                if (item.resposta_aluno) desafiosMap[item.coddesafio].respondidas++;
-                if (item.acerto_erro === 'Acerto') desafiosMap[item.coddesafio].acertos++;
+                let cod = item.coddesafio || 'GERAL';
+                if (!desafiosMap[cod]) {
+                    desafiosMap[cod] = { total: 0, aula: item.aula || 'Aula Geral', acertos: 0, erros: 0, respondidas: 0 };
+                }
+                desafiosMap[cod].total++;
+                if (item.resposta_aluno) {
+                    desafiosMap[cod].respondidas++;
+                    if (item.acerto_erro === 'Acerto') desafiosMap[cod].acertos++;
+                    if (item.acerto_erro === 'Erro') desafiosMap[cod].erros++;
+                }
             });
 
             let html = '';
             Object.keys(desafiosMap).forEach(dCod => {
                 let info = desafiosMap[dCod];
+                let pAcerto = info.respondidas > 0 ? ((info.acertos / info.respondidas) * 100).toFixed(0) : 0;
+
                 html += `<div class="card-item" onclick="selecionarDesafio('${dCod}', '${info.aula.replace(/'/g, "\\'")}')">
                     <div class="card-aula-destaque">📖 ${info.aula}</div>
-                    <span class="card-desafio-menor">Código Desafio: ${dCod}</span>
-                    <div class="stats-box"><div class="stats-line"><span>📝 Questões:</span><b>${info.total}</b></div></div>
+                    <span class="card-desafio-menor">Código: ${dCod}</span>
+                    <div class="stats-box">
+                        <div class="stats-line"><span>📝 Total Questões:</span><b>${info.total}</b></div>
+                        <div class="stats-line"><span>✅ Feitas / Acertos:</span><b>${info.respondidas} / <span style="color:#16a34a">${info.acertos}</span></b></div>
+                        <div class="stats-line" style="color:#dc2626"><span>❌ Erros:</span><b>${info.erros}</b></div>
+                        <div class="progress-container">
+                            <div style="font-size:11px; margin-bottom:2px;">Aproveitamento: ${pAcerto}%</div>
+                            <div class="progress-bar-bg"><div class="progress-bar-green" style="width:${pAcerto}%"></div></div>
+                        </div>
+                    </div>
                     <span style="margin-top:12px; color:var(--primary); font-weight:600; font-size:13px; display:block;">Ver Blocos ➔</span>
                 </div>`;
             });
             grid.innerHTML = html;
         }
 
+        // BLOCOS COM ESTATÍSTICAS COMPLETAS RESTAURADAS
         async function selecionarDesafio(desafioCod, aulaNome, skipPush = false) {
             desafioSelecionado = desafioCod;
             aulaSelecionada = aulaNome || 'Aula Geral';
@@ -629,23 +635,44 @@
             const grid = document.getElementById('grid-blocos');
             grid.innerHTML = '<p>Buscando blocos...</p>';
 
-            const { data } = await supabaseClient.from('questoes_desafios').select('bloco, acerto_erro, resposta_aluno').ilike('username', usuarioAtual.username).eq('tipoprova', provaSelecionadaObj.prova).eq('disciplina', disciplinaSelecionada).eq('coddesafio', desafioCod);
+            const { data } = await supabaseClient.from('questoes_desafios')
+                .select('bloco, acerto_erro, resposta_aluno')
+                .ilike('username', usuarioAtual.username)
+                .eq('tipoprova', provaSelecionadaObj.prova)
+                .eq('disciplina', disciplinaSelecionada)
+                .eq('coddesafio', desafioCod);
             
             const blocosMap = {};
             data.forEach(item => {
                 let b = item.bloco || 1;
-                if (!blocosMap[b]) blocosMap[b] = { total: 0, acertos: 0, respondidas: 0 };
+                if (!blocosMap[b]) {
+                    blocosMap[b] = { total: 0, acertos: 0, erros: 0, respondidas: 0 };
+                }
                 blocosMap[b].total++;
-                if (item.resposta_aluno) blocosMap[b].respondidas++;
-                if (item.acerto_erro === 'Acerto') blocosMap[b].acertos++;
+                if (item.resposta_aluno) {
+                    blocosMap[b].respondidas++;
+                    if (item.acerto_erro === 'Acerto') blocosMap[b].acertos++;
+                    if (item.acerto_erro === 'Erro') blocosMap[b].erros++;
+                }
             });
 
             let html = '';
             Object.keys(blocosMap).sort((a,b)=>a-b).forEach(bNum => {
                 let b = blocosMap[bNum];
+                let pAcerto = b.respondidas > 0 ? ((b.acertos / b.respondidas) * 100).toFixed(0) : 0;
+
                 html += `<div class="card-item" onclick="selecionarBloco(${bNum})">
-                    <h4>📦 Bloco ${bNum} (${b.total} Questões)</h4>
-                    <div class="stats-box"><div class="stats-line"><span>Feitas:</span><b>${b.respondidas}/${b.total}</b></div></div>
+                    <h4>📦 Bloco ${bNum}</h4>
+                    <div class="stats-box">
+                        <div class="stats-line"><span>📝 Questões:</span><b>${b.total}</b></div>
+                        <div class="stats-line"><span>✅ Respondidas:</span><b>${b.respondidas}/${b.total}</b></div>
+                        <div class="stats-line" style="color:#16a34a"><span>✅ Acertos:</span><b>${b.acertos}</b></div>
+                        <div class="stats-line" style="color:#dc2626"><span>❌ Erros:</span><b>${b.erros}</b></div>
+                        <div class="progress-container">
+                            <div style="font-size:11px; margin-bottom:2px;">Aproveitamento: ${pAcerto}%</div>
+                            <div class="progress-bar-bg"><div class="progress-bar-green" style="width:${pAcerto}%"></div></div>
+                        </div>
+                    </div>
                     <span style="margin-top:12px; color:var(--primary); font-weight:600; font-size:13px; display:block;">Iniciar Bloco ➔</span>
                 </div>`;
             });
