@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- Chart.js para Gráficos Profissionais -->
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
@@ -16,14 +16,11 @@
             --primary: #7c3aed;            
             --primary-hover: #6d28d9;      
             --primary-light: #f5f3ff;      
-            
             --bg-color: #f8fafc;           
             --card-bg: #ffffff;            
             --card-border: #e2e8f0;        
-            
             --text-main: #0f172a;          
             --text-muted: #64748b;         
-            
             --success-bg: #dcfce7;
             --success-text: #166534;
             --error-bg: #fee2e2;
@@ -119,7 +116,7 @@
         .ranking-table th { color: #64748b; font-weight: 600; font-size: 12px; text-transform: uppercase; }
         .ranking-pos { font-weight: 800; color: #7c3aed; width: 30px; }
 
-        /* TELA DE LOGIN COM CAMPO MOSTRAR SENHA */
+        /* LOGIN */
         .login-wrapper { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: radial-gradient(circle at top, #1e1b4b 0%, #0f172a 100%); padding: 20px; }
         .login-card { background: #1e293b; border: 1px solid #334155; width: 100%; max-width: 420px; padding: 40px 30px; border-radius: 16px; box-shadow: 0 20px 30px rgba(0, 0, 0, 0.5); text-align: center; }
         .login-card .logo-img { max-width: 110px; height: auto; margin: 0 auto 15px auto; display: block; object-fit: contain; }
@@ -131,7 +128,6 @@
         .form-group input { width: 100%; padding: 12px 14px; border: 1px solid #334155; border-radius: 8px; font-size: 14px; outline: none; background: #0f172a; color: #ffffff; }
         .form-group input:focus { border-color: #7c3aed; box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.25); }
 
-        /* CONTAINER DA SENHA COM BOTÃO OLHO (👁️) RESTAURADO */
         .password-container { position: relative; display: flex; align-items: center; }
         .password-container input { padding-right: 45px; }
         .btn-toggle-pass { position: absolute; right: 12px; background: none; border: none; cursor: pointer; font-size: 18px; color: #94a3b8; user-select: none; }
@@ -143,7 +139,7 @@
 </head>
 <body>
 
-    <!-- TELA DE LOGIN COM MOSTRAR SENHA (👁️) RESTAURADO -->
+    <!-- TELA DE LOGIN -->
     <div id="login-screen" class="login-wrapper">
         <div class="login-card">
             <img src="policia-penal-pe.png" alt="Logo" class="logo-img" onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/arturalves5771-hue/questoes-consursos/main/policia-penal-pe.png';">
@@ -182,9 +178,16 @@
                 <div id="badge-progresso-bloco" class="badge-info-progresso hidden">✏️ Resolveu 0 de 0</div>
             </div>
 
-            <!-- NÍVEL 1: PROVAS + DASHBOARD EXECUTIVO -->
+            <!-- NÍVEL 1: PROVAS E DASHBOARD ABAIXO -->
             <div id="nivel-provas">
-                <div style="margin-bottom: 25px;">
+                <!-- 1. SELEÇÃO DE PROVAS -->
+                <h3 class="section-title">📂 Selecione a Prova (Caderno)</h3>
+                <div id="grid-provas" class="grid-cards"></div>
+
+                <hr style="border:0; border-top:1px solid var(--card-border); margin: 30px 0;">
+
+                <!-- 2. DASHBOARD EXECUTIVO POSICIONADO ABAIXO DE SELECIONE A PROVA -->
+                <div style="margin-top: 10px;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                         <h3 class="section-title" style="margin-bottom:0;">📊 Dashboard & Métricas de Desempenho</h3>
                     </div>
@@ -214,22 +217,24 @@
                         </div>
                     </div>
 
+                    <!-- RANKING POR DISCIPLINA (EXCLUSIVO WALESKA) -->
                     <div class="dashboard-grid" style="margin-top:15px;">
                         <div class="dashboard-card">
-                            <h4 style="margin-bottom:8px; font-size:14px;">🔥 Top Volume (Resolvidas)</h4>
-                            <table class="ranking-table"><thead><tr><th>#</th><th>Aluno</th><th>Qtd</th></tr></thead><tbody id="tbody-ranking-volume"></tbody></table>
+                            <h4 style="margin-bottom:8px; font-size:14px;">🔥 Resolvidas Top (Disciplinas)</h4>
+                            <table class="ranking-table">
+                                <thead><tr><th>#</th><th>Disciplina</th><th>Qtd Resolvidas</th></tr></thead>
+                                <tbody id="tbody-ranking-volume"></tbody>
+                            </table>
                         </div>
                         <div class="dashboard-card">
-                            <h4 style="margin-bottom:8px; font-size:14px;">🏆 Top Acertos (Precisão)</h4>
-                            <table class="ranking-table"><thead><tr><th>#</th><th>Aluno</th><th>Certas</th></tr></thead><tbody id="tbody-ranking-acertos"></tbody></table>
+                            <h4 style="margin-bottom:8px; font-size:14px;">🏆 Acertos Top (Precisão %)</h4>
+                            <table class="ranking-table">
+                                <thead><tr><th>#</th><th>Disciplina</th><th>Aproveitamento</th></tr></thead>
+                                <tbody id="tbody-ranking-acertos"></tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
-
-                <hr style="border:0; border-top:1px solid var(--card-border); margin: 30px 0;">
-
-                <h3 class="section-title">📂 Selecione a Prova (Caderno)</h3>
-                <div id="grid-provas" class="grid-cards"></div>
             </div>
 
             <!-- NÍVEL 2: DISCIPLINAS -->
@@ -283,20 +288,17 @@
         let blocoSelecionado = null;
         let nivelAtual = 1;
 
-        /* CRONÔMETRO DE BLOCO */
         let timerInterval = null;
         let tempoSegundosBloco = 0;
         let timerPausado = false;
         let bancoQuestoesBloco = {};
 
-        /* DASHBOARD EXECUTIVO */
         let modoDataAtual = 'semana';
         let dataInicioOffset = new Date();
         dataInicioOffset.setHours(0,0,0,0);
         let chartEvolucaoInstancia = null;
         let chartPizzaInstancia = null;
 
-        /* FUNÇÃO RESTAURADA: ALTERNAR VISIBILIDADE DA SENHA (👁️) */
         function togglePassword() {
             const passInput = document.getElementById('login-pass');
             const btnEye = document.getElementById('btn-eye');
@@ -421,23 +423,28 @@
             carregarDashboardDinamico();
         }
 
+        /* CARREGAMENTO DO DASHBOARD EXCLUSIVO DA WALESKA E GRÁFICO CORRIGIDO */
         async function carregarDashboardDinamico() {
             const { inicio, fim } = obterIntervaloDatas();
             document.getElementById('label-intervalo-datas').innerText = `${inicio.toLocaleDateString('pt-BR')} até ${fim.toLocaleDateString('pt-BR')}`;
 
+            // Filtra obrigatoriamente apenas os dados da usuária logada
             const { data: registros } = await supabaseClient
                 .from('questoes_desafios')
-                .select('username, acerto_erro, data_resposta')
+                .select('disciplina, acerto_erro, data_resposta')
+                .ilike('username', usuarioAtual.username)
+                .not('resposta_aluno', 'is', null)
                 .gte('data_resposta', inicio.toISOString())
                 .lte('data_resposta', fim.toISOString());
 
-            if (!registros) return;
+            const dados = registros || [];
 
-            let certas = registros.filter(r => r.acerto_erro === 'Acerto').length;
-            let erradas = registros.filter(r => r.acerto_erro === 'Erro').length;
+            let certas = dados.filter(r => r.acerto_erro === 'Acerto').length;
+            let erradas = dados.filter(r => r.acerto_erro === 'Erro').length;
+
             renderizarGraficoPizza(certas, erradas);
-            processarRankings(registros);
-            renderizarGraficoEvolucao(registros, inicio, fim);
+            processarRankingsDisciplinas(dados);
+            renderizarGraficoEvolucaoCorreto(dados, inicio, fim);
         }
 
         function renderizarGraficoPizza(certas, erradas) {
@@ -450,42 +457,88 @@
             });
         }
 
-        function renderizarGraficoEvolucao(registros, inicio, fim) {
+        /* RENDERIZAÇÃO CORRETA DO GRÁFICO DE EVOLUÇÃO (LINHA DE TEMPO CONTÍNUA) */
+        function renderizarGraficoEvolucaoCorreto(registros, inicio, fim) {
             const ctx = document.getElementById('chartEvolucao').getContext('2d');
             if (chartEvolucaoInstancia) chartEvolucaoInstancia.destroy();
 
-            let contagemPorData = {};
+            let datasMap = {};
+            let curr = new Date(inicio);
+
+            // Preenche todas as datas do intervalo selecionado com valor inicial 0
+            while (curr <= fim) {
+                let key = curr.toLocaleDateString('pt-BR');
+                datasMap[key] = 0;
+                if (modoDataAtual === 'dia') break;
+                curr.setDate(curr.getDate() + 1);
+            }
+
+            // Soma a contagem real das questões resolvidas nas datas correspondentes
             registros.forEach(r => {
-                let dt = new Date(r.data_resposta).toLocaleDateString('pt-BR');
-                contagemPorData[dt] = (contagemPorData[dt] || 0) + 1;
+                if (r.data_resposta) {
+                    let dtKey = new Date(r.data_resposta).toLocaleDateString('pt-BR');
+                    if (datasMap.hasOwnProperty(dtKey)) {
+                        datasMap[dtKey]++;
+                    }
+                }
             });
 
             chartEvolucaoInstancia = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: Object.keys(contagemPorData).length ? Object.keys(contagemPorData) : ['Sem dados'],
-                    datasets: [{ label: 'Resolvidas', data: Object.values(contagemPorData).length ? Object.values(contagemPorData) : [0], borderColor: '#7c3aed', backgroundColor: 'rgba(124, 58, 237, 0.1)', fill: true, tension: 0.3 }]
+                    labels: Object.keys(datasMap),
+                    datasets: [{
+                        label: 'Resolvidas',
+                        data: Object.values(datasMap),
+                        borderColor: '#7c3aed',
+                        backgroundColor: 'rgba(124, 58, 237, 0.1)',
+                        fill: true,
+                        tension: 0.3,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#7c3aed'
+                    }]
                 },
-                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, ticks: { stepSize: 1 } }
+                    }
+                }
             });
         }
 
-        function processarRankings(registros) {
-            let alunosMap = {};
+        /* RANKINGS POR DISCIPLINAS (APENAS PARA A WALESKA) */
+        function processarRankingsDisciplinas(registros) {
+            let discMap = {};
+
             registros.forEach(r => {
-                let user = r.username || 'Anônimo';
-                if (!alunosMap[user]) alunosMap[user] = { total: 0, acertos: 0 };
-                alunosMap[user].total++;
-                if (r.acerto_erro === 'Acerto') alunosMap[user].acertos++;
+                let disc = r.disciplina || 'Outras';
+                if (!discMap[disc]) discMap[disc] = { total: 0, acertos: 0 };
+                discMap[disc].total++;
+                if (r.acerto_erro === 'Acerto') discMap[disc].acertos++;
             });
 
-            let lista = Object.keys(alunosMap).map(u => ({ username: u, ...alunosMap[u] }));
+            let lista = Object.keys(discMap).map(d => {
+                let tot = discMap[d].total;
+                let ace = discMap[d].acertos;
+                let perc = tot > 0 ? Math.round((ace / tot) * 100) : 0;
+                return { disciplina: d, total: tot, acertos: ace, porcentagem: perc };
+            });
 
-            let rankVolume = [...lista].sort((a,b) => b.total - a.total).slice(0, 5);
-            document.getElementById('tbody-ranking-volume').innerHTML = rankVolume.map((item, idx) => `<tr><td class="ranking-pos">${idx+1}º</td><td>${item.username}</td><td><b>${item.total}</b></td></tr>`).join('') || '<tr><td colspan="3">Sem registros</td></tr>';
+            // 1. Resolvidas Top (Volume)
+            let rankVolume = [...lista].sort((a,b) => b.total - a.total);
+            let htmlVolume = rankVolume.map((item, idx) => 
+                `<tr><td class="ranking-pos">${idx+1}º</td><td><b>${item.disciplina}</b></td><td><b>${item.total}</b> q</td></tr>`
+            ).join('');
+            document.getElementById('tbody-ranking-volume').innerHTML = htmlVolume || '<tr><td colspan="3">Nenhum registro no período</td></tr>';
 
-            let rankAcertos = [...lista].sort((a,b) => b.acertos - a.acertos).slice(0, 5);
-            document.getElementById('tbody-ranking-acertos').innerHTML = rankAcertos.map((item, idx) => `<tr><td class="ranking-pos">${idx+1}º</td><td>${item.username}</td><td style="color:#10b981;"><b>${item.acertos}</b></td></tr>`).join('') || '<tr><td colspan="3">Sem registros</td></tr>';
+            // 2. Acertos Top (Porcentagem de Precisão %)
+            let rankAcertos = [...lista].sort((a,b) => b.porcentagem - a.porcentagem);
+            let htmlAcertos = rankAcertos.map((item, idx) => 
+                `<tr><td class="ranking-pos">${idx+1}º</td><td><b>${item.disciplina}</b></td><td style="color:#10b981;"><b>${item.porcentagem}%</b></td></tr>`
+            ).join('');
+            document.getElementById('tbody-ranking-acertos').innerHTML = htmlAcertos || '<tr><td colspan="3">Nenhum registro no período</td></tr>';
         }
 
         async function selecionarProva(itemProva, skipPush = false) {
@@ -516,7 +569,6 @@
                 const acertos = qDisc.filter(q => q.acerto_erro === 'Acerto').length;
                 const erros = qDisc.filter(q => q.acerto_erro === 'Erro').length;
                 const pAcerto = resolvidas > 0 ? ((acertos / resolvidas) * 100).toFixed(0) : 0;
-                const pMeta = Math.min(((resolvidas / metaQtd) * 100), 100).toFixed(0);
 
                 html += `<div class="card-item" onclick="selecionarDisciplina('${disc}')">
                     <h4>📖 ${disc}</h4>
