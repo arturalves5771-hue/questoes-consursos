@@ -208,18 +208,11 @@
         /* =========================================================
            ESTILOS DO NOVO DASHBOARD QUIXOTIC MODERN (ROXO)
            ========================================================= */
-        .dash-header-welcome {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 22px;
-        }
         .dash-welcome-title {
             font-size: 28px;
             font-weight: 800;
             color: #111827;
+            margin-bottom: 15px;
         }
         .dash-welcome-title span {
             color: var(--primary);
@@ -332,7 +325,6 @@
             border-radius: 20px;
         }
 
-        /* TABELA ESTILO QUIXOTIC */
         .quixotic-table {
             width: 100%;
             border-collapse: separate;
@@ -358,7 +350,6 @@
         .quixotic-table tr td:first-child { border-top-left-radius: 10px; border-bottom-left-radius: 10px; }
         .quixotic-table tr td:last-child { border-top-right-radius: 10px; border-bottom-right-radius: 10px; }
 
-        /* RODAPÉ */
         .footer-tatico {
             margin-top: auto;
             padding-top: 30px;
@@ -452,33 +443,36 @@
             <!-- NÍVEL 1: PROVAS E DASHBOARD MODERN QUIXOTIC -->
             <div id="nivel-provas">
 
-                <!-- DASHBOARD ESTILO QUIXOTIC ROXO -->
-                <div id="dashboard-container" style="margin-bottom: 30px;">
-                    <div class="dash-header-welcome">
-                        <div>
-                            <h2 class="dash-welcome-title">Bem-vinda de volta, <span id="dash-user-name">Waleska</span> 👋</h2>
-                            <p style="color: var(--text-muted); font-size: 14px; margin-top: 2px;">Acompanhe seu desempenho e constância de estudos.</p>
-                        </div>
-                        
-                        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                            <div class="period-pill-group">
-                                <button id="btn-modo-dia" class="btn-pill" onclick="mudarModoDashboard('dia')">Dia</button>
-                                <button id="btn-modo-semana" class="btn-pill active" onclick="mudarModoDashboard('semana')">Semana</button>
-                                <button id="btn-modo-mes" class="btn-pill" onclick="mudarModoDashboard('mes')">Mês</button>
-                                <button id="btn-modo-ano" class="btn-pill" onclick="mudarModoDashboard('ano')">Ano</button>
-                            </div>
+                <!-- 1. SAUDAÇÃO -->
+                <h2 class="dash-welcome-title">Bem-vinda de volta, <span id="dash-user-name">Waleska</span> 👋</h2>
 
-                            <div class="date-navigator">
-                                <button class="btn-nav-arrow" onclick="navegarPeriodo(-1)">‹</button>
-                                <span id="label-intervalo-datas">--/--/---- a --/--/----</span>
-                                <button class="btn-nav-arrow" onclick="navegarPeriodo(1)">›</button>
-                            </div>
+                <!-- 2. CARDS DE PROVAS (SELEÇÃO) -->
+                <div id="grid-provas" class="grid-cards"></div>
+
+                <!-- 3. SUBTÍTULO -->
+                <p style="color: var(--text-muted); font-size: 15px; font-weight: 600; margin-bottom: 15px; margin-top: 10px;">
+                    📊 Acompanhe seu desempenho e constância de estudos.
+                </p>
+
+                <!-- 4. DASHBOARDS (GRÁFICOS E METRICAS) -->
+                <div id="dashboard-container" style="margin-bottom: 30px;">
+                    <div style="display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-bottom: 18px; flex-wrap: wrap;">
+                        <div class="period-pill-group">
+                            <button id="btn-modo-dia" class="btn-pill" onclick="mudarModoDashboard('dia')">Dia</button>
+                            <button id="btn-modo-semana" class="btn-pill active" onclick="mudarModoDashboard('semana')">Semana</button>
+                            <button id="btn-modo-mes" class="btn-pill" onclick="mudarModoDashboard('mes')">Mês</button>
+                            <button id="btn-modo-ano" class="btn-pill" onclick="mudarModoDashboard('ano')">Ano</button>
+                        </div>
+
+                        <div class="date-navigator">
+                            <button class="btn-nav-arrow" onclick="navegarPeriodo(-1)">‹</button>
+                            <span id="label-intervalo-datas">--/--/---- a --/--/----</span>
+                            <button class="btn-nav-arrow" onclick="navegarPeriodo(1)">›</button>
                         </div>
                     </div>
 
                     <!-- GRID QUIXOTIC PRIMÁRIO -->
                     <div class="quixotic-grid">
-                        <!-- CARTOA GRÁFICO BARRAS -->
                         <div class="quixotic-card">
                             <div class="quixotic-card-header">
                                 <span class="quixotic-card-title">📊 Evolução de Questões Resolvidas</span>
@@ -487,7 +481,6 @@
                             <div style="height: 220px; position: relative;"><canvas id="chartEvolucao"></canvas></div>
                         </div>
 
-                        <!-- CARD ROSQUINHA PRECISÃO -->
                         <div class="quixotic-card" style="display:flex; flex-direction:column; justify-content:space-between;">
                             <div class="quixotic-card-header">
                                 <span class="quixotic-card-title">🎯 Domínio & Precisão</span>
@@ -523,7 +516,6 @@
                             </table>
                         </div>
 
-                        <!-- CARD KPI RESUMO RÁPIDO -->
                         <div class="quixotic-card" style="display:flex; flex-direction:column; gap:14px; justify-content:center;">
                             <div style="background:var(--primary-light); border:1px solid rgba(124,58,237,0.15); border-radius:12px; padding:16px;">
                                 <span style="font-size:12px; color:var(--primary); font-weight:700; text-transform:uppercase;">🔥 Média de Acertos</span>
@@ -537,8 +529,6 @@
                     </div>
                 </div>
 
-                <h3 class="section-title">📂 Selecione a Prova (Caderno)</h3>
-                <div id="grid-provas" class="grid-cards"></div>
             </div>
 
             <!-- NÍVEL 2: DISCIPLINAS -->
@@ -611,7 +601,13 @@
         let chartEvolucaoInstance = null;
         let chartPizzaInstance = null;
 
-        // Controle de exibição inicial do login
+        // HELPER DE HORA LOCAL (Ajuste Fuso Horário de Brasília/Fortaleza -03:00)
+        function formatarDataHoraLocal(dataIso) {
+            if (!dataIso) return 'Agora';
+            const dateObj = new Date(dataIso);
+            return dateObj.toLocaleString('pt-BR', { timeZone: 'America/Fortaleza' });
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
             if (!usuarioAtual) {
                 document.getElementById('login-screen').classList.remove('hidden');
@@ -619,7 +615,6 @@
             }
         });
 
-        // Listener do Histórico do Navegador
         window.addEventListener('popstate', async (event) => {
             if (nivelAtual === 4) {
                 await salvarTempoBlocoAtual();
@@ -732,7 +727,6 @@
             atualizarDashboard();
         }
 
-        /* LÓGICA DO DASHBOARD NOVO (ESTILO QUIXOTIC) */
         function mudarModoDashboard(modo) {
             modoDashboard = modo;
             dataRefDashboard = new Date();
@@ -863,7 +857,6 @@
             const tagTotal = document.getElementById('tag-total-periodo');
             if (tagTotal) tagTotal.innerText = `${totalResolvidas} Resolvidas`;
 
-            // Gráfico de Barras Arredondadas Roxo Quixotic
             const ctxEvolucao = document.getElementById('chartEvolucao');
             if (ctxEvolucao) {
                 if (chartEvolucaoInstance) chartEvolucaoInstance.destroy();
@@ -893,7 +886,6 @@
                 });
             }
 
-            // Gráfico Donut estilo Domínio
             let certas = 0;
             let erradas = 0;
             registros.forEach(r => {
@@ -929,7 +921,6 @@
                 });
             }
 
-            // Tabela Unificada de Rankings Quixotic
             const rankingDisc = {};
             registros.forEach(r => {
                 const disc = r.disciplina || 'Outras';
@@ -1280,7 +1271,7 @@
                         <div id="feedback-${q.id}" class="${jaRespondido ? '' : 'hidden'}">
                             <div class="painel-resposta-info ${isAcerto ? 'status-acerto' : 'status-erro'}" style="margin-top: 15px;">
                                 <span>${isAcerto ? '✓ Acertou!' : '✕ Errou!'} | Sua Resposta: <b>${respAluno}</b> (Gabarito: <b>${gabaritoExibido}</b>)</span>
-                                <span style="font-size:11px; font-weight:normal;">Respondido em: ${q.data_resposta ? new Date(q.data_resposta).toLocaleString('pt-BR') : 'Agora'}</span>
+                                <span style="font-size:11px; font-weight:normal;">Respondido em: ${formatarDataHoraLocal(q.data_resposta)}</span>
                             </div>
                             ${q.gabarito_comentado ? `<div style="margin-top: 12px; font-size: 13.5px; color: #334155; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px dashed var(--card-border); line-height:1.5;"><b>💡 Comentário:</b> ${q.gabarito_comentado}</div>` : ''}
                         </div>
@@ -1391,7 +1382,7 @@
             feedbackDiv.innerHTML = `
                 <div class="painel-resposta-info ${acertou ? 'status-acerto' : 'status-erro'}" style="margin-top: 15px;">
                     <span>${acertou ? '✓ Acertou!' : '✕ Errou!'} | Sua Resposta: <b>${respostaEscolha}</b> (Gabarito: <b>${gabaritoLetra}</b>)</span>
-                    <span style="font-size:11px; font-weight:normal;">Respondido em: Agora</span>
+                    <span style="font-size:11px; font-weight:normal;">Respondido em: ${formatarDataHoraLocal(dataHoraAtual)}</span>
                 </div>
                 ${comentarioHtml}
             `;
