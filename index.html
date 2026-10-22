@@ -72,7 +72,7 @@
         .btn-logout { background: transparent; color: #ef4444; border: 1px solid #fca5a5; padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; }
         .btn-logout:hover { background: #fef2f2; }
 
-        .main-container { max-width: 960px; margin: 20px auto; padding: 0 20px; width: 100%; }
+        .main-container { max-width: 960px; margin: 20px auto; padding: 0 20px; width: 100%; flex: 1; display: flex; flex-direction: column; }
         .section-title { font-size: 18px; font-weight: 700; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; color: #0f172a; }
 
         /* BARRA SUPERIOR DE NAVEGAÇÃO / STATUS (CONGELADA NO TOPO) */
@@ -282,6 +282,24 @@
             border-bottom: none;
         }
 
+        /* ESTILO DO RODAPÉ TÁTICO */
+        .footer-tatico {
+            margin-top: auto;
+            padding-top: 30px;
+            padding-bottom: 20px;
+            border-top: 1px solid var(--card-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        .footer-tatico b {
+            color: var(--primary);
+        }
+
         /* TELA DE LOGIN ESCURA */
         .login-wrapper { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: radial-gradient(circle at top, #1e1b4b 0%, #0f172a 100%); padding: 20px; }
         .login-card { background: #1e293b; border: 1px solid #334155; width: 100%; max-width: 420px; padding: 40px 30px; border-radius: 16px; box-shadow: 0 20px 30px rgba(0, 0, 0, 0.5); text-align: center; }
@@ -305,7 +323,7 @@
 
         @media print {
             body { background: white; color: black; }
-            .navbar, .nav-top-bar, .btn-relatorio, .btn-logout, .btn-duvida, #dashboard-container { display: none !important; }
+            .navbar, .nav-top-bar, .btn-relatorio, .btn-logout, .btn-duvida, #dashboard-container, .footer-tatico { display: none !important; }
             .main-container { max-width: 100%; margin: 0; padding: 0; }
             .card-questao { border: 1px solid #ccc; page-break-inside: avoid; background: white; color: black; }
             .enunciado { color: black; }
@@ -315,7 +333,7 @@
 </head>
 <body>
 
-    <!-- TELA DE LOGIN (Sem classe hidden no HTML, controlada via JS no carregamento) -->
+    <!-- TELA DE LOGIN ESCURA E IMPONENTE -->
     <div id="login-screen" class="login-wrapper">
         <div class="login-card">
             <img src="policia-penal-pe.png" alt="Logo" class="logo-img" onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/arturalves5771-hue/questoes-consursos/main/policia-penal-pe.png';">
@@ -446,6 +464,12 @@
                 <button class="btn-relatorio" onclick="window.print()">🖨️ Imprimir / Salvar PDF</button>
                 <div id="conteudo-relatorio"></div>
             </div>
+
+            <!-- RODAPÉ TÁTICO ESTILOSO -->
+            <footer class="footer-tatico">
+                <div>🦅 <b>Estratégia Penal</b> — Caderno Tático &copy; 2026</div>
+                <div>Foco, Disciplina e Alta Performance 🎯</div>
+            </footer>
         </div>
     </div>
 
@@ -476,7 +500,7 @@
         let chartEvolucaoInstance = null;
         let chartPizzaInstance = null;
 
-        // Controle de exibição inicial de login / dashboard
+        // Controle de exibição inicial do login
         window.addEventListener('DOMContentLoaded', () => {
             if (!usuarioAtual) {
                 document.getElementById('login-screen').classList.remove('hidden');
