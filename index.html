@@ -13,23 +13,23 @@
     
     <style>
         :root {
-            /* PALETA ROXO E CINZA TÁTICO (FUNDO CLARO) */
+            /* PALETA ROXO E CINZA TÁTICO */
             --primary: #7c3aed;            /* Roxo Violeta Vívido */
             --primary-hover: #6d28d9;      /* Roxo Escuro */
-            --primary-light: #f5f3ff;      /* Roxo Suave para Destaques */
+            --primary-light: #f5f3ff;      /* Roxo Suave */
             
-            --bg-color: #f8fafc;           /* Fundo Claro / Off-white */
-            --card-bg: #ffffff;            /* Cards Brancos com alto contraste */
-            --card-border: #e2e8f0;        /* Borda Suave */
+            --bg-color: #f3f4f6;           /* Fundo Suave Cinza Quixotic */
+            --card-bg: #ffffff;            /* Cards Brancos */
+            --card-border: #e5e7eb;        /* Borda Suave */
             
-            --text-main: #0f172a;          /* Texto Escuro de Alta Leitura */
-            --text-muted: #64748b;         /* Texto Secundário Cinza */
+            --text-main: #111827;          /* Texto Principal */
+            --text-muted: #6b7280;         /* Texto Secundário */
             
             --success-bg: #dcfce7;
             --success-text: #166534;
             --error-bg: #fee2e2;
             --error-text: #991b1b;
-            --radius: 12px;
+            --radius: 16px;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
@@ -40,15 +40,15 @@
         /* NAVBAR STICKY CLARA */
         .navbar { 
             background: #ffffff; 
-            border-bottom: 2px solid #e2e8f0; 
-            padding: 14px 24px; 
+            border-bottom: 1px solid #e5e7eb; 
+            padding: 14px 28px; 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
             position: sticky; 
             top: 0; 
             z-index: 1000; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
         }
         .brand-title {
             font-size: 18px;
@@ -69,13 +69,13 @@
             border-radius: 6px;
         }
         .navbar .user-info { font-size: 14px; font-weight: 600; color: var(--text-muted); }
-        .btn-logout { background: transparent; color: #ef4444; border: 1px solid #fca5a5; padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn-logout { background: transparent; color: #ef4444; border: 1px solid #fca5a5; padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; }
         .btn-logout:hover { background: #fef2f2; }
 
-        .main-container { max-width: 960px; margin: 20px auto; padding: 0 20px; width: 100%; flex: 1; display: flex; flex-direction: column; }
-        .section-title { font-size: 18px; font-weight: 700; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; color: #0f172a; }
+        .main-container { max-width: 1040px; margin: 20px auto; padding: 0 20px; width: 100%; flex: 1; display: flex; flex-direction: column; }
+        .section-title { font-size: 18px; font-weight: 800; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; color: #111827; }
 
-        /* BARRA SUPERIOR DE NAVEGAÇÃO / STATUS (CONGELADA NO TOPO) */
+        /* BARRA SUPERIOR DE NAVEGAÇÃO */
         .nav-top-bar {
             position: sticky;
             top: 65px;
@@ -88,17 +88,16 @@
             flex-wrap: wrap;
         }
 
-        /* BOTÃO VOLTAR MAIOR E VERMELHO */
         .btn-voltar-fixo { 
             background: #ef4444; 
             color: white; 
             border: none; 
             padding: 10px 20px; 
-            border-radius: 8px; 
+            border-radius: 10px; 
             font-size: 14px; 
             font-weight: 700; 
             cursor: pointer; 
-            box-shadow: 0 4px 10px rgba(239, 68, 68, 0.25);
+            box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2);
             display: inline-flex;
             align-items: center;
             gap: 6px;
@@ -106,13 +105,12 @@
         }
         .btn-voltar-fixo:hover { background: #dc2626; }
 
-        /* BOTÃO INFORMATIVO NO LADO OPOSTO AO VOLTAR (ROXO TÁTICO) */
         .badge-info-progresso {
             background: #1e1b4b;
             color: #c4b5fd;
             border: 1px solid #7c3aed;
             padding: 10px 18px;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 14px;
             font-weight: 700;
             box-shadow: 0 4px 10px rgba(124, 58, 237, 0.15);
@@ -121,7 +119,6 @@
             gap: 6px;
         }
 
-        /* CABEÇALHO ESCURO DO BLOCO */
         .prova-destaque-header { 
             background: #0f172a; 
             color: #ffffff;
@@ -149,7 +146,6 @@
             border-radius: 6px; 
             font-weight: 700; 
             font-size: 13px; 
-            letter-spacing: 0.5px;
             display: inline-flex;
             align-items: center;
             gap: 8px;
@@ -164,125 +160,205 @@
             font-size: 12px;
             font-weight: 700;
             cursor: pointer;
-            transition: background 0.2s;
         }
-        .btn-pausa-tempo:hover { background: #d97706; color: white; }
 
         .grid-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 18px; margin-bottom: 30px; }
-        .card-item { background: var(--card-bg); border: 1px solid var(--card-border); padding: 22px; border-radius: var(--radius); cursor: pointer; transition: all 0.2s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.05); text-align: left; }
-        .card-item:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: 0 10px 15px rgba(124, 58, 237, 0.1); background: var(--primary-light); }
+        .card-item { background: var(--card-bg); border: 1px solid var(--card-border); padding: 22px; border-radius: var(--radius); cursor: pointer; transition: all 0.2s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.03); text-align: left; }
+        .card-item:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: 0 10px 15px rgba(124, 58, 237, 0.08); background: var(--primary-light); }
         
         .card-aula-destaque { font-size: 18px; font-weight: 700; color: #0f172a; margin-bottom: 4px; }
-        .card-desafio-menor { font-size: 12px; font-weight: 600; color: var(--primary); background: var(--primary-light); padding: 2px 8px; border-radius: 4px; display: inline-block; margin-bottom: 10px; border: 1px solid rgba(124, 58, 237, 0.2); }
+        .card-desafio-menor { font-size: 12px; font-weight: 600; color: var(--primary); background: var(--primary-light); padding: 2px 8px; border-radius: 6px; display: inline-block; margin-bottom: 10px; border: 1px solid rgba(124, 58, 237, 0.2); }
 
-        .stats-box { background: #f8fafc; border: 1px solid var(--card-border); border-radius: 10px; padding: 14px; margin-top: 10px; font-size: 13.5px; color: #334155; display: flex; flex-direction: column; gap: 8px; }
+        .stats-box { background: #f9fafb; border: 1px solid var(--card-border); border-radius: 10px; padding: 14px; margin-top: 10px; font-size: 13.5px; color: #374151; display: flex; flex-direction: column; gap: 8px; }
         .stats-line { display: flex; justify-content: space-between; align-items: center; font-weight: 500; }
 
-        /* BARRAS DE PROGRESSO */
         .progress-container { margin-top: 4px; margin-bottom: 4px; }
-        .progress-bar-bg { width: 100%; height: 8px; background: #e2e8f0; border-radius: 6px; overflow: hidden; }
+        .progress-bar-bg { width: 100%; height: 8px; background: #e5e7eb; border-radius: 6px; overflow: hidden; }
         .progress-bar-green { height: 100%; background: linear-gradient(90deg, #10b981, #059669); border-radius: 6px; }
         .progress-bar-blue { height: 100%; background: linear-gradient(90deg, #7c3aed, #6d28d9); border-radius: 6px; }
 
         .kpi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-bottom: 25px; }
-        .kpi-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 10px; padding: 16px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .kpi-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 16px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.03); }
         .kpi-card h5 { font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; margin-bottom: 6px; }
         .kpi-card .number { font-size: 22px; font-weight: 700; color: var(--text-main); }
 
-        .card-questao { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 24px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .card-questao { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 24px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.03); }
         .questao-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 8px; }
         .badge { background: var(--primary-light); color: var(--primary); border: 1px solid rgba(124, 58, 237, 0.3); font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
         .enunciado { font-size: 15px; font-weight: 500; color: #1e293b; line-height: 1.6; margin-bottom: 18px; }
 
         .alternativas-list { display: flex; flex-direction: column; gap: 8px; }
-        .alternativa-btn { padding: 12px 14px; border-radius: 8px; background: #f8fafc; border: 1px solid var(--card-border); font-size: 14px; color: #334155; text-align: left; cursor: pointer; transition: all 0.2s; width: 100%; display: flex; align-items: center; gap: 10px; }
+        .alternativa-btn { padding: 12px 14px; border-radius: 10px; background: #f9fafb; border: 1px solid var(--card-border); font-size: 14px; color: #374151; text-align: left; cursor: pointer; transition: all 0.2s; width: 100%; display: flex; align-items: center; gap: 10px; }
         .alternativa-btn:hover:not(:disabled) { background: var(--primary-light); border-color: var(--primary); color: var(--primary); }
         .alternativa-btn:disabled { cursor: default; opacity: 0.9; }
 
         .alternativa-correta { background: #dcfce7 !important; border-color: #16a34a !important; color: #166534 !important; font-weight: 600; }
         .alternativa-errada { background: #fee2e2 !important; border-color: #dc2626 !important; color: #991b1b !important; font-weight: 600; }
 
-        .painel-resposta-info { margin-top: 15px; padding: 12px; border-radius: 8px; font-size: 13.5px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .painel-resposta-info { margin-top: 15px; padding: 12px; border-radius: 10px; font-size: 13.5px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
         .status-acerto { background: var(--success-bg); color: var(--success-text); }
         .status-erro { background: var(--error-bg); color: var(--error-text); }
 
-        /* BOTÃO DE DÚVIDA DESTACADO EM AMARELO */
         .btn-duvida { background: #f1f5f9; border: 1px solid #cbd5e1; color: #475569; padding: 8px 14px; border-radius: 6px; font-size: 12.5px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
         .btn-duvida.ativo { background: #eab308 !important; border-color: #ca8a04 !important; color: #000000 !important; font-weight: 700 !important; box-shadow: 0 2px 4px rgba(234, 179, 8, 0.4); }
 
-        .btn-relatorio { background: #10b981; color: white; border: none; padding: 10px 18px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; margin-bottom: 20px; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-relatorio { background: #10b981; color: white; border: none; padding: 10px 18px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; margin-bottom: 20px; display: inline-flex; align-items: center; gap: 8px; }
         .btn-relatorio:hover { background: #059669; }
 
-        /* ESTILOS DO DASHBOARD */
-        .controls-bar {
-            background: #ffffff;
-            border: 1px solid var(--card-border);
-            padding: 12px 16px;
-            border-radius: var(--radius);
+        /* =========================================================
+           ESTILOS DO NOVO DASHBOARD QUIXOTIC MODERN (ROXO)
+           ========================================================= */
+        .dash-header-welcome {
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 12px;
-            margin-bottom: 16px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+            gap: 15px;
+            margin-bottom: 22px;
         }
-        .btn-filter {
-            background: #f1f5f9;
-            border: 1px solid #cbd5e1;
-            color: #334155;
-            padding: 6px 14px;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
+        .dash-welcome-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: #111827;
         }
-        .btn-filter:hover {
-            background: var(--primary-light);
-            border-color: var(--primary);
+        .dash-welcome-title span {
             color: var(--primary);
         }
-        .btn-filter.active {
+
+        .period-pill-group {
+            background: #ffffff;
+            padding: 4px;
+            border-radius: 30px;
+            border: 1px solid var(--card-border);
+            display: flex;
+            gap: 4px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+        }
+        .btn-pill {
+            border: none;
+            background: transparent;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-pill.active {
             background: var(--primary);
             color: #ffffff;
-            border-color: var(--primary-hover);
+            box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);
         }
-        .dashboard-grid {
+
+        .date-navigator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #ffffff;
+            padding: 6px 14px;
+            border-radius: 30px;
+            border: 1px solid var(--card-border);
+            font-size: 13px;
+            font-weight: 700;
+            color: #374151;
+        }
+        .btn-nav-arrow {
+            background: #f3f4f6;
+            border: none;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        .btn-nav-arrow:hover {
+            background: var(--primary-light);
+        }
+
+        .quixotic-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 16px;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
         }
-        .dashboard-card {
+
+        @media (max-width: 850px) {
+            .quixotic-grid { grid-template-columns: 1fr; }
+        }
+
+        .quixotic-card {
             background: #ffffff;
             border: 1px solid var(--card-border);
             border-radius: var(--radius);
-            padding: 18px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-        }
-        .ranking-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-        }
-        .ranking-table th {
-            text-align: left;
-            padding: 8px;
-            background: #f8fafc;
-            color: var(--text-muted);
-            font-weight: 600;
-            border-bottom: 1px solid var(--card-border);
-        }
-        .ranking-table td {
-            padding: 8px;
-            border-bottom: 1px solid #f1f5f9;
-            color: var(--text-main);
-        }
-        .ranking-table tr:last-child td {
-            border-bottom: none;
+            padding: 22px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
         }
 
-        /* ESTILO DO RODAPÉ TÁTICO */
+        .quixotic-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+        .quixotic-card-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #111827;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tag-status-purple {
+            background: var(--primary-light);
+            color: var(--primary);
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 20px;
+            border: 1px solid rgba(124, 58, 237, 0.2);
+        }
+        .tag-status-green {
+            background: #dcfce7;
+            color: #15803d;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 20px;
+        }
+
+        /* TABELA ESTILO QUIXOTIC */
+        .quixotic-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 8px;
+            font-size: 13px;
+        }
+        .quixotic-table th {
+            text-align: left;
+            padding: 6px 12px;
+            color: var(--text-muted);
+            font-weight: 600;
+            border: none;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+        .quixotic-table td {
+            padding: 12px;
+            background: #f9fafb;
+            color: var(--text-main);
+            font-weight: 500;
+            border: none;
+        }
+        .quixotic-table tr td:first-child { border-top-left-radius: 10px; border-bottom-left-radius: 10px; }
+        .quixotic-table tr td:last-child { border-top-right-radius: 10px; border-bottom-right-radius: 10px; }
+
+        /* RODAPÉ */
         .footer-tatico {
             margin-top: auto;
             padding-top: 30px;
@@ -296,9 +372,7 @@
             font-size: 13px;
             color: var(--text-muted);
         }
-        .footer-tatico b {
-            color: var(--primary);
-        }
+        .footer-tatico b { color: var(--primary); }
 
         /* TELA DE LOGIN ESCURA */
         .login-wrapper { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: radial-gradient(circle at top, #1e1b4b 0%, #0f172a 100%); padding: 20px; }
@@ -333,7 +407,7 @@
 </head>
 <body>
 
-    <!-- TELA DE LOGIN ESCURA E IMPONENTE -->
+    <!-- TELA DE LOGIN ESCURA -->
     <div id="login-screen" class="login-wrapper">
         <div class="login-card">
             <img src="policia-penal-pe.png" alt="Logo" class="logo-img" onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/arturalves5771-hue/questoes-consursos/main/policia-penal-pe.png';">
@@ -375,59 +449,96 @@
                 <div id="badge-progresso-bloco" class="badge-info-progresso hidden">✏️ Resolveu 0 de 0 | Restam 0</div>
             </div>
 
-            <!-- NÍVEL 1: PROVAS -->
+            <!-- NÍVEL 1: PROVAS E DASHBOARD MODERN QUIXOTIC -->
             <div id="nivel-provas">
-                <h3 class="section-title">📂 Selecione a Prova (Caderno)</h3>
-                <div id="grid-provas" class="grid-cards"></div>
 
-                <!-- DASHBOARD EXECUTIVO DE MÉTRICAS INTEGRADOR -->
-                <div id="dashboard-container" style="margin-top: 25px; margin-bottom: 25px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                        <h3 class="section-title" style="margin-bottom:0;">📊 Dashboard & Métricas de Desempenho</h3>
+                <!-- DASHBOARD ESTILO QUIXOTIC ROXO -->
+                <div id="dashboard-container" style="margin-bottom: 30px;">
+                    <div class="dash-header-welcome">
+                        <div>
+                            <h2 class="dash-welcome-title">Bem-vinda de volta, <span id="dash-user-name">Waleska</span> 👋</h2>
+                            <p style="color: var(--text-muted); font-size: 14px; margin-top: 2px;">Acompanhe seu desempenho e constância de estudos.</p>
+                        </div>
+                        
+                        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                            <div class="period-pill-group">
+                                <button id="btn-modo-dia" class="btn-pill" onclick="mudarModoDashboard('dia')">Dia</button>
+                                <button id="btn-modo-semana" class="btn-pill active" onclick="mudarModoDashboard('semana')">Semana</button>
+                                <button id="btn-modo-mes" class="btn-pill" onclick="mudarModoDashboard('mes')">Mês</button>
+                                <button id="btn-modo-ano" class="btn-pill" onclick="mudarModoDashboard('ano')">Ano</button>
+                            </div>
+
+                            <div class="date-navigator">
+                                <button class="btn-nav-arrow" onclick="navegarPeriodo(-1)">‹</button>
+                                <span id="label-intervalo-datas">--/--/---- a --/--/----</span>
+                                <button class="btn-nav-arrow" onclick="navegarPeriodo(1)">›</button>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="controls-bar">
-                        <div style="display:flex; gap:6px;">
-                            <button id="btn-modo-dia" class="btn-filter" onclick="mudarModoDashboard('dia')">Dia</button>
-                            <button id="btn-modo-semana" class="btn-filter active" onclick="mudarModoDashboard('semana')">Semana</button>
-                            <button id="btn-modo-mes" class="btn-filter" onclick="mudarModoDashboard('mes')">Mês</button>
-                            <button id="btn-modo-ano" class="btn-filter" onclick="mudarModoDashboard('ano')">Ano</button>
-                        </div>
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <button class="btn-filter" onclick="navegarPeriodo(-1)">⏮️ Anterior</button>
-                            <span id="label-intervalo-datas" style="font-weight: 700; font-size: 13px;">--/--/---- a --/--/----</span>
-                            <button class="btn-filter" onclick="navegarPeriodo(1)">Próximo ⏭️</button>
-                        </div>
-                    </div>
-
-                    <div class="dashboard-grid">
-                        <div class="dashboard-card" style="grid-column: span 2;">
-                            <h4 style="margin-bottom:12px; font-size:15px;">📈 Evolução de Questões Resolvidas</h4>
+                    <!-- GRID QUIXOTIC PRIMÁRIO -->
+                    <div class="quixotic-grid">
+                        <!-- CARTOA GRÁFICO BARRAS -->
+                        <div class="quixotic-card">
+                            <div class="quixotic-card-header">
+                                <span class="quixotic-card-title">📊 Evolução de Questões Resolvidas</span>
+                                <span id="tag-total-periodo" class="tag-status-purple">0 Resolvidas</span>
+                            </div>
                             <div style="height: 220px; position: relative;"><canvas id="chartEvolucao"></canvas></div>
                         </div>
-                        <div class="dashboard-card">
-                            <h4 style="margin-bottom:12px; font-size:15px;">🎯 Precisão (Certas x Erradas)</h4>
-                            <div style="height: 220px; display:flex; justify-content:center; position: relative;"><canvas id="chartPizza"></canvas></div>
+
+                        <!-- CARD ROSQUINHA PRECISÃO -->
+                        <div class="quixotic-card" style="display:flex; flex-direction:column; justify-content:space-between;">
+                            <div class="quixotic-card-header">
+                                <span class="quixotic-card-title">🎯 Domínio & Precisão</span>
+                                <span class="tag-status-green">Em Tempo Real</span>
+                            </div>
+                            <div style="height: 180px; position: relative; display:flex; justify-content:center; align-items:center;">
+                                <canvas id="chartPizza"></canvas>
+                            </div>
+                            <div id="stats-resumo-pizza" style="text-align:center; font-size:12px; color:var(--text-muted); font-weight:600; margin-top:8px;">
+                                Certas x Erradas no período
+                            </div>
                         </div>
                     </div>
 
-                    <div class="dashboard-grid" style="margin-top:15px;">
-                        <div class="dashboard-card">
-                            <h4 style="margin-bottom:8px; font-size:14px;">🔥 Resolvidas Top (Disciplinas)</h4>
-                            <table class="ranking-table">
-                                <thead><tr><th>#</th><th>Disciplina</th><th>Qtd Resolvidas</th></tr></thead>
-                                <tbody id="tbody-ranking-volume"></tbody>
+                    <!-- GRID QUIXOTIC SECUNDÁRIO (RANKINGS) -->
+                    <div class="quixotic-grid">
+                        <div class="quixotic-card">
+                            <div class="quixotic-card-header">
+                                <span class="quixotic-card-title">🏆 Desempenho por Disciplina</span>
+                                <span class="tag-status-purple">Top Disciplinas</span>
+                            </div>
+                            <table class="quixotic-table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Disciplina</th>
+                                        <th>Resolvidas</th>
+                                        <th>Aproveitamento</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody-ranking-unificado"></tbody>
                             </table>
                         </div>
-                        <div class="dashboard-card">
-                            <h4 style="margin-bottom:8px; font-size:14px;">🏆 Acertos Top (Precisão %)</h4>
-                            <table class="ranking-table">
-                                <thead><tr><th>#</th><th>Disciplina</th><th>Aproveitamento</th></tr></thead>
-                                <tbody id="tbody-ranking-acertos"></tbody>
-                            </table>
+
+                        <!-- CARD KPI RESUMO RÁPIDO -->
+                        <div class="quixotic-card" style="display:flex; flex-direction:column; gap:14px; justify-content:center;">
+                            <div style="background:var(--primary-light); border:1px solid rgba(124,58,237,0.15); border-radius:12px; padding:16px;">
+                                <span style="font-size:12px; color:var(--primary); font-weight:700; text-transform:uppercase;">🔥 Média de Acertos</span>
+                                <div id="kpi-media-acertos" style="font-size:26px; font-weight:800; color:var(--primary); margin-top:4px;">0%</div>
+                            </div>
+                            <div style="background:#f9fafb; border:1px solid var(--card-border); border-radius:12px; padding:16px;">
+                                <span style="font-size:12px; color:var(--text-muted); font-weight:700; text-transform:uppercase;">📝 Volume Total no Período</span>
+                                <div id="kpi-volume-total" style="font-size:26px; font-weight:800; color:#111827; margin-top:4px;">0</div>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+                <h3 class="section-title">📂 Selecione a Prova (Caderno)</h3>
+                <div id="grid-provas" class="grid-cards"></div>
             </div>
 
             <!-- NÍVEL 2: DISCIPLINAS -->
@@ -575,7 +686,10 @@
             usuarioAtual = data;
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('main-screen').classList.remove('hidden');
+            
+            const primeiroNome = data.nome_completo ? data.nome_completo.split(' ')[0] : 'Estudante';
             document.getElementById('span-nome-usuario').innerText = data.nome_completo;
+            document.getElementById('dash-user-name').innerText = primeiroNome;
             
             history.replaceState({ nivel: 1 }, '');
             carregarProvas(true);
@@ -618,7 +732,7 @@
             atualizarDashboard();
         }
 
-        /* DASHBOARD LOGIC */
+        /* LÓGICA DO DASHBOARD NOVO (ESTILO QUIXOTIC) */
         function mudarModoDashboard(modo) {
             modoDashboard = modo;
             dataRefDashboard = new Date();
@@ -678,7 +792,7 @@
             const labelIntervalo = document.getElementById('label-intervalo-datas');
             if (labelIntervalo) {
                 if (modoDashboard === 'dia') labelIntervalo.innerText = formatDt(inicio);
-                else labelIntervalo.innerText = `${formatDt(inicio)} a ${formatDt(fim)}`;
+                else labelIntervalo.innerText = `${formatDt(inicio)} - ${formatDt(fim)}`;
             }
 
             const { data } = await supabaseClient
@@ -744,23 +858,27 @@
             }
 
             const dadosArea = Object.values(dadosAreaMap);
+            const totalResolvidas = registros.length;
 
+            const tagTotal = document.getElementById('tag-total-periodo');
+            if (tagTotal) tagTotal.innerText = `${totalResolvidas} Resolvidas`;
+
+            // Gráfico de Barras Arredondadas Roxo Quixotic
             const ctxEvolucao = document.getElementById('chartEvolucao');
             if (ctxEvolucao) {
                 if (chartEvolucaoInstance) chartEvolucaoInstance.destroy();
                 chartEvolucaoInstance = new Chart(ctxEvolucao, {
-                    type: 'line',
+                    type: 'bar',
                     data: {
                         labels: labelsArea,
                         datasets: [{
-                            label: 'Questões Resolvidas',
+                            label: 'Questões',
                             data: dadosArea,
-                            borderColor: '#7c3aed',
-                            backgroundColor: 'rgba(124, 58, 237, 0.12)',
-                            fill: true,
-                            tension: 0.35,
-                            borderWidth: 2,
-                            pointBackgroundColor: '#7c3aed'
+                            backgroundColor: '#7c3aed',
+                            hoverBackgroundColor: '#6d28d9',
+                            borderRadius: 12,
+                            borderSkipped: false,
+                            barThickness: modoDashboard === 'mes' ? 10 : 22
                         }]
                     },
                     options: {
@@ -768,19 +886,25 @@
                         maintainAspectRatio: false,
                         plugins: { legend: { display: false } },
                         scales: {
-                            y: { beginAtZero: true, ticks: { precision: 0 } },
+                            y: { beginAtZero: true, grid: { color: '#f3f4f6' }, ticks: { precision: 0 } },
                             x: { grid: { display: false } }
                         }
                     }
                 });
             }
 
+            // Gráfico Donut estilo Domínio
             let certas = 0;
             let erradas = 0;
             registros.forEach(r => {
                 if (r.acerto_erro === 'Acerto') certas++;
                 else if (r.acerto_erro === 'Erro') erradas++;
             });
+
+            const mediaPct = totalResolvidas > 0 ? ((certas / totalResolvidas) * 100).toFixed(0) : 0;
+            
+            document.getElementById('kpi-media-acertos').innerText = `${mediaPct}%`;
+            document.getElementById('kpi-volume-total').innerText = totalResolvidas;
 
             const ctxPizza = document.getElementById('chartPizza');
             if (ctxPizza) {
@@ -790,19 +914,22 @@
                     data: {
                         labels: ['Acertos', 'Erros'],
                         datasets: [{
-                            data: [certas, erradas],
-                            backgroundColor: ['#10b981', '#ef4444'],
-                            borderWidth: 0
+                            data: totalResolvidas === 0 ? [1, 0] : [certas, erradas],
+                            backgroundColor: totalResolvidas === 0 ? ['#e5e7eb', '#e5e7eb'] : ['#7c3aed', '#ef4444'],
+                            borderWidth: 0,
+                            borderRadius: 6
                         }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        plugins: { legend: { position: 'bottom' } }
+                        cutout: '72%',
+                        plugins: { legend: { display: false } }
                     }
                 });
             }
 
+            // Tabela Unificada de Rankings Quixotic
             const rankingDisc = {};
             registros.forEach(r => {
                 const disc = r.disciplina || 'Outras';
@@ -811,41 +938,33 @@
                 if (r.acerto_erro === 'Acerto') rankingDisc[disc].acertos++;
             });
 
-            const listVolume = Object.keys(rankingDisc).map(d => ({
-                disc: d,
-                qtd: rankingDisc[d].total
-            })).sort((a, b) => b.qtd - a.qtd);
-
-            const listAcertos = Object.keys(rankingDisc).map(d => {
+            const listRank = Object.keys(rankingDisc).map(d => {
                 const tot = rankingDisc[d].total;
                 const ac = rankingDisc[d].acertos;
                 const pct = tot > 0 ? (ac / tot) * 100 : 0;
-                return { disc: d, pct: pct, total: tot };
-            }).sort((a, b) => b.pct - a.pct);
+                return { disc: d, total: tot, pct: pct };
+            }).sort((a, b) => b.total - a.total);
 
-            const tbodyVol = document.getElementById('tbody-ranking-volume');
-            if (tbodyVol) {
-                if (listVolume.length === 0) {
-                    tbodyVol.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--text-muted);">Sem dados no período</td></tr>';
+            const tbodyUnificado = document.getElementById('tbody-ranking-unificado');
+            if (tbodyUnificado) {
+                if (listRank.length === 0) {
+                    tbodyUnificado.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">Nenhuma questão resolvida neste período</td></tr>';
                 } else {
-                    let htmlVol = '';
-                    listVolume.slice(0, 5).forEach((item, idx) => {
-                        htmlVol += `<tr><td><b>${idx + 1}º</b></td><td>${item.disc}</td><td><b>${item.qtd}</b></td></tr>`;
-                    });
-                    tbodyVol.innerHTML = htmlVol;
-                }
-            }
+                    let htmlRank = '';
+                    listRank.slice(0, 5).forEach((item, idx) => {
+                        let statusTag = '<span style="color:#10b981; font-weight:700;">● Excelente</span>';
+                        if (item.pct < 70) statusTag = '<span style="color:#f59e0b; font-weight:700;">● Bom</span>';
+                        if (item.pct < 50) statusTag = '<span style="color:#ef4444; font-weight:700;">● Ajustar</span>';
 
-            const tbodyAc = document.getElementById('tbody-ranking-acertos');
-            if (tbodyAc) {
-                if (listAcertos.length === 0) {
-                    tbodyAc.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--text-muted);">Sem dados no período</td></tr>';
-                } else {
-                    let htmlAc = '';
-                    listAcertos.slice(0, 5).forEach((item, idx) => {
-                        htmlAc += `<tr><td><b>${idx + 1}º</b></td><td>${item.disc}</td><td><b style="color:#10b981;">${item.pct.toFixed(0)}%</b> <span style="font-size:11px; color:var(--text-muted);">(${item.total} Qs)</span></td></tr>`;
+                        htmlRank += `<tr>
+                            <td><b>${idx + 1}</b></td>
+                            <td><b>📖 ${item.disc}</b></td>
+                            <td>${item.total} Qs</td>
+                            <td><b style="color:var(--primary);">${item.pct.toFixed(0)}%</b></td>
+                            <td>${statusTag}</td>
+                        </tr>`;
                     });
-                    tbodyAc.innerHTML = htmlAc;
+                    tbodyUnificado.innerHTML = htmlRank;
                 }
             }
         }
