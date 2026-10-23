@@ -1072,7 +1072,8 @@ async function selecionarProva(itemProva, skipPush = false) {
             });
 
             let html = '';
-            Object.keys(desafiosMap).forEach(dCod => {
+           // NOVO CÓDIGO (Ordenado por coddesafio):
+            Object.keys(desafiosMap).sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' })).forEach(dCod => {
                 const info = desafiosMap[dCod];
                 const pctAcertos = info.total > 0 ? Math.round((info.acertos / info.total) * 100) : 0;
                 const tempoTotalSeg = temposDesafioMap[dCod] || 0;
