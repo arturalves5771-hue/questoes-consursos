@@ -699,7 +699,7 @@
             document.getElementById('login-screen').classList.remove('hidden');
         }
 
-        async function carregarProvas(skipPush = false) {
+async function carregarProvas(skipPush = false) {
             nivelAtual = 1; 
             atualizarNavegacaoTela();
             if (!skipPush) {
@@ -709,16 +709,45 @@
             const gridProvas = document.getElementById('grid-provas');
             gridProvas.innerHTML = '<p style="color: var(--text-muted);">Carregando...</p>';
 
-            const { data } = await supabaseClient.from('provas_usuario').select('*').ilike('username', usuarioAtual.username);
-            if (!data || !data.length) { gridProvas.innerHTML = '<p>Nenhuma prova encontrada.</p>'; }
-            else {
+            const { data: provasData } = await supabaseClient.from('provas_usuario').select('*').ilike('username', usuarioAtual.username);
+            const { data: questoesData } = await supabaseClient.from('questoes_desafios').select('tipoprova, acerto_erro, resposta_aluno').ilike('username', usuarioAtual.username);
+
+            if (!provasData || !provasData.length) { 
+                gridProvas.innerHTML = '<p>Nenhuma prova encontrada.</p>'; 
+            } else {
                 let html = '';
-                data.forEach(item => {
+                provasData.forEach(item => {
                     const dt = item.data_prova ? new Date(item.data_prova).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) : 'Não informada';
+                    
+                    // Filtrar questões referentes a esta prova específica
+                    const qProva = questoesData ? questoesData.filter(q => q.tipoprova && q.tipoprova.toLowerCase() === item.prova.toLowerCase()) : [];
+                    const totalQ = qProva.length;
+                    const qRespondidas = qProva.filter(q => q.resposta_aluno !== null && q.resposta_aluno !== '');
+                    const resolvidas = qRespondidas.length;
+                    const acertos = qRespondidas.filter(q => q.acerto_erro === 'Acerto').length;
+                    const erros = qRespondidas.filter(q => q.acerto_erro === 'Erro').length;
+                    
+                    const pAcerto = resolvidas > 0 ? ((acertos / resolvidas) * 100).toFixed(0) : 0;
+                    const pConclusao = totalQ > 0 ? Math.min(((resolvidas / totalQ) * 100), 100).toFixed(0) : 0;
+
                     html += `<div class="card-item" onclick='selecionarProva(${JSON.stringify(item)})'>
                         <h4>🏛️ ${item.prova}</h4>
                         <span>📅 Data da Prova: <b>${dt}</b></span>
-                        <span style="margin-top:10px; color:var(--primary); font-weight:600; font-size:13px; display:block;">Ver Disciplinas ➔</span>
+                        <div class="stats-box" style="margin-top:12px;">
+                            <div class="stats-line"><span>📚 Total de Questões:</span><b>${totalQ}</b></div>
+                            <div class="stats-line"><span>📝 Resolvidas:</span><b>${resolvidas} / ${totalQ}</b></div>
+                            <div class="stats-line" style="color:#16a34a"><span>✅ Acertos:</span><b>${acertos}</b></div>
+                            <div class="stats-line" style="color:#dc2626"><span>❌ Erros:</span><b>${erros}</b></div>
+                            <div class="progress-container">
+                                <div class="progress-label" style="display:flex; justify-content:space-font; font-size:12px; margin-bottom:2px;"><span>Aproveitamento:</span><span>${pAcerto}%</span></div>
+                                <div class="progress-bar-bg"><div class="progress-bar-green" style="width:${pAcerto}%"></div></div>
+                            </div>
+                            <div class="progress-container">
+                                <div class="progress-label" style="display:flex; justify-content:space-font; font-size:12px; margin-bottom:2px;"><span>Conclusão Geral:</span><span>${pConclusao}%</span></div>
+                                <div class="progress-bar-bg"><div class="progress-bar-blue" style="width:${pConclusao}%"></div></div>
+                            </div>
+                        </div>
+                        <span style="margin-top:14px; color:var(--primary); font-weight:600; font-size:13px; display:block;">Ver Disciplinas ➔</span>
                     </div>`;
                 });
                 gridProvas.innerHTML = html;
