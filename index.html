@@ -455,16 +455,8 @@
                 <!-- 3. SEÇÃO DE AULAS INTERATIVAS -->
                 <section id="secao-aulas" style="margin-bottom:24px;">
                     <h3 class="section-title" style="margin-bottom:12px;">🎓 Aulas</h3>
-                    <div class="quixotic-card" style="display:flex; flex-direction:column; gap:14px;">
-                        <div class="quixotic-card-header" style="margin-bottom:0;">
-                            <span class="quixotic-card-title">Aulas Interativas</span>
-                            <span class="tag-status-green">Conteúdo disponível</span>
-                        </div>
-                        <div>
-                            <div id="total-aulas-interativas" style="font-size:30px; font-weight:800; color:#16a34a;">—</div>
-                            <div style="font-size:12px; color:var(--text-muted);">aulas cadastradas</div>
-                        </div>
-                        <button class="btn-primary" style="width:100%; margin-top:0;" onclick="abrirDisciplinasAulas()">Ver Disciplinas (Aulas) ➔</button>
+                    <div id="grid-aulas-home" class="grid-cards">
+                        <p style="color:var(--text-muted);">Carregando disciplinas...</p>
                     </div>
                 </section>
 
@@ -810,23 +802,45 @@ async function carregarProvas(skipPush = false) {
         }
 
         async function carregarResumoAulas() {
-            const totalEl = document.getElementById('total-aulas-interativas');
-            if (!totalEl) return;
-            totalEl.textContent = '...';
+            const grid = document.getElementById('grid-aulas-home');
+            if (!grid) return;
+            grid.innerHTML = '<p style="color:var(--text-muted);">Carregando disciplinas...</p>';
 
-            const { count, error } = await supabaseClient
-                .from('aulas_interativas')
-                .select('*', { count: 'exact', head: true });
+            try {
+                // Busca as aulas uma única vez e usa os dados para montar os mini-cards da tela principal.
+                aulasInterativasCache = await buscarTodasAulasInterativas();
 
-            if (error) {
-                console.error('Erro ao contar aulas interativas:', error);
-                totalEl.textContent = '—';
-                totalEl.title = 'Não foi possível carregar a quantidade de aulas.';
-                return;
+                const mapa = new Map();
+                aulasInterativasCache.forEach((item, indice) => {
+                    const nome = String(item.disciplina || 'Sem disciplina informada').trim() || 'Sem disciplina informada';
+                    if (!mapa.has(nome)) mapa.set(nome, []);
+                    mapa.get(nome).push({ ...item, _indice: indice });
+                });
+
+                disciplinasAulasCache = Array.from(mapa.entries())
+                    .map(([nome, aulas]) => ({ nome, aulas }))
+                    .sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR', { sensitivity: 'base' }));
+
+                if (!disciplinasAulasCache.length) {
+                    grid.innerHTML = '<p style="color:var(--text-muted);">Nenhuma aula interativa cadastrada.</p>';
+                    return;
+                }
+
+                grid.innerHTML = disciplinasAulasCache.map((disc, indice) => `
+                    <div class="card-item" role="button" tabindex="0"
+                         aria-label="Abrir aulas de ${escaparHtml(disc.nome)}"
+                         onclick="abrirListaAulas(${indice})"
+                         onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();abrirListaAulas(${indice});}">
+                        <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px;">
+                            <h4 style="font-size:16px; line-height:1.4; color:#111827;">📚 ${escaparHtml(disc.nome)}</h4>
+                            <span class="tag-status-purple" style="white-space:nowrap;">${disc.aulas.length} ${disc.aulas.length === 1 ? 'aula' : 'aulas'}</span>
+                        </div>
+                        <span style="margin-top:12px; color:var(--primary); font-weight:600; font-size:13px; display:block;">Abrir disciplina ➔</span>
+                    </div>`).join('');
+            } catch (error) {
+                console.error('Erro ao carregar disciplinas e aulas interativas:', error);
+                grid.innerHTML = '<p style="color:#dc2626;">Não foi possível carregar as disciplinas. Verifique a conexão e as permissões da tabela.</p>';
             }
-
-            totalEl.textContent = Number(count || 0).toLocaleString('pt-BR');
-            totalEl.title = 'Total de aulas cadastradas em public.aulas_interativas';
         }
 
         async function buscarTodasAulasInterativas() {
