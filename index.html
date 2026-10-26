@@ -446,7 +446,31 @@
                 <!-- 1. SAUDAÇÃO -->
                 <h2 class="dash-welcome-title">Bem-vinda de volta, <span id="dash-user-name">Waleska</span> 👋</h2>
 
-                <!-- 2. CARDS DE PROVAS (SELEÇÃO) -->
+                <!-- 2. ACESSO A QUESTÕES E AULAS INTERATIVAS -->
+                <div class="quixotic-grid" style="margin-bottom:18px;">
+                    <div class="quixotic-card" style="display:flex; flex-direction:column; justify-content:space-between; gap:12px;">
+                        <div class="quixotic-card-header">
+                            <span class="quixotic-card-title">📝 Questões</span>
+                            <span class="tag-status-purple">Caderno Tático</span>
+                        </div>
+                        <p style="color:var(--text-muted); font-size:13px; margin:0;">Selecione uma prova abaixo para acessar disciplinas, desafios e questões.</p>
+                        <div style="font-size:14px; font-weight:700; color:var(--primary);">Escolha uma prova para continuar ↓</div>
+                    </div>
+                    <div class="quixotic-card" style="display:flex; flex-direction:column; justify-content:space-between; gap:12px;">
+                        <div class="quixotic-card-header">
+                            <span class="quixotic-card-title">🎓 Aulas</span>
+                            <span class="tag-status-green">Aulas Interativas</span>
+                        </div>
+                        <div>
+                            <div id="total-aulas-interativas" style="font-size:30px; font-weight:800; color:#16a34a;">—</div>
+                            <div style="font-size:12px; color:var(--text-muted);">aulas cadastradas</div>
+                        </div>
+                        <button class="btn-primary" style="width:100%;" onclick="abrirDisciplinasAulas()">Ver Disciplinas (Aulas) ➔</button>
+                    </div>
+                </div>
+
+                <!-- PROVAS E QUESTÕES EXISTENTES -->
+                <h3 class="section-title" style="margin-bottom:12px;">📝 Questões</h3>
                 <div id="grid-provas" class="grid-cards"></div>
 
                 <!-- 3. SUBTÍTULO -->
@@ -568,6 +592,19 @@
                 <div id="resultado-questoes"></div>
             </div>
 
+            <!-- AULAS INTERATIVAS: DISCIPLINAS -->
+            <div id="nivel-aulas-disciplinas" class="hidden">
+                <h3 class="section-title">🎓 Aulas</h3>
+                <p style="color:var(--text-muted); margin:0 0 16px;">Escolha uma disciplina para ver as aulas disponíveis.</p>
+                <div id="grid-disciplinas-aulas" class="grid-cards"></div>
+            </div>
+
+            <!-- AULAS INTERATIVAS: LISTA DE AULAS -->
+            <div id="nivel-aulas-lista" class="hidden">
+                <h3 class="section-title" id="titulo-lista-aulas">🎓 Aulas</h3>
+                <div id="grid-lista-aulas" class="grid-cards"></div>
+            </div>
+
             <!-- TELA DE RELATÓRIO DO DESAFIO GERAL -->
             <div id="nivel-relatorio" class="hidden">
                 <button class="btn-relatorio" onclick="window.print()">🖨️ Imprimir / Salvar PDF</button>
@@ -595,6 +632,10 @@
         let aulaSelecionada = null;
         let blocoSelecionado = null;
         let nivelAtual = 1;
+
+        // Cache independente para a área de Aulas Interativas.
+        let aulasInterativasCache = [];
+        let disciplinasAulasCache = [];
 
         /* CONTROLE DE TEMPO EM SEGUNDOS */
         let timerInterval = null;
@@ -650,6 +691,14 @@
                     selecionarBloco(blocoSelecionado, true);
                 } else if (destNivel === 5) {
                     gerarRelatorioDesafio(true);
+                } else if (destNivel === 6) {
+                    abrirDisciplinasAulas(true);
+                } else if (destNivel === 7) {
+                    abrirDisciplinasAulas(true).then(() => {
+                        if (event.state && event.state.disciplinaAulas !== undefined) {
+                            abrirListaAulas(event.state.disciplinaAulas, true);
+                        }
+                    });
                 }
             } else {
                 carregarProvas(true);
@@ -762,6 +811,138 @@ async function carregarProvas(skipPush = false) {
             }
 
             atualizarDashboard();
+            carregarResumoAulas();
+        }
+
+        async function carregarResumoAulas() {
+            const totalEl = document.getElementById('total-aulas-interativas');
+            if (!totalEl) return;
+            totalEl.textContent = '...';
+
+            const { count, error } = await supabaseClient
+                .from('aulas_interativas')
+                .select('*', { count: 'exact', head: true });
+
+            if (error) {
+                console.error('Erro ao contar aulas interativas:', error);
+                totalEl.textContent = '—';
+                totalEl.title = 'Não foi possível carregar a quantidade de aulas.';
+                return;
+            }
+
+            totalEl.textContent = Number(count || 0).toLocaleString('pt-BR');
+            totalEl.title = 'Total de aulas cadastradas em public.aulas_interativas';
+        }
+
+        async function buscarTodasAulasInterativas() {
+            const lote = 1000;
+            const todas = [];
+            for (let inicio = 0; ; inicio += lote) {
+                const { data, error } = await supabaseClient
+                    .from('aulas_interativas')
+                    .select('disciplina, aula, tipoprova, enderecohtml')
+                    .order('disciplina', { ascending: true })
+                    .order('aula', { ascending: true })
+                    .range(inicio, inicio + lote - 1);
+
+                if (error) throw error;
+                const pagina = data || [];
+                todas.push(...pagina);
+                if (pagina.length < lote) break;
+            }
+            return todas;
+        }
+
+        async function abrirDisciplinasAulas(skipPush = false) {
+            nivelAtual = 6;
+            atualizarNavegacaoTela();
+            if (!skipPush) history.pushState({ nivel: 6 }, '');
+
+            const grid = document.getElementById('grid-disciplinas-aulas');
+            grid.innerHTML = '<p style="color:var(--text-muted);">Carregando disciplinas...</p>';
+
+            try {
+                aulasInterativasCache = await buscarTodasAulasInterativas();
+                const mapa = new Map();
+                aulasInterativasCache.forEach((item, indice) => {
+                    const nome = String(item.disciplina || 'Sem disciplina informada').trim() || 'Sem disciplina informada';
+                    if (!mapa.has(nome)) mapa.set(nome, []);
+                    mapa.get(nome).push({ ...item, _indice: indice });
+                });
+                disciplinasAulasCache = Array.from(mapa.entries())
+                    .map(([nome, aulas]) => ({ nome, aulas }))
+                    .sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR', { sensitivity: 'base' }));
+
+                if (!disciplinasAulasCache.length) {
+                    grid.innerHTML = '<p style="color:var(--text-muted);">Nenhuma aula interativa cadastrada.</p>';
+                    return;
+                }
+
+                grid.innerHTML = disciplinasAulasCache.map((disc, indice) => `
+                    <div class="card-item" role="button" tabindex="0" onclick="abrirListaAulas(${indice})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();abrirListaAulas(${indice});}">
+                        <h4>📚 ${escaparHtml(disc.nome)}</h4>
+                        <div class="stats-box">
+                            <div class="stats-line"><span>🎓 Total de aulas:</span><b>${disc.aulas.length}</b></div>
+                        </div>
+                        <span style="margin-top:12px; color:var(--primary); font-weight:600; font-size:13px; display:block;">Ver aulas ➔</span>
+                    </div>`).join('');
+            } catch (error) {
+                console.error('Erro ao carregar aulas interativas:', error);
+                grid.innerHTML = '<p style="color:#dc2626;">Não foi possível carregar as aulas. Verifique a conexão e as permissões da tabela.</p>';
+            }
+        }
+
+        function abrirListaAulas(indiceDisciplina, skipPush = false) {
+            const disciplina = disciplinasAulasCache[indiceDisciplina];
+            if (!disciplina) return;
+
+            nivelAtual = 7;
+            atualizarNavegacaoTela();
+            if (!skipPush) history.pushState({ nivel: 7, disciplinaAulas: indiceDisciplina }, '');
+
+            document.getElementById('titulo-lista-aulas').textContent = '🎓 Aulas — ' + disciplina.nome;
+            const grid = document.getElementById('grid-lista-aulas');
+
+            if (!disciplina.aulas.length) {
+                grid.innerHTML = '<p style="color:var(--text-muted);">Nenhuma aula cadastrada nesta disciplina.</p>';
+                return;
+            }
+
+            grid.innerHTML = disciplina.aulas.map(item => `
+                <div class="card-item" role="button" tabindex="0" onclick="abrirAulaInterativa(${item._indice})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();abrirAulaInterativa(${item._indice});}">
+                    <h4>📖 ${escaparHtml(String(item.aula || 'Aula sem título'))}</h4>
+                    ${item.tipoprova ? `<div style="font-size:12px; color:var(--text-muted); margin-top:8px;">Prova: ${escaparHtml(String(item.tipoprova))}</div>` : ''}
+                    <span style="margin-top:12px; color:var(--primary); font-weight:600; font-size:13px; display:block;">Abrir aula em nova aba ↗</span>
+                </div>`).join('');
+        }
+
+        function abrirAulaInterativa(indiceAula) {
+            const item = aulasInterativasCache[indiceAula];
+            const endereco = String(item && item.enderecohtml || '').trim();
+            if (!endereco) {
+                alert('Esta aula ainda não possui um endereço HTML cadastrado.');
+                return;
+            }
+
+            let url;
+            try {
+                url = new URL(endereco, window.location.href);
+            } catch (error) {
+                alert('O endereço desta aula é inválido.');
+                return;
+            }
+            if (url.protocol !== 'https:' && url.protocol !== 'http:') {
+                alert('O endereço desta aula não é seguro para abertura.');
+                return;
+            }
+
+            window.open(url.href, '_blank', 'noopener,noreferrer');
+        }
+
+        function escaparHtml(valor) {
+            return String(valor == null ? '' : valor).replace(/[&<>"']/g, caractere => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[caractere]));
         }
 
         function mudarModoDashboard(modo) {
@@ -1612,7 +1793,7 @@ async function selecionarProva(itemProva, skipPush = false) {
         }
 
         function atualizarNavegacaoTela() {
-            ['nivel-provas', 'nivel-disciplinas', 'nivel-desafios', 'nivel-blocos', 'nivel-questoes', 'nivel-relatorio'].forEach(id => {
+            ['nivel-provas', 'nivel-disciplinas', 'nivel-desafios', 'nivel-blocos', 'nivel-questoes', 'nivel-relatorio', 'nivel-aulas-disciplinas', 'nivel-aulas-lista'].forEach(id => {
                 document.getElementById(id).classList.add('hidden');
             });
 
@@ -1631,6 +1812,8 @@ async function selecionarProva(itemProva, skipPush = false) {
             if (nivelAtual === 3.5) document.getElementById('nivel-blocos').classList.remove('hidden');
             if (nivelAtual === 4) document.getElementById('nivel-questoes').classList.remove('hidden');
             if (nivelAtual === 5) document.getElementById('nivel-relatorio').classList.remove('hidden');
+            if (nivelAtual === 6) document.getElementById('nivel-aulas-disciplinas').classList.remove('hidden');
+            if (nivelAtual === 7) document.getElementById('nivel-aulas-lista').classList.remove('hidden');
         }
 
         function voltarNivel() {
