@@ -522,8 +522,16 @@
                                 <div id="kpi-media-acertos" style="font-size:26px; font-weight:800; color:var(--primary); margin-top:4px;">0%</div>
                             </div>
                             <div style="background:#f9fafb; border:1px solid var(--card-border); border-radius:12px; padding:16px;">
-                                <span style="font-size:12px; color:var(--text-muted); font-weight:700; text-transform:uppercase;">📝 Volume Total no Período</span>
+                                <span style="font-size:12px; color:var(--text-muted); font-weight:700;">📝 Questões Resolvidas no Período</span>
                                 <div id="kpi-volume-total" style="font-size:26px; font-weight:800; color:#111827; margin-top:4px;">0</div>
+                            </div>
+                            <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:12px; padding:16px;">
+                                <span style="font-size:12px; color:#15803d; font-weight:700;">✅ Acertos no Período</span>
+                                <div id="kpi-acertos-periodo" style="font-size:26px; font-weight:800; color:#16a34a; margin-top:4px;">0</div>
+                            </div>
+                            <div style="background:#fef2f2; border:1px solid #fecaca; border-radius:12px; padding:16px;">
+                                <span style="font-size:12px; color:#b91c1c; font-weight:700;">❌ Erros no Período</span>
+                                <div id="kpi-erros-periodo" style="font-size:26px; font-weight:800; color:#dc2626; margin-top:4px;">0</div>
                             </div>
                         </div>
                     </div>
@@ -880,7 +888,30 @@ async function carregarProvas(skipPush = false) {
                 });
             }
 
+            // Separa o total por resultado, mantendo exatamente os mesmos intervalos do gráfico.
+            const dadosAcertosMap = {};
+            const dadosErrosMap = {};
+            Object.keys(dadosAreaMap).forEach(chave => {
+                dadosAcertosMap[chave] = 0;
+                dadosErrosMap[chave] = 0;
+            });
+
+            registros.forEach(r => {
+                if (!r.data_resposta) return;
+                let chave;
+                if (modoDashboard === 'dia') chave = Math.floor(new Date(r.data_resposta).getHours() / 3) * 3;
+                else if (modoDashboard === 'semana') chave = new Date(r.data_resposta).getDay();
+                else if (modoDashboard === 'mes') chave = new Date(r.data_resposta).getDate();
+                else if (modoDashboard === 'ano') chave = new Date(r.data_resposta).getMonth();
+
+                if (dadosAcertosMap[chave] === undefined) return;
+                if (r.acerto_erro === 'Acerto') dadosAcertosMap[chave]++;
+                else if (r.acerto_erro === 'Erro') dadosErrosMap[chave]++;
+            });
+
             const dadosArea = Object.values(dadosAreaMap);
+            const dadosAcertos = Object.values(dadosAcertosMap);
+            const dadosErros = Object.values(dadosErrosMap);
             const totalResolvidas = registros.length;
 
             const tagTotal = document.getElementById('tag-total-periodo');
@@ -893,15 +924,28 @@ async function carregarProvas(skipPush = false) {
                     type: 'bar',
                     data: {
                         labels: labelsArea,
-                        datasets: [{
-                            label: 'Questões',
-                            data: dadosArea,
-                            backgroundColor: '#7c3aed',
-                            hoverBackgroundColor: '#6d28d9',
-                            borderRadius: 12,
-                            borderSkipped: false,
-                            barThickness: modoDashboard === 'mes' ? 10 : 22
-                        }]
+                        datasets: [
+                            {
+                                label: 'Acertos',
+                                data: dadosAcertos,
+                                backgroundColor: '#22a06b',
+                                hoverBackgroundColor: '#168653',
+                                borderRadius: 6,
+                                borderSkipped: false,
+                                stack: 'questoes',
+                                barThickness: modoDashboard === 'mes' ? 10 : 22
+                            },
+                            {
+                                label: 'Erros',
+                                data: dadosErros,
+                                backgroundColor: '#e5484d',
+                                hoverBackgroundColor: '#c93439',
+                                borderRadius: 6,
+                                borderSkipped: false,
+                                stack: 'questoes',
+                                barThickness: modoDashboard === 'mes' ? 10 : 22
+                            }
+                        ]
                     },
                     options: {
                         responsive: true,
@@ -926,6 +970,8 @@ async function carregarProvas(skipPush = false) {
             
             document.getElementById('kpi-media-acertos').innerText = `${mediaPct}%`;
             document.getElementById('kpi-volume-total').innerText = totalResolvidas;
+            document.getElementById('kpi-acertos-periodo').innerText = certas;
+            document.getElementById('kpi-erros-periodo').innerText = erradas;
 
             const ctxPizza = document.getElementById('chartPizza');
             if (ctxPizza) {
