@@ -973,6 +973,19 @@ async function carregarProvas(skipPush = false) {
             document.getElementById('kpi-acertos-periodo').innerText = certas;
             document.getElementById('kpi-erros-periodo').innerText = erradas;
 
+            const totalDesempenho = certas + erradas;
+            const pctAcertosRosca = totalDesempenho > 0 ? (certas / totalDesempenho) * 100 : 0;
+            const pctErrosRosca = totalDesempenho > 0 ? (erradas / totalDesempenho) * 100 : 0;
+
+            const resumoPizza = document.getElementById('stats-resumo-pizza');
+            if (resumoPizza) {
+                resumoPizza.innerHTML = totalDesempenho > 0
+                    ? `<span style="color:#16a34a;">● Acertos: ${pctAcertosRosca.toFixed(0)}%</span>
+                       <span style="color:var(--text-muted); margin:0 6px;">|</span>
+                       <span style="color:#ef4444;">● Erros: ${pctErrosRosca.toFixed(0)}%</span>`
+                    : 'Sem questões resolvidas no período';
+            }
+
             const ctxPizza = document.getElementById('chartPizza');
             if (ctxPizza) {
                 if (chartPizzaInstance) chartPizzaInstance.destroy();
@@ -981,8 +994,8 @@ async function carregarProvas(skipPush = false) {
                     data: {
                         labels: ['Acertos', 'Erros'],
                         datasets: [{
-                            data: totalResolvidas === 0 ? [1, 0] : [certas, erradas],
-                            backgroundColor: totalResolvidas === 0 ? ['#e5e7eb', '#e5e7eb'] : ['#7c3aed', '#ef4444'],
+                            data: totalDesempenho === 0 ? [1, 0] : [certas, erradas],
+                            backgroundColor: totalDesempenho === 0 ? ['#e5e7eb', '#e5e7eb'] : ['#16a34a', '#ef4444'],
                             borderWidth: 0,
                             borderRadius: 6
                         }]
