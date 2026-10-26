@@ -1524,9 +1524,13 @@ async function selecionarProva(itemProva, skipPush = false) {
             const totalQ = data.length;
             const resolvidas = data.filter(q => q.resposta_aluno).length;
             const acertos = data.filter(q => q.acerto_erro === 'Acerto').length;
-            const erros = data.filter(q => q.acerto_erro === 'Erro').length;
+            // Questões sinalizadas como dúvida ficam exclusivamente na seção de dúvidas.
             const questoesDuvida = data.filter(q => q.acertou_duvida === true);
             const duvidas = questoesDuvida.length;
+            const questoesErradas = data.filter(q =>
+                q.acerto_erro === 'Erro' && q.acertou_duvida !== true
+            );
+            const erros = questoesErradas.length;
 
             const pAproveitamento = resolvidas > 0 ? ((acertos / resolvidas) * 100).toFixed(0) : 0;
 
@@ -1544,7 +1548,12 @@ async function selecionarProva(itemProva, skipPush = false) {
             }
 
             let tempoTexto = formatarTempoExtenso(somaSegundos);
-            const questoesErradas = data.filter(q => q.acerto_erro === 'Erro');
+            const mediaSegundosPorQuestao = resolvidas > 0
+                ? Math.round(somaSegundos / resolvidas)
+                : 0;
+            const mediaTempoTexto = resolvidas > 0
+                ? formatarTempoExtenso(mediaSegundosPorQuestao)
+                : 'Sem dados';
 
             let erradasHtml = '';
             questoesErradas.forEach(q => {
@@ -1575,6 +1584,7 @@ async function selecionarProva(itemProva, skipPush = false) {
                     <div class="kpi-card"><h5>Aproveitamento</h5><div class="number" style="color:#7c3aed;">${pAproveitamento}%</div></div>
                     <div class="kpi-card"><h5>Tempo Total</h5><div class="number" style="font-size:15px;">⏱️ ${tempoTexto}</div></div>
                     <div class="kpi-card"><h5>Questões Feitas</h5><div class="number">${resolvidas}/${totalQ}</div></div>
+                    <div class="kpi-card"><h5>Média de Tempo por Questão</h5><div class="number" style="font-size:15px;">⏱️ ${mediaTempoTexto}</div></div>
                     <div class="kpi-card"><h5>Acertos</h5><div class="number" style="color:#16a34a;">✅ ${acertos}</div></div>
                     <div class="kpi-card"><h5>Erros</h5><div class="number" style="color:#dc2626;">❌ ${erros}</div></div>
                     <div class="kpi-card"><h5>Dúvidas</h5><div class="number" style="color:#d97706;">⭐ ${duvidas}</div></div>
