@@ -453,8 +453,8 @@
                             <span class="quixotic-card-title">📝 Questões</span>
                             <span class="tag-status-purple">Caderno Tático</span>
                         </div>
-                        <p style="color:var(--text-muted); font-size:13px; margin:0;">Selecione uma prova abaixo para acessar disciplinas, desafios e questões.</p>
-                        <div style="font-size:14px; font-weight:700; color:var(--primary);">Escolha uma prova para continuar ↓</div>
+                        <div style="font-size:13px; color:var(--text-muted);">Provas e exercícios</div>
+                        <button class="btn-primary" style="width:100%;" onclick="document.getElementById('grid-provas').scrollIntoView({behavior:'smooth',block:'start'});">Ver Provas ➔</button>
                     </div>
                     <div class="quixotic-card" style="display:flex; flex-direction:column; justify-content:space-between; gap:12px;">
                         <div class="quixotic-card-header">
@@ -916,7 +916,7 @@ async function carregarProvas(skipPush = false) {
                 </div>`).join('');
         }
 
-        function abrirAulaInterativa(indiceAula) {
+        async function abrirAulaInterativa(indiceAula) {
             const item = aulasInterativasCache[indiceAula];
             const endereco = String(item && item.enderecohtml || '').trim();
             if (!endereco) {
@@ -936,7 +936,39 @@ async function carregarProvas(skipPush = false) {
                 return;
             }
 
-            window.open(url.href, '_blank', 'noopener,noreferrer');
+            // Abre a aba imediatamente para evitar bloqueio de pop-up.
+            const novaAba = window.open('about:blank', '_blank');
+            if (!novaAba) {
+                alert('O navegador bloqueou a nova aba. Permita pop-ups para este site e tente novamente.');
+                return;
+            }
+
+            try {
+                novaAba.document.title = 'Carregando aula...';
+                novaAba.document.body.innerHTML = '<p style="font-family:Arial,sans-serif;padding:24px;">Carregando aula...</p>';
+
+                // Alguns arquivos do Storage foram enviados com Content-Type incorreto
+                // (por exemplo, text/plain). Recriar o Blob como text/html força renderização.
+                const resposta = await fetch(url.href);
+                if (!resposta.ok) throw new Error('Não foi possível buscar o arquivo HTML (' + resposta.status + ').');
+
+                let html = await resposta.text();
+                // Mantém caminhos relativos de CSS, imagens e scripts apontando para o arquivo no Storage.
+                const baseTag = '<base href="' + url.href.replace(/&/g, '&amp;').replace(/"/g, '&quot;') + '">';
+                if (/<head(?:\s[^>]*)?>/i.test(html)) {
+                    html = html.replace(/<head(?:\s[^>]*)?>/i, match => match + baseTag);
+                } else {
+                    html = '<!doctype html><html><head><meta charset="utf-8">' + baseTag + '</head><body>' + html + '</body></html>';
+                }
+
+                const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+                const paginaRenderizada = URL.createObjectURL(blob);
+                novaAba.location.replace(paginaRenderizada);
+            } catch (error) {
+                console.error('Erro ao renderizar aula interativa:', error);
+                novaAba.close();
+                alert('Não foi possível renderizar esta aula pelo navegador. Verifique se o arquivo no Supabase Storage permite leitura via CORS e se foi enviado como text/html.');
+            }
         }
 
         function escaparHtml(valor) {
