@@ -446,32 +446,27 @@
                 <!-- 1. SAUDAÇÃO -->
                 <h2 class="dash-welcome-title">Bem-vinda de volta, <span id="dash-user-name">Waleska</span> 👋</h2>
 
-                <!-- 2. ACESSO A QUESTÕES E AULAS INTERATIVAS -->
-                <div class="quixotic-grid" style="margin-bottom:18px;">
-                    <div class="quixotic-card" style="display:flex; flex-direction:column; justify-content:space-between; gap:12px;">
-                        <div class="quixotic-card-header">
-                            <span class="quixotic-card-title">📝 Questões</span>
-                            <span class="tag-status-purple">Caderno Tático</span>
-                        </div>
-                        <div style="font-size:13px; color:var(--text-muted);">Provas e exercícios</div>
-                        <button class="btn-primary" style="width:100%;" onclick="document.getElementById('grid-provas').scrollIntoView({behavior:'smooth',block:'start'});">Ver Provas ➔</button>
-                    </div>
-                    <div class="quixotic-card" style="display:flex; flex-direction:column; justify-content:space-between; gap:12px;">
-                        <div class="quixotic-card-header">
-                            <span class="quixotic-card-title">🎓 Aulas</span>
-                            <span class="tag-status-green">Aulas Interativas</span>
+                <!-- 2. SEÇÃO DE QUESTÕES E PROVAS -->
+                <section id="secao-questoes" style="margin-bottom:24px;">
+                    <h3 class="section-title" style="margin-bottom:12px;">📝 Questões</h3>
+                    <div id="grid-provas" class="grid-cards"></div>
+                </section>
+
+                <!-- 3. SEÇÃO DE AULAS INTERATIVAS -->
+                <section id="secao-aulas" style="margin-bottom:24px;">
+                    <h3 class="section-title" style="margin-bottom:12px;">🎓 Aulas</h3>
+                    <div class="quixotic-card" style="display:flex; flex-direction:column; gap:14px;">
+                        <div class="quixotic-card-header" style="margin-bottom:0;">
+                            <span class="quixotic-card-title">Aulas Interativas</span>
+                            <span class="tag-status-green">Conteúdo disponível</span>
                         </div>
                         <div>
                             <div id="total-aulas-interativas" style="font-size:30px; font-weight:800; color:#16a34a;">—</div>
                             <div style="font-size:12px; color:var(--text-muted);">aulas cadastradas</div>
                         </div>
-                        <button class="btn-primary" style="width:100%;" onclick="abrirDisciplinasAulas()">Ver Disciplinas (Aulas) ➔</button>
+                        <button class="btn-primary" style="width:100%; margin-top:0;" onclick="abrirDisciplinasAulas()">Ver Disciplinas (Aulas) ➔</button>
                     </div>
-                </div>
-
-                <!-- PROVAS E QUESTÕES EXISTENTES -->
-                <h3 class="section-title" style="margin-bottom:12px;">📝 Questões</h3>
-                <div id="grid-provas" class="grid-cards"></div>
+                </section>
 
                 <!-- 3. SUBTÍTULO -->
                 <p style="color: var(--text-muted); font-size: 15px; font-weight: 600; margin-bottom: 15px; margin-top: 10px;">
