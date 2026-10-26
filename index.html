@@ -952,8 +952,8 @@ async function carregarProvas(skipPush = false) {
                         maintainAspectRatio: false,
                         plugins: { legend: { display: false } },
                         scales: {
-                            y: { beginAtZero: true, grid: { color: '#f3f4f6' }, ticks: { precision: 0 } },
-                            x: { grid: { display: false } }
+                            y: { stacked: true, beginAtZero: true, grid: { color: '#f3f4f6' }, ticks: { precision: 0 } },
+                            x: { stacked: true, grid: { display: false } }
                         }
                     }
                 });
