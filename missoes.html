@@ -37,7 +37,7 @@
   <div class="card"><div class="kpi-label">Missões concluídas hoje</div><div class="kpi-value" id="kpi-today">0%</div><div class="kpi-note" id="today-note">0 de 0 missões</div></div>
  </section>
  <section class="panel">
-  <div class="section"><div><h2>📅 Minha constância</h2><div class="muted" id="calendar-caption">Acompanhe seu ritmo de estudos</div></div><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><div class="calendar-nav"><button id="week-prev" aria-label="Semana anterior" onclick="navigateWeek(-1)">‹</button><button id="week-next" aria-label="Próxima semana" onclick="navigateWeek(1)">›</button><button class="nav-today" onclick="goCurrentWeek()">Hoje</button></div><div class="toggle"><button id="view-week" class="active" onclick="setCalendarMode('week')">Semana</button><button id="view-month" onclick="setCalendarMode('month')">Mês</button></div></div></div>
+  <div class="section"><div><h2>📅 Minha constância</h2><div class="muted" id="calendar-caption">Acompanhe seu ritmo de estudos</div></div><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><button class="btn primary small" onclick="openAvulsa()">＋ Registrar atividade avulsa</button><div class="calendar-nav"><button id="week-prev" aria-label="Semana anterior" onclick="navigateWeek(-1)">‹</button><button id="week-next" aria-label="Próxima semana" onclick="navigateWeek(1)">›</button><button class="nav-today" onclick="goCurrentWeek()">Hoje</button></div><div class="toggle"><button id="view-week" class="active" onclick="setCalendarMode('week')">Semana</button><button id="view-month" onclick="setCalendarMode('month')">Mês</button></div></div></div>
   <div id="calendar"></div>
   <div class="muted" style="margin-top:10px">Selecione um dia passado ou hoje para consultar os registros. Datas futuras ficam bloqueadas.</div>
   <div id="selected-day-activities"></div>
@@ -62,6 +62,11 @@
    <div class="time-unit"><label for="time-minutes">Minutos</label><input id="time-minutes" type="number" min="0" max="59" value="0"></div>
   </div>
   <div class="presets"><button class="preset" onclick="setTempo(30)">30 min</button><button class="preset" onclick="setTempo(45)">45 min</button><button class="preset" onclick="setTempo(60)">1 hora</button><button class="preset" onclick="setTempo(90)">1h30</button><button class="preset" onclick="setTempo(120)">2 horas</button></div>
+  <div id="avulsa-fields" class="hidden">
+   <div class="field"><label for="avulsa-discipline">Disciplina</label><select id="avulsa-discipline" style="width:100%;border:1px solid #dbe1ea;border-radius:9px;padding:10px;font:inherit" onchange="updateAvulsaSubjects()"></select></div>
+   <div class="field"><label for="avulsa-subject">Assunto</label><select id="avulsa-subject" style="width:100%;border:1px solid #dbe1ea;border-radius:9px;padding:10px;font:inherit"></select></div>
+   <div class="field"><label for="avulsa-type">Tipo de atividade</label><select id="avulsa-type" style="width:100%;border:1px solid #dbe1ea;border-radius:9px;padding:10px;font:inherit" onchange="toggleAvulsaQuestions()"><option value="TEORIA">Teoria</option><option value="REVISAO">Revisão</option><option value="QUESTOES">Questões</option></select></div>
+  </div>
   <div id="questions-fields" class="form-row hidden">
    <div class="field"><label for="questions-done">Questões feitas</label><input id="questions-done" type="number" min="1" value="10"></div>
    <div class="field"><label for="questions-right">Acertos</label><input id="questions-right" type="number" min="0" value="0"></div>
@@ -214,8 +219,11 @@ function openModal(mode,title,description){
  document.getElementById('modal-bg').classList.add('open');
 }
 function openStart(cod){selectedCod=cod;const s=allSubjects.find(x=>x.codrelacional===cod);openModal('start','Iniciar teoria',s?s.disciplina+' · '+s.conteudo:'Informe o tempo dedicado à teoria.')}
+function openAvulsa(){if(!allSubjects.length){notice('Aguarde o carregamento do edital para registrar uma atividade.',true);return}modalMode='avulsa';selectedMission=null;selectedCod=null;document.getElementById('modal-title').textContent='Registrar atividade avulsa';document.getElementById('modal-description').textContent='Atividade fora do cronograma · '+fmtDate(selectedDate);document.getElementById('avulsa-fields').classList.remove('hidden');document.getElementById('avulsa-discipline').innerHTML=[...new Set(allSubjects.map(x=>x.disciplina))].sort().map(n=>'<option value="'+esc(n)+'">'+esc(n)+'</option>').join('');updateAvulsaSubjects();document.getElementById('avulsa-type').value='QUESTOES';toggleAvulsaQuestions();setTempo(45);document.getElementById('questions-done').value='20';document.getElementById('questions-right').value='0';document.getElementById('modal-error').classList.add('hidden');document.getElementById('confirm-btn').textContent='Salvar atividade';document.getElementById('modal-bg').classList.add('open')}
+function updateAvulsaSubjects(){const d=document.getElementById('avulsa-discipline').value;document.getElementById('avulsa-subject').innerHTML=allSubjects.filter(x=>x.disciplina===d).map(x=>'<option value="'+esc(x.codrelacional)+'">'+esc(x.conteudo)+'</option>').join('')}
+function toggleAvulsaQuestions(){document.getElementById('questions-fields').classList.toggle('hidden',document.getElementById('avulsa-type').value!=='QUESTOES')}
 function openMission(id){selectedMission=missionsToday.find(x=>Number(x.cronograma_id)===Number(id));if(!selectedMission)return;openModal('mission','Concluir '+typeName(selectedMission.tipo_evento).toLowerCase(),selectedMission.disciplina+' · '+selectedMission.conteudo)}
-function closeModal(){document.getElementById('modal-bg').classList.remove('open');selectedMission=null;selectedCod=null}
+function closeModal(){document.getElementById('modal-bg').classList.remove('open');document.getElementById('avulsa-fields').classList.add('hidden');selectedMission=null;selectedCod=null}
 function fecharModal(){closeModal()}
 document.getElementById('modal-bg').addEventListener('click',e=>{if(e.target.id==='modal-bg')closeModal()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById('modal-bg').classList.contains('open'))closeModal()});
@@ -223,16 +231,19 @@ async function confirmarModal(){
  const h=Number(document.getElementById('time-hours').value),m=Number(document.getElementById('time-minutes').value),minutes=h*60+m;
  const errorBox=document.getElementById('modal-error');
  if(!Number.isInteger(h)||!Number.isInteger(m)||h<0||m<0||m>59||minutes<=0){errorBox.textContent='Informe um tempo válido. O total precisa ser maior que zero.';errorBox.classList.remove('hidden');return}
- const q=modalMode==='mission'&&selectedMission?.tipo_evento==='QUESTOES'?Number(document.getElementById('questions-done').value):0;
- const a=modalMode==='mission'&&selectedMission?.tipo_evento==='QUESTOES'?Number(document.getElementById('questions-right').value):0;
- if(modalMode==='mission'&&selectedMission?.tipo_evento==='QUESTOES'&&(!Number.isInteger(q)||!Number.isInteger(a)||q<1||a<0||a>q)){errorBox.textContent='Informe pelo menos uma questão e confira a quantidade de acertos.';errorBox.classList.remove('hidden');return}
+ const isQuestionMission=modalMode==='mission'&&selectedMission?.tipo_evento==='QUESTOES';
+ const isQuestionAvulsa=modalMode==='avulsa'&&document.getElementById('avulsa-type').value==='QUESTOES';
+ const q=(isQuestionMission||isQuestionAvulsa)?Number(document.getElementById('questions-done').value):0;
+ const a=(isQuestionMission||isQuestionAvulsa)?Number(document.getElementById('questions-right').value):0;
+ if((isQuestionMission||isQuestionAvulsa)&&(!Number.isInteger(q)||!Number.isInteger(a)||q<1||a<0||a>q)){errorBox.textContent='Informe pelo menos uma questão e confira a quantidade de acertos.';errorBox.classList.remove('hidden');return}
  const btn=document.getElementById('confirm-btn');btn.disabled=true;btn.textContent='Salvando...';
  let result;
  if(modalMode==='start')result=await db.rpc('fn_iniciar_assunto',{p_codrelacional:selectedCod,p_tempo_minutos:minutes,p_data_inicio:selectedDate});
- else result=await db.rpc('fn_concluir_missao',{p_cronograma_id:selectedMission.cronograma_id,p_tempo_minutos:minutes,p_questoes_feitas:q,p_acertos:a,p_data_atividade:selectedDate});
+ else if(modalMode==='mission')result=await db.rpc('fn_concluir_missao',{p_cronograma_id:selectedMission.cronograma_id,p_tempo_minutos:minutes,p_questoes_feitas:q,p_acertos:a,p_data_atividade:selectedDate});
+ else {const cod=document.getElementById('avulsa-subject').value,type=document.getElementById('avulsa-type').value;const subject=allSubjects.find(x=>x.codrelacional===cod);if(!subject){errorBox.textContent='Selecione um assunto válido.';errorBox.classList.remove('hidden');btn.disabled=false;btn.textContent='Salvar atividade';return}result=await db.from('tb_atividades').insert({codrelacional:cod,cronograma_id:null,atividade:typeName(type)+' (avulsa)',data_atividade:selectedDate+'T12:00:00-03:00',tempo_minutos:minutes,questoes_feitas:q,acertos:a});}
  btn.disabled=false;btn.textContent=modalMode==='start'?'Registrar teoria e criar ciclo':'Salvar conclusão';
  if(result.error){errorBox.textContent=(modalMode==='start'?'Não foi possível iniciar a teoria: ':'Não foi possível concluir a missão: ')+result.error.message;errorBox.classList.remove('hidden');return}
- const wasStart=modalMode==='start';closeModal();notice(wasStart?'Teoria registrada! As próximas cinco missões foram programadas.':'Missão concluída e tempo de estudo registrado.');await recarregar();
+ const wasStart=modalMode==='start',wasAvulsa=modalMode==='avulsa';closeModal();notice(wasStart?'Teoria registrada! As próximas cinco missões foram programadas.':wasAvulsa?'Atividade avulsa registrada e incluída no histórico.':'Missão concluída e tempo de estudo registrado.');await recarregar();
  
 }
 let bonusInProgress=false;
