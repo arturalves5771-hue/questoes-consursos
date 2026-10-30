@@ -74,9 +74,10 @@
 const SUPABASE_URL='https://npedrsbixoaqupljsnpt.supabase.co';
 const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5wZWRyc2JpeG9hcXVwbGpzbnB0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI1MTUzNTIsImV4cCI6MjEwODA5MTM1Mn0.Sthx6-Owgs4cz-jj3wVmUxxQX3V8wq4aQqiMJmnxtjw';
 const db=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
-let allSubjects=[],allCycles=[],missionsToday=[],selectedDiscipline='',selectedMission=null,modalMode='',selectedCod=null,calendarMode='week',historyRows=[],weekOffset=0,selectedDate=today();
+let allSubjects=[],allCycles=[],missionsToday=[],selectedDiscipline='',selectedMission=null,modalMode='',selectedCod=null,calendarMode='week',historyRows=[],weekOffset=0,selectedDate=null;
 const dateKey=(date=new Date())=>{const p=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Recife',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(date);const o={};p.forEach(x=>o[x.type]=x.value);return o.year+'-'+o.month+'-'+o.day};
 const today=()=>dateKey();
+selectedDate=today();
 const fromKey=k=>new Date(k+'T12:00:00');
 const addDays=(k,n)=>{const d=fromKey(k);d.setDate(d.getDate()+n);return dateKey(d)};
 const fmtDate=k=>k?fromKey(k).toLocaleDateString('pt-BR',{timeZone:'America/Recife'}):'—';
