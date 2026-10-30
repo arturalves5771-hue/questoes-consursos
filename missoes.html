@@ -195,7 +195,7 @@ async function confirmarModal(){
  btn.disabled=false;btn.textContent=modalMode==='start'?'Registrar teoria e criar ciclo':'Salvar conclusão';
  if(result.error){errorBox.textContent=(modalMode==='start'?'Não foi possível iniciar a teoria: ':'Não foi possível concluir a missão: ')+result.error.message;errorBox.classList.remove('hidden');return}
  const wasStart=modalMode==='start';closeModal();notice(wasStart?'Teoria registrada! As próximas cinco missões foram programadas.':'Missão concluída e tempo de estudo registrado.');await recarregar();
- if(wasStart)renderSubjects();
+ 
 }
 async function sortearBonus(){const {error}=await db.rpc('fn_sortear_missao_extra');if(error){notice('Não foi possível sortear a missão extra: '+error.message,true);return}notice('Missão extra sorteada! Ela não altera o percentual obrigatório.');await loadMissions()}
 recarregar();
