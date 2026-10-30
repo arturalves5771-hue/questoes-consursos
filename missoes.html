@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Missões do Dia | Estratégia Penal</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--purple:#7c3aed;--purple2:#6d28d9;--ink:#172033;--muted:#64748b;--line:#e5e7eb;--bg:#f5f6fa;--green:#16a34a;--red:#dc2626;--amber:#d97706}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,Arial,sans-serif}button,input,select{font:inherit}button{cursor:pointer}
+.wrap{max-width:1120px;margin:0 auto;padding:22px 18px 40px}.top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:20px;flex-wrap:wrap}
+h1{font-size:25px;margin:0 0 6px;font-weight:800;letter-spacing:-.6px}.sub{font-size:13px;color:var(--muted)}
+.btn{border:0;border-radius:10px;padding:11px 15px;font-weight:700;font-size:13px;transition:.15s}.primary{background:var(--purple);color:white}.primary:hover{background:var(--purple2)}.light{background:white;border:1px solid var(--line);color:var(--ink)}.light:hover{border-color:var(--purple);color:var(--purple)}.small{padding:8px 11px;font-size:12px}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:18px}.card{background:white;border:1px solid var(--line);border-radius:15px;padding:17px;box-shadow:0 2px 6px #0f172a08}.kpi-label{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.4px}.kpi-value{font-size:27px;font-weight:800;margin-top:7px}.kpi-note{font-size:11px;color:var(--muted);margin-top:3px}
+.progress-track{height:9px;background:#e5e7eb;border-radius:20px;overflow:hidden;margin-top:12px}.progress-fill{height:100%;border-radius:20px;background:linear-gradient(90deg,#86efac,#16a34a);transition:width .25s}
+.section{margin:22px 0 10px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.section h2{font-size:16px;margin:0;font-weight:800}.muted{color:var(--muted);font-size:12px}
+.layout{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(280px,.85fr);gap:16px;align-items:start}.mission{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid #eef0f4}.mission:last-child{border-bottom:0}.mission-icon{width:38px;height:38px;border-radius:11px;background:#f3e8ff;display:grid;place-items:center;font-size:18px;flex-shrink:0}.mission-main{flex:1;min-width:0}.mission-title{font-size:13px;font-weight:700;line-height:1.4}.mission-meta{font-size:11px;color:var(--muted);margin-top:4px}.tag{display:inline-block;border-radius:20px;padding:4px 8px;font-size:10px;font-weight:800;white-space:nowrap}.tag.late{background:#fee2e2;color:#991b1b}.tag.done{background:#dcfce7;color:#166534}.tag.pending{background:#f1f5f9;color:#475569}.tag.bonus{background:#fef3c7;color:#92400e}
+.empty{padding:25px 12px;text-align:center;color:var(--muted);font-size:13px}.disc-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.disc{border:1px solid var(--line);background:white;border-radius:12px;padding:14px;text-align:left;width:100%;color:var(--ink)}.disc:hover{border-color:var(--purple);background:#faf7ff}.disc strong{display:block;font-size:13px}.disc span{display:block;font-size:11px;color:var(--muted);margin-top:5px}
+.subject{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #eef0f4}.subject:last-child{border:0}.subject-name{font-size:13px;font-weight:600;line-height:1.45}.subject-info{font-size:11px;color:var(--muted);margin-top:4px}
+.history-list{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}.day{background:#f8fafc;border:1px solid var(--line);border-radius:9px;padding:9px 5px;text-align:center}.day b{font-size:12px;display:block}.day span{font-size:10px;color:var(--muted)}.day .dot{height:5px;border-radius:9px;margin-top:7px;background:#e2e8f0}.day .dot.good{background:#22c55e}
+.modal-bg{position:fixed;inset:0;background:#0f172a88;display:none;align-items:center;justify-content:center;padding:16px;z-index:50}.modal-bg.open{display:flex}.modal{width:100%;max-width:440px;background:white;border-radius:16px;padding:21px;box-shadow:0 20px 60px #0003}.modal h3{margin:0 0 7px;font-size:17px}.modal p{font-size:12px;color:var(--muted);line-height:1.5;margin:0 0 15px}.field{margin:12px 0}.field label{display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:6px}.field input{width:100%;border:1px solid #cbd5e1;border-radius:9px;padding:10px 11px;outline:none}.field input:focus{border-color:var(--purple);box-shadow:0 0 0 3px #7c3aed18}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+.notice{padding:11px 13px;border-radius:10px;background:#f5f3ff;color:#5b21b6;font-size:12px;line-height:1.5;margin-bottom:15px}.error{background:#fef2f2;color:#991b1b}.hidden{display:none!important}.backline{display:flex;gap:8px;align-items:center;margin-bottom:14px}
+@media(max-width:800px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.layout{grid-template-columns:1fr}}@media(max-width:480px){.wrap{padding:16px 12px 30px}h1{font-size:21px}.disc-grid{grid-template-columns:1fr}.mission{align-items:flex-start}.mission .btn{padding:7px 9px}.kpi-value{font-size:23px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div><div class="sub" style="font-weight:800;color:#7c3aed;letter-spacing:1px">ESTRATÉGIA PENAL · CADERNO TÁTICO</div><h1>🎯 Missões do Dia</h1><div class="sub" id="today-label">Organize sua constância, um assunto por vez.</div></div>
+    <button class="btn light" onclick="recarregar()">↻ Atualizar</button>
+  </header>
+  <div id="alert" class="notice hidden"></div>
+  <section class="grid">
+    <div class="card"><div class="kpi-label">Progresso de hoje</div><div class="kpi-value" id="kpi-progress">0%</div><div class="progress-track"><div class="progress-fill" id="progress-bar" style="width:0%"></div></div></div>
+    <div class="card"><div class="kpi-label">Missões previstas</div><div class="kpi-value" id="kpi-total">0</div><div class="kpi-note">Inclui obrigações atrasadas de hoje</div></div>
+    <div class="card"><div class="kpi-label">Concluídas</div><div class="kpi-value" id="kpi-done">0</div><div class="kpi-note">Missões obrigatórias</div></div>
+    <div class="card"><div class="kpi-label">Em atraso</div><div class="kpi-value" id="kpi-late">0</div><div class="kpi-note">Não concluídas no prazo</div></div>
+  </section>
+  <div class="layout">
+    <main>
+      <section class="card">
+        <div class="section" style="margin-top:0"><h2>📌 Missões de hoje</h2><span class="muted" id="mission-date"></span></div>
+        <div id="missions-list"><div class="empty">Carregando missões...</div></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button class="btn primary" onclick="sortearBonus()">🎲 Sortear missão extra</button><button class="btn light" onclick="abrirDisciplinas()">＋ Iniciar nova teoria</button></div>
+      </section>
+      <section class="card" style="margin-top:15px">
+        <div class="section" style="margin-top:0"><h2>📅 Histórico de produtividade</h2><span class="muted">Últimos dias registrados</span></div>
+        <div id="history" class="history-list"><div class="empty">Carregando histórico...</div></div>
+      </section>
+    </main>
+    <aside>
+      <section class="card">
+        <div class="section" style="margin-top:0"><h2>📚 Disciplinas do edital</h2><span class="muted" id="disc-count"></span></div>
+        <div id="disciplines" class="disc-grid"><div class="empty">Carregando disciplinas...</div></div>
+      </section>
+      <section class="card" style="margin-top:15px">
+        <div class="section" style="margin-top:0"><h2>Como funciona o ciclo</h2></div>
+        <div class="muted" style="line-height:1.9">D0 · Teoria<br>D+3 · Revisão 1<br>D+7 · Questões 1<br>D+21 · Revisão 2<br>D+30 · Questões 2<br>D+45 · Questões 3</div>
+        <div class="notice" style="margin:12px 0 0">O sistema calcula as datas automaticamente a partir do início da teoria. Missões atrasadas continuam vinculadas à data original.</div>
+      </section>
+    </aside>
+  </div>
+  <section id="subjects-section" class="card hidden" style="margin-top:16px">
+    <div class="backline"><button class="btn light small" onclick="fecharAssuntos()">← Disciplinas</button><strong id="subjects-title"></strong></div>
+    <div id="subjects-list"></div>
+  </section>
+</div>
+
+<div class="modal-bg" id="modal-bg">
+  <div class="modal">
+    <h3 id="modal-title">Concluir missão</h3><p id="modal-description"></p>
+    <div class="row">
+      <div class="field"><label for="time-hours">Horas</label><input id="time-hours" type="number" min="0" max="24" value="0"></div>
+      <div class="field"><label for="time-minutes">Minutos</label><input id="time-minutes" type="number" min="0" max="59" value="30"></div>
+    </div>
+    <div id="questions-fields" class="row hidden">
+      <div class="field"><label for="questions-done">Questões feitas</label><input id="questions-done" type="number" min="0" value="0"></div>
+      <div class="field"><label for="questions-right">Acertos</label><input id="questions-right" type="number" min="0" value="0"></div>
+    </div>
+    <div id="modal-error" class="notice error hidden"></div>
+    <div class="modal-actions"><button class="btn light" onclick="fecharModal()">Cancelar</button><button class="btn primary" id="confirm-btn" onclick="confirmarConclusao()">Salvar conclusão</button></div>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL='https://npedrsbixoaqupljsnpt.supabase.co';
+const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsIm5iZiI6MTc5MjUxNTM1MiwiZXhwIjoyMTA4MDkxMzUyLCJpYXQiOjE3OTI1MTUzNTIsInN1YiI6ImFub24ifQ.Sthx6-Owgs4cz-jj3wVmUxxQX3V8wq4aQqiMJmnxtjw';
+const db=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+let selectedMission=null, selectedDiscipline='', allSubjects=[], allCycles=[], missionsToday=[];
+const today=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'America/Recife',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+const fmtDate=(s)=>s?new Date(s+'T12:00:00').toLocaleDateString('pt-BR',{timeZone:'America/Recife'}):'—';
+const esc=(v)=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function aviso(msg,erro){const el=document.getElementById('alert');el.textContent=msg;el.className='notice'+(erro?' error':'');el.classList.remove('hidden');}
+function limparAviso(){document.getElementById('alert').classList.add('hidden')}
+function tipoLabel(t){return t==='TEORIA'?'Teoria':t==='REVISAO'?'Revisão':'Questões'}
+function tipoIcon(t){return t==='TEORIA'?'📖':t==='REVISAO'?'🔁':'✍️'}
+function statusTag(s){if(s==='CONCLUIDO')return '<span class="tag done">CONCLUÍDA</span>';if(s==='ATRASADO')return '<span class="tag late">ATRASADA</span>';return '<span class="tag pending">PENDENTE</span>'}
+async function recarregar(){limparAviso();document.getElementById('missions-list').innerHTML='<div class="empty">Atualizando...</div>';await Promise.all([carregarMissoes(),carregarDisciplinas(),carregarHistorico()])}
+async function carregarMissoes(){
+ const d=today();document.getElementById('today-label').textContent='Hoje · '+fmtDate(d);document.getElementById('mission-date').textContent=fmtDate(d);
+ const [m,p]=await Promise.all([
+  db.from('vw_missoes_dia').select('*').eq('data_exibicao',d).order('data_original',{ascending:true}).order('cronograma_id',{ascending:true}),
+  db.from('vw_progresso_diario_atual').select('*').eq('data_referencia',d).maybeSingle()
+ ]);
+ if(m.error){aviso('Não foi possível carregar as missões: '+m.error.message,true);return}
+ missionsToday=m.data||[];
+ const obrig=missionsToday.filter(x=>x.tipo_missao==='OBRIGATORIA');
+ const total=(p.data&&p.data.total_missoes!==undefined)?Number(p.data.total_missoes):obrig.length;
+ const done=(p.data&&p.data.missoes_concluidas!==undefined)?Number(p.data.missoes_concluidas):obrig.filter(x=>x.status_exibicao==='CONCLUIDO').length;
+ const pct=(p.data&&p.data.percentual_conclusao!==undefined)?Number(p.data.percentual_conclusao):0;
+ document.getElementById('kpi-progress').textContent=Math.round(pct)+'%';document.getElementById('progress-bar').style.width=Math.max(0,Math.min(100,pct))+'%';
+ document.getElementById('kpi-total').textContent=total;document.getElementById('kpi-done').textContent=done;
+ document.getElementById('kpi-late').textContent=obrig.filter(x=>x.status_exibicao==='ATRASADO').length;
+ renderMissoes(missionsToday);
+}
+function renderMissoes(rows){
+ const el=document.getElementById('missions-list');
+ if(!rows.length){el.innerHTML='<div class="empty">Nenhuma missão prevista para hoje. Que tal iniciar uma nova teoria?</div>';return}
+ el.innerHTML=rows.map(x=>{
+  const bonus=x.tipo_missao==='BONUS',done=x.status_exibicao==='CONCLUIDO';
+  const meta=(x.descricao?esc(x.descricao)+' · ':'')+tipoLabel(x.tipo_evento)+' · '+(x.data_original===today()?'Hoje':'Origem: '+fmtDate(x.data_original));
+  const action=done?'<span class="tag done">CONCLUÍDA</span>':'<button class="btn primary small" onclick="abrirConclusao('+Number(x.cronograma_id)+')">Concluir</button>';
+  return '<div class="mission"><div class="mission-icon">'+tipoIcon(x.tipo_evento)+'</div><div class="mission-main"><div class="mission-title">'+esc(x.conteudo)+'</div><div class="mission-meta">'+esc(x.disciplina)+' · '+meta+'</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">'+(bonus?'<span class="tag bonus">EXTRA</span>':statusTag(x.status_exibicao))+action+'</div></div>'
+ }).join('');
+}
+async function carregarDisciplinas(){
+ const [s,c]=await Promise.all([
+  db.from('edital_verticalizado').select('codrelacional,disciplina,conteudo,status_teoria').order('disciplina').order('conteudo'),
+  db.from('tb_ciclos_estudo').select('codrelacional,data_inicio')
+ ]);
+ if(s.error){document.getElementById('disciplines').innerHTML='<div class="empty">Erro ao carregar edital: '+esc(s.error.message)+'</div>';return}
+ allSubjects=s.data||[];allCycles=c.data||[];
+ const names=[...new Set(allSubjects.map(x=>x.disciplina))];
+ document.getElementById('disc-count').textContent=names.length+' disciplinas';
+ document.getElementById('disciplines').innerHTML=names.map(n=>{
+  const arr=allSubjects.filter(x=>x.disciplina===n),started=arr.filter(x=>allCycles.some(c=>c.codrelacional===x.codrelacional)).length;
+  return '<button class="disc" onclick="abrirAssuntos('+JSON.stringify(n).replace(/</g,'\\u003c')+')"><strong>'+esc(n)+'</strong><span>'+arr.length+' assuntos · '+started+' já iniciados</span></button>'
+ }).join('')||'<div class="empty">Nenhuma disciplina cadastrada no edital.</div>';
+}
+function abrirDisciplinas(){document.getElementById('subjects-section').classList.remove('hidden');document.getElementById('subjects-title').textContent='Escolha uma disciplina';document.getElementById('subjects-list').innerHTML='<div class="muted">Selecione uma das disciplinas ao lado para visualizar os assuntos.</div>';document.getElementById('subjects-section').scrollIntoView({behavior:'smooth',block:'start'})}
+function fecharAssuntos(){document.getElementById('subjects-section').classList.add('hidden')}
+function abrirAssuntos(nome){
+ selectedDiscipline=nome;const rows=allSubjects.filter(x=>x.disciplina===nome);
+ document.getElementById('subjects-section').classList.remove('hidden');document.getElementById('subjects-title').textContent=nome;
+ document.getElementById('subjects-list').innerHTML=rows.map(s=>{
+  const ciclos=allCycles.filter(c=>c.codrelacional===s.codrelacional),todayStarted=ciclos.some(c=>c.data_inicio===today());
+  const label=todayStarted?'<span class="tag done">INICIADO HOJE</span>':ciclos.length?'<span class="tag pending">ESTUDADO '+ciclos.length+' VEZ(ES)</span>':'<span class="tag pending">NÃO INICIADO</span>';
+  return '<div class="subject"><div style="flex:1"><div class="subject-name">'+esc(s.conteudo)+'</div><div class="subject-info">'+label+'</div></div><button class="btn '+(todayStarted?'light':'primary')+' small" '+(todayStarted?'disabled':'')+' onclick="iniciarTeoria('+JSON.stringify(s.codrelacional)+')">'+(todayStarted?'Iniciado':'Iniciar teoria')+'</button></div>'
+ }).join('')||'<div class="empty">Nenhum assunto encontrado.</div>';
+ document.getElementById('subjects-section').scrollIntoView({behavior:'smooth',block:'start'});
+}
+async function iniciarTeoria(cod){
+ const h=prompt('Quanto tempo você gastou na teoria? Informe as horas (pode ser 0):','1');if(h===null)return;
+ const min=prompt('Informe os minutos (0 a 59):','0');if(min===null)return;
+ const total=Number(h)*60+Number(min);
+ if(!Number.isInteger(Number(h))||!Number.isInteger(Number(min))||Number(h)<0||Number(min)<0||Number(min)>59||total<=0){aviso('Informe um tempo válido maior que zero.',true);return}
+ const {error}=await db.rpc('fn_iniciar_assunto',{p_codrelacional:cod,p_tempo_minutos:total});
+ if(error){aviso('Não foi possível iniciar a teoria: '+error.message,true);return}
+ aviso('Teoria registrada! As cinco próximas missões foram programadas automaticamente.');await recarregar();abrirAssuntos(selectedDiscipline);
+}
+function abrirConclusao(id){
+ selectedMission=missionsToday.find(x=>Number(x.cronograma_id)===Number(id));if(!selectedMission)return;
+ document.getElementById('modal-title').textContent='Concluir '+tipoLabel(selectedMission.tipo_evento).toLowerCase();
+ document.getElementById('modal-description').textContent=selectedMission.conteudo+' · '+selectedMission.disciplina;
+ document.getElementById('time-hours').value='0';document.getElementById('time-minutes').value='30';
+ document.getElementById('questions-fields').classList.toggle('hidden',selectedMission.tipo_evento!=='QUESTOES');
+ document.getElementById('questions-done').value='0';document.getElementById('questions-right').value='0';document.getElementById('modal-error').classList.add('hidden');
+ document.getElementById('modal-bg').classList.add('open');
+}
+function fecharModal(){document.getElementById('modal-bg').classList.remove('open');selectedMission=null}
+async function confirmarConclusao(){
+ if(!selectedMission)return;const h=Number(document.getElementById('time-hours').value),m=Number(document.getElementById('time-minutes').value),tempo=h*60+m;
+ const q=selectedMission.tipo_evento==='QUESTOES'?Number(document.getElementById('questions-done').value):0;
+ const a=selectedMission.tipo_evento==='QUESTOES'?Number(document.getElementById('questions-right').value):0;
+ const err=document.getElementById('modal-error');
+ if(!Number.isInteger(h)||!Number.isInteger(m)||h<0||m<0||m>59||tempo<=0){err.textContent='Informe um tempo válido maior que zero.';err.classList.remove('hidden');return}
+ if(!Number.isInteger(q)||!Number.isInteger(a)||q<0||a<0||a>q){err.textContent='Confira a quantidade de questões e acertos.';err.classList.remove('hidden');return}
+ const btn=document.getElementById('confirm-btn');btn.disabled=true;btn.textContent='Salvando...';
+ const {error}=await db.rpc('fn_concluir_missao',{p_cronograma_id:selectedMission.cronograma_id,p_tempo_minutos:tempo,p_questoes_feitas:q,p_acertos:a});
+ btn.disabled=false;btn.textContent='Salvar conclusão';
+ if(error){err.textContent='Não foi possível concluir: '+error.message;err.classList.remove('hidden');return}
+ fecharModal();aviso('Missão concluída e atividade registrada.');await recarregar();
+}
+async function sortearBonus(){
+ const {error}=await db.rpc('fn_sortear_missao_extra');
+ if(error){aviso('Não foi possível sortear a missão extra: '+error.message,true);return}
+ aviso('Missão extra sorteada! Ela aparece na lista de hoje e não altera o percentual obrigatório.');await carregarMissoes();
+}
+async function carregarHistorico(){
+ const {data,error}=await db.from('vw_progresso_diario_historico').select('*').order('data_programada',{ascending:false}).limit(14);
+ const el=document.getElementById('history');if(error){el.innerHTML='<div class="empty">Histórico indisponível.</div>';return}
+ if(!data||!data.length){el.innerHTML='<div class="empty">O histórico aparecerá após iniciar as primeiras teorias.</div>';return}
+ el.innerHTML=data.reverse().map(x=>{const p=Number(x.percentual_conclusao)||0;return '<div class="day"><b>'+fmtDate(x.data_programada).slice(0,5)+'</b><span>'+Math.round(p)+'%</span><div class="dot '+(p>=100?'good':'')+'" style="opacity:'+Math.max(.25,p/100)+'"></div></div>'}).join('');
+}
+recarregar();
+</script>
+</body>
+</html>
