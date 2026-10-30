@@ -86,7 +86,7 @@ h1{font-size:25px;margin:0 0 6px;font-weight:800;letter-spacing:-.6px}.sub{font-
 
 <script>
 const SUPABASE_URL='https://npedrsbixoaqupljsnpt.supabase.co';
-const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsIm5iZiI6MTc5MjUxNTM1MiwiZXhwIjoyMTA4MDkxMzUyLCJpYXQiOjE3OTI1MTUzNTIsInN1YiI6ImFub24ifQ.Sthx6-Owgs4cz-jj3wVmUxxQX3V8wq4aQqiMJmnxtjw';
+const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5wZWRyc2JpeG9hcXVwbGpzbnB0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI1MTUzNTIsImV4cCI6MjEwODA5MTM1Mn0.Sthx6-Owgs4cz-jj3wVmUxxQX3V8wq4aQqiMJmnxtjw';
 const db=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 let selectedMission=null, selectedDiscipline='', allSubjects=[], allCycles=[], missionsToday=[];
 const today=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'America/Recife',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
