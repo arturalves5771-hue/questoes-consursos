@@ -89,16 +89,16 @@ function typeIcon(t){return t==='TEORIA'?'📖':t==='REVISAO'?'🔁':'✍️'}
 function tag(s){return s==='CONCLUIDO'?'<span class="tag done">CONCLUÍDA</span>':s==='ATRASADO'?'<span class="tag late">ATRASADA</span>':'<span class="tag pending">PENDENTE</span>'}
 async function recarregar(){clearNotice();await Promise.all([loadDashboard(),loadMissions(),loadDisciplines(),loadCalendar()])}
 async function loadDashboard(){
- const [ed,total,acts]=await Promise.all([
-  db.from('edital_verticalizado').select('codrelacional,status_teoria'),
+ const [ed,total,cycles]=await Promise.all([
+  db.from('edital_verticalizado').select('codrelacional'),
   db.from('edital_verticalizado').select('codrelacional',{count:'exact',head:true}),
-  db.from('tb_atividades').select('data_atividade,tempo_minutos').order('data_atividade',{ascending:true})
+  db.from('tb_ciclos_estudo').select('codrelacional')
  ]);
- if(ed.error||total.error){notice('Não foi possível carregar o percentual do edital: '+(ed.error||total.error).message,true);return}
- const rows=ed.data||[],done=rows.filter(x=>x.status_teoria===true).length,all=total.count||rows.length,pct=all?done/all*100:0;
- document.getElementById('kpi-edital').textContent=Math.round(pct)+'%';document.getElementById('edital-bar').style.width=pct+'%';document.getElementById('edital-note').textContent=done+' de '+all+' assuntos com teoria concluída';
- if(acts.error){document.getElementById('kpi-hours').textContent='—';document.getElementById('kpi-days').textContent='—';return}
- let totalMin=0,days=new Set();(acts.data||[]).forEach(x=>{totalMin+=Number(x.tempo_minutos)||0;if(x.data_atividade)days.add(dateKey(new Date(x.data_atividade)))});
+ if(ed.error||total.error||cycles.error){notice('Não foi possível carregar o percentual do edital: '+(ed.error||total.error||cycles.error).message,true);return}
+ const all=total.count||0,done=new Set((cycles.data||[]).map(x=>x.codrelacional)).size,pct=all?done/all*100:0;
+ document.getElementById('kpi-edital').textContent=Math.round(pct)+'%';document.getElementById('edital-bar').style.width=pct+'%';document.getElementById('edital-note').textContent=done+' de '+all+' assuntos com teoria iniciada';
+ let totalMin=0,days=new Set(),offset=0,batch;
+ do{const r=await db.from('tb_atividades').select('data_atividade,tempo_minutos').order('data_atividade',{ascending:true}).range(offset,offset+999);if(r.error){document.getElementById('kpi-hours').textContent='—';document.getElementById('kpi-days').textContent='—';notice('Não foi possível calcular horas e dias: '+r.error.message,true);return}batch=r.data||[];batch.forEach(x=>{totalMin+=Number(x.tempo_minutos)||0;if(x.data_atividade)days.add(dateKey(new Date(x.data_atividade)))});offset+=1000;}while(batch.length===1000);
  document.getElementById('kpi-hours').textContent=minsLabel(totalMin);document.getElementById('kpi-days').textContent=days.size;
 }
 async function loadMissions(){
@@ -147,7 +147,7 @@ function renderSubjects(){
   return '<div class="subject"><div style="flex:1"><div class="subject-title">'+esc(s.conteudo)+'</div><div class="subject-state">'+esc(state)+'</div></div><button class="btn '+(startedToday?'light':'primary')+' small" '+(startedToday?'disabled':'')+' data-cod="'+esc(s.codrelacional)+'" onclick="openStart(this.dataset.cod)">'+(startedToday?'Iniciado hoje':'Iniciar teoria')+'</button></div>'
  }).join('')+'</div>';
 }
-function setCalendarMode(mode){calendarMode=mode;document.getElementById('view-week').classList.toggle('active',mode==='week');document.getElementById('view-month').classList.toggle('active',mode==='month');renderCalendar()}
+function setCalendarMode(mode){calendarMode=mode;document.getElementById('view-week').classList.toggle('active',mode==='week');document.getElementById('view-month').classList.toggle('active',mode==='month');loadCalendar()}
 function green(p){if(p<=0)return '#f0fdf4';if(p<=30)return '#dcfce7';if(p<=50)return '#bbf7d0';if(p<=75)return '#86efac';if(p<100)return '#4ade80';return '#15803d'}
 async function loadCalendar(){
  const now=today(),d=fromKey(now),start=calendarMode==='week'?addDays(now,-((d.getDay()+6)%7)):now.slice(0,8)+'01';
