@@ -72,14 +72,14 @@
         .btn-logout { background: transparent; color: #ef4444; border: 1px solid #fca5a5; padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; }
         .btn-logout:hover { background: #fef2f2; }
 
-        .main-container { max-width: 1040px; margin: 20px auto; padding: 0 20px; width: 100%; flex: 1; display: flex; flex-direction: column; }
+        .main-container { width:100%; max-width:none; margin:20px 0; padding:0 clamp(14px,2.2vw,34px); flex:1; display:flex; flex-direction:column; min-width:0; }
         .section-title { font-size: 18px; font-weight: 800; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; color: #111827; }
 
         /* BARRA SUPERIOR DE NAVEGAÇÃO */
         .nav-top-bar {
-            position: sticky;
-            top: 65px;
-            z-index: 950;
+            position: relative;
+            top: auto;
+            z-index: 10;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -389,7 +389,7 @@
         /* Modo Missões: a rolagem fica somente dentro do iframe. */
         body.missoes-open { height:100vh; overflow:hidden; }
         body.missoes-open #main-screen { height:100vh; display:flex; flex-direction:column; overflow:hidden; }
-        body.missoes-open .main-container { flex:1; min-height:0; overflow:hidden; margin:10px auto; }
+        body.missoes-open .main-container { width:100%; max-width:none; flex:1; min-height:0; overflow:hidden; margin:10px 0 0; padding:0 clamp(10px,1.5vw,22px); }
         body.missoes-open #nivel-missoes { flex:1; min-height:0; display:flex; flex-direction:column; }
         body.missoes-open #iframe-missoes { display:block; flex:1; min-height:0; height:100% !important; }
         body.missoes-open .footer-tatico { display:none; }
