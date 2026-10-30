@@ -89,7 +89,7 @@ const SUPABASE_URL='https://npedrsbixoaqupljsnpt.supabase.co';
 const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5wZWRyc2JpeG9hcXVwbGpzbnB0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI1MTUzNTIsImV4cCI6MjEwODA5MTM1Mn0.Sthx6-Owgs4cz-jj3wVmUxxQX3V8wq4aQqiMJmnxtjw';
 const db=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 let selectedMission=null, selectedDiscipline='', allSubjects=[], allCycles=[], missionsToday=[];
-const today=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'America/Recife',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+const today=()=>{const p=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Recife',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());const v={};p.forEach(x=>{v[x.type]=x.value});return v.year+'-'+v.month+'-'+v.day};
 const fmtDate=(s)=>s?new Date(s+'T12:00:00').toLocaleDateString('pt-BR',{timeZone:'America/Recife'}):'—';
 const esc=(v)=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function aviso(msg,erro){const el=document.getElementById('alert');el.textContent=msg;el.className='notice'+(erro?' error':'');el.classList.remove('hidden');}
@@ -176,7 +176,7 @@ async function confirmarConclusao(){
  const a=selectedMission.tipo_evento==='QUESTOES'?Number(document.getElementById('questions-right').value):0;
  const err=document.getElementById('modal-error');
  if(!Number.isInteger(h)||!Number.isInteger(m)||h<0||m<0||m>59||tempo<=0){err.textContent='Informe um tempo válido maior que zero.';err.classList.remove('hidden');return}
- if(!Number.isInteger(q)||!Number.isInteger(a)||q<0||a<0||a>q){err.textContent='Confira a quantidade de questões e acertos.';err.classList.remove('hidden');return}
+ if(!Number.isInteger(q)||!Number.isInteger(a)||q<1||a<0||a>q){err.textContent='Informe pelo menos uma questão e confira a quantidade de acertos.';err.classList.remove('hidden');return}
  const btn=document.getElementById('confirm-btn');btn.disabled=true;btn.textContent='Salvando...';
  const {error}=await db.rpc('fn_concluir_missao',{p_cronograma_id:selectedMission.cronograma_id,p_tempo_minutos:tempo,p_questoes_feitas:q,p_acertos:a});
  btn.disabled=false;btn.textContent='Salvar conclusão';
