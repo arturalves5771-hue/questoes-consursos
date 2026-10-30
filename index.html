@@ -446,6 +446,17 @@
                 <!-- 1. SAUDAÇÃO -->
                 <h2 class="dash-welcome-title">Bem-vinda de volta, <span id="dash-user-name">Waleska</span> 👋</h2>
 
+                <!-- MISSÕES DO DIA -->
+                <section id="secao-missoes" style="margin-bottom:24px;">
+                    <div class="card-item" onclick="abrirMissoes()" style="display:flex;align-items:center;justify-content:space-between;gap:16px;background:linear-gradient(110deg,#1e1b4b,#312e81);border:1px solid #4c1d95;color:white;">
+                        <div>
+                            <div style="font-size:18px;font-weight:800;margin-bottom:5px;color:white;">🎯 Missões do Dia</div>
+                            <div style="font-size:13px;color:#ddd6fe;">Teoria, revisões e questões organizadas automaticamente.</div>
+                        </div>
+                        <div style="font-size:26px;color:#c4b5fd;">➜</div>
+                    </div>
+                </section>
+
                 <!-- 2. SEÇÃO DE QUESTÕES E PROVAS -->
                 <section id="secao-questoes" style="margin-bottom:24px;">
                     <h3 class="section-title" style="margin-bottom:12px;">📝 Questões</h3>
@@ -598,6 +609,13 @@
                 <div id="conteudo-relatorio"></div>
             </div>
 
+            <!-- MISSÕES DO DIA -->
+            <div id="nivel-missoes" class="hidden" style="width:100%;">
+                <iframe id="iframe-missoes" title="Missões do Dia" src="about:blank"
+                    style="width:100%;height:calc(100vh - 150px);min-height:950px;border:0;border-radius:14px;background:#f5f6fa;"
+                    loading="lazy"></iframe>
+            </div>
+
             <!-- RODAPÉ TÁTICO ESTILOSO -->
             <footer class="footer-tatico">
                 <div>🦅 <b>Estratégia Penal</b> — Caderno Tático &copy; 2026</div>
@@ -686,6 +704,8 @@
                             abrirListaAulas(event.state.disciplinaAulas, true);
                         }
                     });
+                 else if (destNivel === 8) {
+                    // O módulo permanece carregado no iframe ao navegar de volta.
                 }
             } else {
                 carregarProvas(true);
@@ -1834,7 +1854,7 @@ async function selecionarProva(itemProva, skipPush = false) {
         }
 
         function atualizarNavegacaoTela() {
-            ['nivel-provas', 'nivel-disciplinas', 'nivel-desafios', 'nivel-blocos', 'nivel-questoes', 'nivel-relatorio', 'nivel-aulas-disciplinas', 'nivel-aulas-lista'].forEach(id => {
+            ['nivel-provas', 'nivel-disciplinas', 'nivel-desafios', 'nivel-blocos', 'nivel-questoes', 'nivel-relatorio', 'nivel-aulas-disciplinas', 'nivel-aulas-lista', 'nivel-missoes'].forEach(id => {
                 document.getElementById(id).classList.add('hidden');
             });
 
@@ -1855,6 +1875,18 @@ async function selecionarProva(itemProva, skipPush = false) {
             if (nivelAtual === 5) document.getElementById('nivel-relatorio').classList.remove('hidden');
             if (nivelAtual === 6) document.getElementById('nivel-aulas-disciplinas').classList.remove('hidden');
             if (nivelAtual === 7) document.getElementById('nivel-aulas-lista').classList.remove('hidden');
+            if (nivelAtual === 8) document.getElementById('nivel-missoes').classList.remove('hidden');
+        }
+
+        function abrirMissoes(skipPush = false) {
+            nivelAtual = 8;
+            atualizarNavegacaoTela();
+            const iframe = document.getElementById('iframe-missoes');
+            if (iframe && (iframe.src === 'about:blank' || !iframe.src.endsWith('/missoes.html'))) {
+                iframe.src = 'missoes.html';
+            }
+            if (!skipPush) history.pushState({ nivel: 8 }, '');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function voltarNivel() {
