@@ -143,7 +143,7 @@ function abrirDisciplinas(){const el=document.getElementById('disciplines');el.s
 function renderSubjectPanel(discipline){
  const rows=allSubjects.filter(x=>x.disciplina===discipline);
  return '<div class="subjects-inline"><div class="subjects-heading">'+esc(discipline)+' · ASSUNTOS</div>'+rows.map(s=>{
-  const cycles=allCycles.filter(c=>c.codrelacional===s.codrelacional),startedToday=cycles.some(c=>c.data_inicio===today());
+  const cycles=allCycles.filter(c=>c.codrelacional===s.codrelacional);
   const startedSelected=cycles.some(c=>c.data_inicio===selectedDate);const state=startedSelected?'Teoria iniciada nesta data':cycles.length?'Já possui '+cycles.length+' ciclo(s) de estudo':'Ainda não iniciado';
   return '<div class="subject"><div style="flex:1"><div class="subject-title">'+esc(s.conteudo)+'</div><div class="subject-state">'+esc(state)+'</div></div><button class="btn '+(startedToday?'light':'primary')+' small" '+(startedSelected?'disabled':'')+' data-cod="'+esc(s.codrelacional)+'" onclick="openStart(this.dataset.cod)">'+(startedSelected?'Iniciado nesta data':'Iniciar teoria em '+fmtDate(selectedDate))+'</button></div>'
  }).join('')+'</div>';
@@ -177,7 +177,7 @@ function renderCalendar(){
   host.innerHTML='<div class="calendar-month">'+names.map(n=>'<div class="weekday">'+n+'</div>').join('')+cells.map(k=>{if(!k)return '<div class="day empty month"></div>';const p=map[k]||0;return '<button type="button" class="day month level-'+dayLevel(p)+' '+(k===now?'today ':'')+(k===selectedDate?'selected ':'')+(k>now?'future':'')+'" '+(k>now?'disabled':'')+' onclick="selectCalendarDate(\''+k+'\')"><strong class="day-number">'+Number(k.slice(8,10))+'</strong><span class="day-percent">'+Math.round(p)+'%</span></button>'}).join('')+'</div>';
  }
 }
-async function selectCalendarDate(k){if(k>today()){notice('Não é permitido selecionar datas futuras.',true);return}selectedDate=k;renderCalendar();await loadSelectedDayActivities()}
+async function selectCalendarDate(k){if(k>today()){notice('Não é permitido selecionar datas futuras.',true);return}selectedDate=k;renderCalendar();await Promise.all([loadSelectedDayActivities(),loadDisciplines()])}
 async function loadSelectedDayActivities(){
  const host=document.getElementById('selected-day-activities');if(!host)return;
  const start=selectedDate+'T00:00:00-03:00',end=addDays(selectedDate,1)+'T00:00:00-03:00';
