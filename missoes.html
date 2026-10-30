@@ -136,7 +136,7 @@ async function carregarDisciplinas(){
  document.getElementById('disc-count').textContent=names.length+' disciplinas';
  document.getElementById('disciplines').innerHTML=names.map(n=>{
   const arr=allSubjects.filter(x=>x.disciplina===n),started=arr.filter(x=>allCycles.some(c=>c.codrelacional===x.codrelacional)).length;
-  return '<button class="disc" onclick="abrirAssuntos('+JSON.stringify(n).replace(/</g,'\\u003c')+')"><strong>'+esc(n)+'</strong><span>'+arr.length+' assuntos · '+started+' já iniciados</span></button>'
+  return '<button class="disc" data-discipline="'+esc(n)+'" onclick="abrirAssuntos(this.dataset.discipline)"><strong>'+esc(n)+'</strong><span>'+arr.length+' assuntos · '+started+' já iniciados</span></button>'
  }).join('')||'<div class="empty">Nenhuma disciplina cadastrada no edital.</div>';
 }
 function abrirDisciplinas(){document.getElementById('subjects-section').classList.remove('hidden');document.getElementById('subjects-title').textContent='Escolha uma disciplina';document.getElementById('subjects-list').innerHTML='<div class="muted">Selecione uma das disciplinas ao lado para visualizar os assuntos.</div>';document.getElementById('subjects-section').scrollIntoView({behavior:'smooth',block:'start'})}
@@ -147,7 +147,7 @@ function abrirAssuntos(nome){
  document.getElementById('subjects-list').innerHTML=rows.map(s=>{
   const ciclos=allCycles.filter(c=>c.codrelacional===s.codrelacional),todayStarted=ciclos.some(c=>c.data_inicio===today());
   const label=todayStarted?'<span class="tag done">INICIADO HOJE</span>':ciclos.length?'<span class="tag pending">ESTUDADO '+ciclos.length+' VEZ(ES)</span>':'<span class="tag pending">NÃO INICIADO</span>';
-  return '<div class="subject"><div style="flex:1"><div class="subject-name">'+esc(s.conteudo)+'</div><div class="subject-info">'+label+'</div></div><button class="btn '+(todayStarted?'light':'primary')+' small" '+(todayStarted?'disabled':'')+' onclick="iniciarTeoria('+JSON.stringify(s.codrelacional)+')">'+(todayStarted?'Iniciado':'Iniciar teoria')+'</button></div>'
+  return '<div class="subject"><div style="flex:1"><div class="subject-name">'+esc(s.conteudo)+'</div><div class="subject-info">'+label+'</div></div><button class="btn '+(todayStarted?'light':'primary')+' small" '+(todayStarted?'disabled':'')+' data-cod="'+esc(s.codrelacional)+'" onclick="iniciarTeoria(this.dataset.cod)">'+(todayStarted?'Iniciado':'Iniciar teoria')+'</button></div>'
  }).join('')||'<div class="empty">Nenhum assunto encontrado.</div>';
  document.getElementById('subjects-section').scrollIntoView({behavior:'smooth',block:'start'});
 }
