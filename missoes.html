@@ -10,13 +10,14 @@
 <style>
 :root{--purple:#6d28d9;--purple-dark:#4c1d95;--ink:#182235;--muted:#64748b;--line:#e7eaf0;--bg:#f5f6fa;--green:#15803d;--red:#b91c1c}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,Arial,sans-serif}button,input{font:inherit}button{cursor:pointer}
-.wrap{max-width:1080px;margin:auto;padding:22px 18px 42px}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:15px;flex-wrap:wrap}
+.wrap{width:100%;max-width:none;margin:0;padding:22px clamp(14px,2.2vw,34px) 42px}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:15px;flex-wrap:wrap}
 .brand{font-size:11px;font-weight:800;letter-spacing:1px;color:var(--purple)}h1{font-size:23px;margin:5px 0 0;font-weight:800;letter-spacing:-.5px}.muted{font-size:12px;color:var(--muted)}
 .btn{border:0;border-radius:10px;padding:10px 14px;font-size:12px;font-weight:700}.primary{background:var(--purple);color:#fff}.primary:hover{background:var(--purple-dark)}.light{background:#fff;border:1px solid var(--line);color:var(--ink)}.light:hover{border-color:var(--purple);color:var(--purple)}.small{padding:8px 11px;font-size:11px}
 .purple-banner{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 19px;background:linear-gradient(105deg,#4c1d95,#7c3aed);color:#fff;border-radius:15px;margin:17px 0 15px;box-shadow:0 7px 18px #6d28d922}.banner-title{font-size:17px;font-weight:800}.banner-sub{font-size:11px;color:#ede9fe;margin-top:4px}.banner-date{font-size:12px;font-weight:700;color:#f5f3ff;text-align:right}
 .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px}.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:0 2px 6px #0f172a06}.kpi-label{font-size:10px;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.45px}.kpi-value{font-size:25px;font-weight:800;margin-top:7px;letter-spacing:-.5px}.kpi-note{font-size:10px;color:var(--muted);margin-top:4px}
 .track{height:7px;border-radius:20px;background:#eef2f7;overflow:hidden;margin-top:9px}.fill{height:100%;background:linear-gradient(90deg,#a78bfa,#6d28d9);border-radius:20px}
 .section{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 12px}.section h2{font-size:15px;margin:0;font-weight:800}.panel{background:white;border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:14px}.calendar-nav{display:flex;align-items:center;gap:6px}.calendar-nav button{width:30px;height:30px;border:1px solid var(--line);border-radius:8px;background:#fff;color:#334155;font-weight:800}.calendar-nav button:disabled{opacity:.35;cursor:not-allowed}.calendar-nav .nav-today{width:auto;padding:0 9px;font-size:10px}.day{cursor:pointer}.day.selected{outline:2px solid #7c3aed;outline-offset:2px}.day.future{opacity:.38;cursor:not-allowed;filter:grayscale(.25)}.selected-day-panel{margin-top:14px;padding:13px;border:1px solid #ddd6fe;background:#fcfbff;border-radius:11px}.selected-day-title{font-size:12px;font-weight:800;color:#4c1d95;margin-bottom:8px}.activity-subject{background:#f5f3ff;border:1px solid #ddd6fe;border-radius:9px;padding:9px 10px;margin:5px 0 7px}.activity-discipline{font-size:10px;font-weight:800;color:#6d28d9;letter-spacing:.35px;text-transform:uppercase}.activity-topic{font-size:12px;font-weight:800;color:#312e81;line-height:1.45;margin-top:3px}
+.subject-metrics{display:flex;flex-wrap:wrap;gap:6px 12px;margin-top:7px;color:#475569;font-size:10px;font-weight:700}.subject-metrics span{background:#f1f5f9;border-radius:6px;padding:4px 7px}
 .toggle{display:flex;gap:4px;padding:3px;background:#f1f5f9;border-radius:9px}.toggle button{border:0;background:transparent;color:#64748b;font-size:10px;font-weight:800;padding:7px 10px;border-radius:7px}.toggle button.active{background:#fff;color:var(--purple);box-shadow:0 1px 3px #0f172a12}
 .calendar-week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:9px}.calendar-month{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:7px}.weekday{text-align:center;color:#64748b;font-size:10px;font-weight:800;padding:5px 0;letter-spacing:.35px}.day{min-width:0;min-height:91px;text-align:center;border:1px solid #dbe3e8;border-radius:13px;padding:10px 4px 9px;background:#f8fafc;color:#334155;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease}.day:hover{transform:translateY(-2px);box-shadow:0 5px 13px #0f172a12;border-color:#94a3b8}.day .day-name{display:block;font-size:9px;font-weight:800;letter-spacing:.55px;opacity:.88}.day .day-number{display:block;font-size:22px;line-height:1.05;font-weight:800;letter-spacing:-.6px}.day .day-percent{display:inline-flex;align-items:center;justify-content:center;min-width:43px;padding:4px 7px;border-radius:20px;background:#ffffffb8;font-size:10px;font-weight:800;line-height:1.1}.day.level-0{background:#f8fafc;border-color:#e2e8f0;color:#475569}.day.level-0 .day-percent{background:#e2e8f0;color:#334155}.day.level-1{background:#dcfce7;border-color:#bbf7d0;color:#14532d}.day.level-1 .day-percent{background:#bbf7d0;color:#14532d}.day.level-2{background:#bbf7d0;border-color:#86efac;color:#14532d}.day.level-2 .day-percent{background:#86efac;color:#14532d}.day.level-3{background:#86efac;border-color:#4ade80;color:#14532d}.day.level-3 .day-percent{background:#4ade80;color:#14532d}.day.level-4{background:#4ade80;border-color:#22c55e;color:#14532d}.day.level-4 .day-percent{background:#22c55e;color:#052e16}.day.level-5{background:#15803d;border-color:#166534;color:#fff}.day.level-5 .day-percent{background:#fff;color:#14532d}.day.today{outline:3px solid var(--purple);outline-offset:2px;box-shadow:0 0 0 5px #6d28d914}.day.empty{visibility:hidden}.day.month{padding:7px 2px;min-height:68px;gap:4px;border-radius:10px}.day.month .day-number{font-size:15px}.day.month .day-percent{min-width:0;padding:3px 5px;font-size:9px}
 .mission{display:flex;align-items:center;gap:11px;padding:12px 0;border-bottom:1px solid #eff1f5}.mission:last-child{border-bottom:0}.mission-icon{width:36px;height:36px;display:grid;place-items:center;border-radius:10px;background:#f3e8ff;font-size:17px;flex-shrink:0}.mission-main{flex:1;min-width:0}.mission-name{font-size:12px;font-weight:700;line-height:1.45}.mission-meta{font-size:10px;color:var(--muted);margin-top:4px;line-height:1.5}.tag{display:inline-block;border-radius:30px;padding:4px 7px;font-size:9px;font-weight:800;white-space:nowrap}.late{background:#fee2e2;color:#991b1b}.done{background:#dcfce7;color:#166534}.pending{background:#f1f5f9;color:#475569}.bonus{background:#fef3c7;color:#92400e}
@@ -35,6 +36,9 @@
   <div class="card"><div class="kpi-label">Horas estudadas</div><div class="kpi-value" id="kpi-hours">0h</div><div class="kpi-note">Tempo total registrado</div></div>
   <div class="card"><div class="kpi-label">Dias de estudo</div><div class="kpi-value" id="kpi-days">0</div><div class="kpi-note">Dias com atividade registrada</div></div>
   <div class="card"><div class="kpi-label">Missões concluídas hoje</div><div class="kpi-value" id="kpi-today">0%</div><div class="kpi-note" id="today-note">0 de 0 missões</div></div>
+  <div class="card"><div class="kpi-label">Questões respondidas</div><div class="kpi-value" id="kpi-questions">0</div><div class="kpi-note">Total registrado nas atividades</div></div>
+  <div class="card"><div class="kpi-label">Percentual de acertos</div><div class="kpi-value" id="kpi-accuracy">0%</div><div class="kpi-note" id="accuracy-note">0 acertos em 0 questões</div></div>
+  <div class="card"><div class="kpi-label">Minutos dedicados</div><div class="kpi-value" id="kpi-minutes">0</div><div class="kpi-note">Tempo total de estudo registrado</div></div>
  </section>
  <section class="panel">
   <div class="section"><div><h2>📅 Minha constância</h2><div class="muted" id="calendar-caption">Acompanhe seu ritmo de estudos</div></div><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><button class="btn primary small" onclick="openAvulsa()">＋ Registrar atividade avulsa</button><div class="calendar-nav"><button id="week-prev" aria-label="Semana anterior" onclick="navigateWeek(-1)">‹</button><button id="week-next" aria-label="Próxima semana" onclick="navigateWeek(1)">›</button><button class="nav-today" onclick="goCurrentWeek()">Hoje</button></div><div class="toggle"><button id="view-week" class="active" onclick="setCalendarMode('week')">Semana</button><button id="view-month" onclick="setCalendarMode('month')">Mês</button></div></div></div>
@@ -79,7 +83,7 @@
 const SUPABASE_URL='https://npedrsbixoaqupljsnpt.supabase.co';
 const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5wZWRyc2JpeG9hcXVwbGpzbnB0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI1MTUzNTIsImV4cCI6MjEwODA5MTM1Mn0.Sthx6-Owgs4cz-jj3wVmUxxQX3V8wq4aQqiMJmnxtjw';
 const db=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
-let allSubjects=[],allCycles=[],missionsToday=[],selectedDiscipline='',selectedMission=null,modalMode='',selectedCod=null,calendarMode='week',historyRows=[],weekOffset=0,selectedDate=null;
+let allSubjects=[],allCycles=[],missionsToday=[],selectedDiscipline='',selectedMission=null,modalMode='',selectedCod=null,calendarMode='week',historyRows=[],weekOffset=0,selectedDate=null,activityStatsByCode={};
 const dateKey=(date=new Date())=>{const p=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Recife',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(date);const o={};p.forEach(x=>o[x.type]=x.value);return o.year+'-'+o.month+'-'+o.day};
 const today=()=>dateKey();
 selectedDate=today();
@@ -103,9 +107,32 @@ async function loadDashboard(){
  if(ed.error||total.error||cycles.error){notice('Não foi possível carregar o percentual do edital: '+(ed.error||total.error||cycles.error).message,true);return}
  const all=total.count||0,done=new Set((cycles.data||[]).map(x=>x.codrelacional)).size,pct=all?done/all*100:0;
  document.getElementById('kpi-edital').textContent=Math.round(pct)+'%';document.getElementById('edital-bar').style.width=pct+'%';document.getElementById('edital-note').textContent=done+' de '+all+' assuntos com teoria iniciada';
- let totalMin=0,days=new Set(),offset=0,batch;
- do{const r=await db.from('tb_atividades').select('data_atividade,tempo_minutos').order('data_atividade',{ascending:true}).range(offset,offset+999);if(r.error){document.getElementById('kpi-hours').textContent='—';document.getElementById('kpi-days').textContent='—';notice('Não foi possível calcular horas e dias: '+r.error.message,true);return}batch=r.data||[];batch.forEach(x=>{totalMin+=Number(x.tempo_minutos)||0;if(x.data_atividade)days.add(dateKey(new Date(x.data_atividade)))});offset+=1000;}while(batch.length===1000);
- document.getElementById('kpi-hours').textContent=minsLabel(totalMin);document.getElementById('kpi-days').textContent=days.size;
+ let totalMin=0,totalQuestions=0,totalCorrect=0,days=new Set(),offset=0,batch,activityRows=[];
+ do{
+  const r=await db.from('tb_atividades').select('data_atividade,tempo_minutos,questoes_feitas,acertos,codrelacional,cronograma_id').order('data_atividade',{ascending:true}).range(offset,offset+999);
+  if(r.error){document.getElementById('kpi-hours').textContent='—';document.getElementById('kpi-days').textContent='—';notice('Não foi possível calcular os indicadores de estudo: '+r.error.message,true);return}
+  batch=r.data||[];activityRows.push(...batch);
+  batch.forEach(x=>{totalMin+=Number(x.tempo_minutos)||0;totalQuestions+=Number(x.questoes_feitas)||0;totalCorrect+=Number(x.acertos)||0;if(x.data_atividade)days.add(dateKey(new Date(x.data_atividade)))});
+  offset+=1000;
+ }while(batch.length===1000);
+ const cronIds=[...new Set(activityRows.filter(x=>!x.codrelacional&&x.cronograma_id!==null&&x.cronograma_id!==undefined).map(x=>x.cronograma_id))];
+ const codByCron={};
+ for(let i=0;i<cronIds.length;i+=500){
+  const cr=await db.from('tb_cronograma_estudo').select('id,codrelacional').in('id',cronIds.slice(i,i+500));
+  if(!cr.error)(cr.data||[]).forEach(x=>codByCron[String(x.id)]=x.codrelacional);
+ }
+ activityStatsByCode={};
+ activityRows.forEach(x=>{
+  const code=x.codrelacional||codByCron[String(x.cronograma_id)];
+  if(!code)return;
+  const st=activityStatsByCode[code]||(activityStatsByCode[code]={minutes:0,questions:0,correct:0});
+  st.minutes+=Number(x.tempo_minutos)||0;st.questions+=Number(x.questoes_feitas)||0;st.correct+=Number(x.acertos)||0;
+ });
+ document.getElementById('kpi-hours').textContent=minsLabel(totalMin);document.getElementById('kpi-minutes').textContent=totalMin.toLocaleString('pt-BR');document.getElementById('kpi-days').textContent=days.size;
+ document.getElementById('kpi-questions').textContent=totalQuestions.toLocaleString('pt-BR');
+ const accuracy=totalQuestions?totalCorrect/totalQuestions*100:0;
+ document.getElementById('kpi-accuracy').textContent=Math.round(accuracy)+'%';
+ document.getElementById('accuracy-note').textContent=totalCorrect.toLocaleString('pt-BR')+' acertos em '+totalQuestions.toLocaleString('pt-BR')+' questões';
 }
 async function loadMissions(){
  const d=today();document.getElementById('banner-date').textContent=fmtDate(d);document.getElementById('mission-date').textContent=fmtDate(d);
@@ -141,7 +168,9 @@ async function loadDisciplines(){
  document.getElementById('disc-count').textContent=names.length+' disciplinas';
  document.getElementById('disciplines').innerHTML=names.map(n=>{
   const arr=allSubjects.filter(x=>x.disciplina===n),started=arr.filter(x=>allCycles.some(c=>c.codrelacional===x.codrelacional)).length;
-  return '<div class="discipline-item"><button class="discipline-row '+(selectedDiscipline===n?'active':'')+'" data-name="'+esc(n)+'" onclick="toggleDiscipline(this.dataset.name)"><div><div class="discipline-name">'+esc(n)+'</div><div class="discipline-count">'+arr.length+' assuntos · '+started+' iniciados</div></div><span class="chevron">'+(selectedDiscipline===n?'⌄':'›')+'</span></button>'+(selectedDiscipline===n?renderSubjectPanel(n):'')+'</div>';
+  const totals=arr.reduce((a,s)=>{const st=activityStatsByCode[s.codrelacional]||{};a.minutes+=st.minutes||0;a.questions+=st.questions||0;a.correct+=st.correct||0;return a},{minutes:0,questions:0,correct:0});
+  const accuracy=totals.questions?Math.round(totals.correct/totals.questions*100):0;
+  return '<div class="discipline-item"><button class="discipline-row '+(selectedDiscipline===n?'active':'')+'" data-name="'+esc(n)+'" onclick="toggleDiscipline(this.dataset.name)"><div><div class="discipline-name">'+esc(n)+'</div><div class="discipline-count">'+arr.length+' assuntos · '+started+' iniciados · '+minsLabel(totals.minutes)+' · '+totals.questions+' questões · '+accuracy+'% acertos</div></div><span class="chevron">'+(selectedDiscipline===n?'⌄':'›')+'</span></button>'+(selectedDiscipline===n?renderSubjectPanel(n):'')+'</div>';
  }).join('')||'<div class="empty">Nenhuma disciplina cadastrada no edital.</div>';
 }
 function toggleDiscipline(n){selectedDiscipline=selectedDiscipline===n?'':n;loadDisciplines();if(selectedDiscipline){requestAnimationFrame(()=>{const row=[...document.querySelectorAll('.discipline-row')].find(x=>x.dataset.name===selectedDiscipline);row?.scrollIntoView({behavior:'smooth',block:'nearest'})})}}
@@ -151,7 +180,8 @@ function renderSubjectPanel(discipline){
  return '<div class="subjects-inline"><div class="subjects-heading">'+esc(discipline)+' · ASSUNTOS</div>'+rows.map(s=>{
   const cycles=allCycles.filter(c=>c.codrelacional===s.codrelacional);
   const startedSelected=cycles.some(c=>c.data_inicio===selectedDate);const state=startedSelected?'Teoria iniciada nesta data':cycles.length?'Já possui '+cycles.length+' ciclo(s) de estudo':'Ainda não iniciado';
-  return '<div class="subject"><div style="flex:1"><div class="subject-title">'+esc(s.conteudo)+'</div><div class="subject-state">'+esc(state)+'</div></div><button class="btn '+(startedSelected?'light':'primary')+' small" '+(startedSelected?'disabled':'')+' data-cod="'+esc(s.codrelacional)+'" onclick="openStart(this.dataset.cod)">'+(startedSelected?'Iniciado nesta data':'Iniciar teoria em '+fmtDate(selectedDate))+'</button></div>'
+  const st=activityStatsByCode[s.codrelacional]||{minutes:0,questions:0,correct:0},accuracy=st.questions?Math.round(st.correct/st.questions*100):0;
+  return '<div class="subject"><div style="flex:1"><div class="subject-title">'+esc(s.conteudo)+'</div><div class="subject-state">'+esc(state)+'</div><div class="subject-metrics"><span>⏱ '+minsLabel(st.minutes)+'</span><span>✍️ '+st.questions+' questões</span><span>✓ '+accuracy+'% de acertos</span></div></div><button class="btn '+(startedSelected?'light':'primary')+' small" '+(startedSelected?'disabled':'')+' data-cod="'+esc(s.codrelacional)+'" onclick="openStart(this.dataset.cod)">'+(startedSelected?'Iniciado nesta data':'Iniciar teoria em '+fmtDate(selectedDate))+'</button></div>'
  }).join('')+'</div>';
 }
 function setCalendarMode(mode){calendarMode=mode;document.getElementById('view-week').classList.toggle('active',mode==='week');document.getElementById('view-month').classList.toggle('active',mode==='month');loadCalendar()}
