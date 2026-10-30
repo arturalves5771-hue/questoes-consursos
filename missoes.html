@@ -146,7 +146,7 @@ function renderSubjectPanel(discipline){
  return '<div class="subjects-inline"><div class="subjects-heading">'+esc(discipline)+' · ASSUNTOS</div>'+rows.map(s=>{
   const cycles=allCycles.filter(c=>c.codrelacional===s.codrelacional);
   const startedSelected=cycles.some(c=>c.data_inicio===selectedDate);const state=startedSelected?'Teoria iniciada nesta data':cycles.length?'Já possui '+cycles.length+' ciclo(s) de estudo':'Ainda não iniciado';
-  return '<div class="subject"><div style="flex:1"><div class="subject-title">'+esc(s.conteudo)+'</div><div class="subject-state">'+esc(state)+'</div></div><button class="btn '+(startedToday?'light':'primary')+' small" '+(startedSelected?'disabled':'')+' data-cod="'+esc(s.codrelacional)+'" onclick="openStart(this.dataset.cod)">'+(startedSelected?'Iniciado nesta data':'Iniciar teoria em '+fmtDate(selectedDate))+'</button></div>'
+  return '<div class="subject"><div style="flex:1"><div class="subject-title">'+esc(s.conteudo)+'</div><div class="subject-state">'+esc(state)+'</div></div><button class="btn '+(startedSelected?'light':'primary')+' small" '+(startedSelected?'disabled':'')+' data-cod="'+esc(s.codrelacional)+'" onclick="openStart(this.dataset.cod)">'+(startedSelected?'Iniciado nesta data':'Iniciar teoria em '+fmtDate(selectedDate))+'</button></div>'
  }).join('')+'</div>';
 }
 function setCalendarMode(mode){calendarMode=mode;document.getElementById('view-week').classList.toggle('active',mode==='week');document.getElementById('view-month').classList.toggle('active',mode==='month');loadCalendar()}
