@@ -38,7 +38,7 @@
   <div class="card"><div class="kpi-label">Missões concluídas hoje</div><div class="kpi-value" id="kpi-today">0%</div><div class="kpi-note" id="today-note">0 de 0 missões</div></div>
   <div class="card"><div class="kpi-label">Questões respondidas</div><div class="kpi-value" id="kpi-questions">0</div><div class="kpi-note">Total registrado nas atividades</div></div>
   <div class="card"><div class="kpi-label">Percentual de acertos</div><div class="kpi-value" id="kpi-accuracy">0%</div><div class="kpi-note" id="accuracy-note">0 acertos em 0 questões</div></div>
-  <div class="card"><div class="kpi-label">Minutos dedicados</div><div class="kpi-value" id="kpi-minutes">0</div><div class="kpi-note">Tempo total de estudo registrado</div></div>
+  <div class="card"><div class="kpi-label">Tempo dedicado às questões</div><div class="kpi-value" id="kpi-minutes">0min</div><div class="kpi-note">Somente atividades de questões</div></div>
  </section>
  <section class="panel">
   <div class="section"><div><h2>📅 Minha constância</h2><div class="muted" id="calendar-caption">Acompanhe seu ritmo de estudos</div></div><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><button class="btn primary small" onclick="openAvulsa()">＋ Registrar atividade avulsa</button><div class="calendar-nav"><button id="week-prev" aria-label="Semana anterior" onclick="navigateWeek(-1)">‹</button><button id="week-next" aria-label="Próxima semana" onclick="navigateWeek(1)">›</button><button class="nav-today" onclick="goCurrentWeek()">Hoje</button></div><div class="toggle"><button id="view-week" class="active" onclick="setCalendarMode('week')">Semana</button><button id="view-month" onclick="setCalendarMode('month')">Mês</button></div></div></div>
@@ -107,12 +107,12 @@ async function loadDashboard(){
  if(ed.error||total.error||cycles.error){notice('Não foi possível carregar o percentual do edital: '+(ed.error||total.error||cycles.error).message,true);return}
  const all=total.count||0,done=new Set((cycles.data||[]).map(x=>x.codrelacional)).size,pct=all?done/all*100:0;
  document.getElementById('kpi-edital').textContent=Math.round(pct)+'%';document.getElementById('edital-bar').style.width=pct+'%';document.getElementById('edital-note').textContent=done+' de '+all+' assuntos com teoria iniciada';
- let totalMin=0,totalQuestions=0,totalCorrect=0,days=new Set(),offset=0,batch,activityRows=[];
+ let totalMin=0,totalQuestionMin=0,totalQuestions=0,totalCorrect=0,days=new Set(),offset=0,batch,activityRows=[];
  do{
-  const r=await db.from('tb_atividades').select('data_atividade,tempo_minutos,questoes_feitas,acertos,codrelacional,cronograma_id').order('data_atividade',{ascending:true}).range(offset,offset+999);
+  const r=await db.from('tb_atividades').select('atividade,data_atividade,tempo_minutos,questoes_feitas,acertos,codrelacional,cronograma_id').order('data_atividade',{ascending:true}).range(offset,offset+999);
   if(r.error){document.getElementById('kpi-hours').textContent='—';document.getElementById('kpi-days').textContent='—';notice('Não foi possível calcular os indicadores de estudo: '+r.error.message,true);return}
   batch=r.data||[];activityRows.push(...batch);
-  batch.forEach(x=>{totalMin+=Number(x.tempo_minutos)||0;totalQuestions+=Number(x.questoes_feitas)||0;totalCorrect+=Number(x.acertos)||0;if(x.data_atividade)days.add(dateKey(new Date(x.data_atividade)))});
+  batch.forEach(x=>{const minutes=Number(x.tempo_minutos)||0;totalMin+=minutes;if(/quest/i.test(String(x.atividade||'')))totalQuestionMin+=minutes;totalQuestions+=Number(x.questoes_feitas)||0;totalCorrect+=Number(x.acertos)||0;if(x.data_atividade)days.add(dateKey(new Date(x.data_atividade)))});
   offset+=1000;
  }while(batch.length===1000);
  const cronIds=[...new Set(activityRows.filter(x=>!x.codrelacional&&x.cronograma_id!==null&&x.cronograma_id!==undefined).map(x=>x.cronograma_id))];
@@ -125,10 +125,10 @@ async function loadDashboard(){
  activityRows.forEach(x=>{
   const code=x.codrelacional||codByCron[String(x.cronograma_id)];
   if(!code)return;
-  const st=activityStatsByCode[code]||(activityStatsByCode[code]={minutes:0,questions:0,correct:0});
-  st.minutes+=Number(x.tempo_minutos)||0;st.questions+=Number(x.questoes_feitas)||0;st.correct+=Number(x.acertos)||0;
+  const st=activityStatsByCode[code]||(activityStatsByCode[code]={minutes:0,questionMinutes:0,questions:0,correct:0});
+  const minutes=Number(x.tempo_minutos)||0;st.minutes+=minutes;if(/quest/i.test(String(x.atividade||'')))st.questionMinutes+=minutes;st.questions+=Number(x.questoes_feitas)||0;st.correct+=Number(x.acertos)||0;
  });
- document.getElementById('kpi-hours').textContent=minsLabel(totalMin);document.getElementById('kpi-minutes').textContent=totalMin.toLocaleString('pt-BR');document.getElementById('kpi-days').textContent=days.size;
+ document.getElementById('kpi-hours').textContent=minsLabel(totalMin);document.getElementById('kpi-minutes').textContent=minsLabel(totalQuestionMin);document.getElementById('kpi-days').textContent=days.size;
  document.getElementById('kpi-questions').textContent=totalQuestions.toLocaleString('pt-BR');
  const accuracy=totalQuestions?totalCorrect/totalQuestions*100:0;
  document.getElementById('kpi-accuracy').textContent=Math.round(accuracy)+'%';
@@ -168,7 +168,7 @@ async function loadDisciplines(){
  document.getElementById('disc-count').textContent=names.length+' disciplinas';
  document.getElementById('disciplines').innerHTML=names.map(n=>{
   const arr=allSubjects.filter(x=>x.disciplina===n),started=arr.filter(x=>allCycles.some(c=>c.codrelacional===x.codrelacional)).length;
-  const totals=arr.reduce((a,s)=>{const st=activityStatsByCode[s.codrelacional]||{};a.minutes+=st.minutes||0;a.questions+=st.questions||0;a.correct+=st.correct||0;return a},{minutes:0,questions:0,correct:0});
+  const totals=arr.reduce((a,s)=>{const st=activityStatsByCode[s.codrelacional]||{};a.minutes+=st.questionMinutes||0;a.questions+=st.questions||0;a.correct+=st.correct||0;return a},{minutes:0,questions:0,correct:0});
   const accuracy=totals.questions?Math.round(totals.correct/totals.questions*100):0;
   return '<div class="discipline-item"><button class="discipline-row '+(selectedDiscipline===n?'active':'')+'" data-name="'+esc(n)+'" onclick="toggleDiscipline(this.dataset.name)"><div><div class="discipline-name">'+esc(n)+'</div><div class="discipline-count">'+arr.length+' assuntos · '+started+' iniciados · '+minsLabel(totals.minutes)+' · '+totals.questions+' questões · '+accuracy+'% acertos</div></div><span class="chevron">'+(selectedDiscipline===n?'⌄':'›')+'</span></button>'+(selectedDiscipline===n?renderSubjectPanel(n):'')+'</div>';
  }).join('')||'<div class="empty">Nenhuma disciplina cadastrada no edital.</div>';
@@ -180,8 +180,8 @@ function renderSubjectPanel(discipline){
  return '<div class="subjects-inline"><div class="subjects-heading">'+esc(discipline)+' · ASSUNTOS</div>'+rows.map(s=>{
   const cycles=allCycles.filter(c=>c.codrelacional===s.codrelacional);
   const startedSelected=cycles.some(c=>c.data_inicio===selectedDate);const state=startedSelected?'Teoria iniciada nesta data':cycles.length?'Já possui '+cycles.length+' ciclo(s) de estudo':'Ainda não iniciado';
-  const st=activityStatsByCode[s.codrelacional]||{minutes:0,questions:0,correct:0},accuracy=st.questions?Math.round(st.correct/st.questions*100):0;
-  return '<div class="subject"><div style="flex:1"><div class="subject-title">'+esc(s.conteudo)+'</div><div class="subject-state">'+esc(state)+'</div><div class="subject-metrics"><span>⏱ '+minsLabel(st.minutes)+'</span><span>✍️ '+st.questions+' questões</span><span>✓ '+accuracy+'% de acertos</span></div></div><button class="btn '+(startedSelected?'light':'primary')+' small" '+(startedSelected?'disabled':'')+' data-cod="'+esc(s.codrelacional)+'" onclick="openStart(this.dataset.cod)">'+(startedSelected?'Iniciado nesta data':'Iniciar teoria em '+fmtDate(selectedDate))+'</button></div>'
+  const st=activityStatsByCode[s.codrelacional]||{questionMinutes:0,questions:0,correct:0},accuracy=st.questions?Math.round(st.correct/st.questions*100):0;
+  return '<div class="subject"><div style="flex:1"><div class="subject-title">'+esc(s.conteudo)+'</div><div class="subject-state">'+esc(state)+'</div><div class="subject-metrics"><span>⏱ '+minsLabel(st.questionMinutes)+'</span><span>✍️ '+st.questions+' questões</span><span>✓ '+accuracy+'% de acertos</span></div></div><button class="btn '+(startedSelected?'light':'primary')+' small" '+(startedSelected?'disabled':'')+' data-cod="'+esc(s.codrelacional)+'" onclick="openStart(this.dataset.cod)">'+(startedSelected?'Iniciado nesta data':'Iniciar teoria em '+fmtDate(selectedDate))+'</button></div>'
  }).join('')+'</div>';
 }
 function setCalendarMode(mode){calendarMode=mode;document.getElementById('view-week').classList.toggle('active',mode==='week');document.getElementById('view-month').classList.toggle('active',mode==='month');loadCalendar()}
