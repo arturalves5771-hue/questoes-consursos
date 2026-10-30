@@ -386,6 +386,14 @@
 
         .error-msg { color: #fca5a5; font-size: 13px; margin-top: 12px; background: #450a0a; padding: 10px; border-radius: 6px; border: 1px solid #7f1d1d; text-align: left; }
 
+        /* Modo Missões: a rolagem fica somente dentro do iframe. */
+        body.missoes-open { height:100vh; overflow:hidden; }
+        body.missoes-open #main-screen { height:100vh; display:flex; flex-direction:column; overflow:hidden; }
+        body.missoes-open .main-container { flex:1; min-height:0; overflow:hidden; margin:10px auto; }
+        body.missoes-open #nivel-missoes { flex:1; min-height:0; display:flex; flex-direction:column; }
+        body.missoes-open #iframe-missoes { display:block; flex:1; min-height:0; height:100% !important; }
+        body.missoes-open .footer-tatico { display:none; }
+
         @media print {
             body { background: white; color: black; }
             .navbar, .nav-top-bar, .btn-relatorio, .btn-logout, .btn-duvida, #dashboard-container, .footer-tatico { display: none !important; }
@@ -612,7 +620,7 @@
             <!-- MISSÕES DO DIA -->
             <div id="nivel-missoes" class="hidden" style="width:100%;">
                 <iframe id="iframe-missoes" title="Missões do Dia" src="about:blank"
-                    style="width:100%;height:calc(100vh - 150px);min-height:950px;border:0;border-radius:14px;background:#f5f6fa;"
+                    style="width:100%;height:100%;min-height:0;border:0;border-radius:14px;background:#f5f6fa;"
                     loading="lazy"></iframe>
             </div>
 
@@ -1854,6 +1862,7 @@ async function selecionarProva(itemProva, skipPush = false) {
         }
 
         function atualizarNavegacaoTela() {
+            document.body.classList.toggle('missoes-open', nivelAtual === 8);
             ['nivel-provas', 'nivel-disciplinas', 'nivel-desafios', 'nivel-blocos', 'nivel-questoes', 'nivel-relatorio', 'nivel-aulas-disciplinas', 'nivel-aulas-lista', 'nivel-missoes'].forEach(id => {
                 document.getElementById(id).classList.add('hidden');
             });
@@ -1879,6 +1888,7 @@ async function selecionarProva(itemProva, skipPush = false) {
         }
 
         function abrirMissoes(skipPush = false) {
+            document.body.classList.add('missoes-open');
             nivelAtual = 8;
             atualizarNavegacaoTela();
             const iframe = document.getElementById('iframe-missoes');
