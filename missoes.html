@@ -10,7 +10,10 @@
 <style>
 :root{--purple:#6d28d9;--purple-dark:#4c1d95;--ink:#182235;--muted:#64748b;--line:#e7eaf0;--bg:#f5f6fa;--green:#15803d;--red:#b91c1c}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,Arial,sans-serif}button,input{font:inherit}button{cursor:pointer}
-.wrap{width:100%;max-width:none;margin:0;padding:22px clamp(14px,2.2vw,34px) 90px}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:15px;flex-wrap:wrap}
+.wrap{width:100%;max-width:none;margin:0;padding:22px clamp(14px,2.2vw,34px) 90px}
+.missions-footer{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin:0 clamp(14px,2.2vw,34px);padding:20px 0 24px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
+.missions-footer b{color:var(--purple)}
+@media(max-width:600px){.missions-footer{font-size:12px;align-items:flex-start;flex-direction:column}}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:15px;flex-wrap:wrap}
 .brand{font-size:11px;font-weight:800;letter-spacing:1px;color:var(--purple)}h1{font-size:23px;margin:5px 0 0;font-weight:800;letter-spacing:-.5px}.muted{font-size:12px;color:var(--muted)}
 .btn{border:0;border-radius:10px;padding:10px 14px;font-size:12px;font-weight:700}.primary{background:var(--purple);color:#fff}.primary:hover{background:var(--purple-dark)}.light{background:#fff;border:1px solid var(--line);color:var(--ink)}.light:hover{border-color:var(--purple);color:var(--purple)}.small{padding:8px 11px;font-size:11px}
 .purple-banner{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 19px;background:linear-gradient(105deg,#4c1d95,#7c3aed);color:#fff;border-radius:15px;margin:17px 0 15px;box-shadow:0 7px 18px #6d28d922}.banner-title{font-size:17px;font-weight:800}.banner-sub{font-size:11px;color:#ede9fe;margin-top:4px}.banner-date{font-size:12px;font-weight:700;color:#f5f3ff;text-align:right}
@@ -57,6 +60,10 @@
   <div id="disciplines" class="discipline-list"><div class="empty">Carregando disciplinas...</div></div>
   <div id="subjects-area"></div>
  </section>
+ <footer class="missions-footer">
+  <div>🦅 <b>Estratégia Penal</b> — Caderno Tático &copy; 2026</div>
+  <div>Sonhar, Estudar &amp; Pertencer 🎯</div>
+ </footer>
 </div>
 <div class="modal-bg" id="modal-bg">
  <div class="modal">
