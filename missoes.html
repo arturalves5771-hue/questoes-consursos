@@ -104,6 +104,23 @@ function notice(msg,error=false){const e=document.getElementById('alert');e.text
 function clearNotice(){document.getElementById('alert').classList.add('hidden')}
 function typeName(t){return t==='TEORIA'?'Teoria':t==='REVISAO'?'Revisão':'Questões'}
 function typeIcon(t){return t==='TEORIA'?'📖':t==='REVISAO'?'🔁':'✍️'}
+function ordenarAssuntosNumericos(lista){
+ const extrairNumeracao=titulo=>{
+  const match=String(titulo||'').match(/^\\s*(\\d+(?:\\.\\d+)*)(?=\\s|\\.|$)/);
+  return match?match[1].split('.').map(Number):null;
+ };
+ return [...lista].sort((a,b)=>{
+  const numA=extrairNumeracao(a.conteudo),numB=extrairNumeracao(b.conteudo);
+  if(!numA&&!numB)return 0;
+  if(!numA)return 1;
+  if(!numB)return -1;
+  const tamanho=Math.min(numA.length,numB.length);
+  for(let i=0;i<tamanho;i++){
+   if(numA[i]!==numB[i])return numA[i]-numB[i];
+  }
+  return numA.length-numB.length;
+ });
+}
 function tag(s){return s==='CONCLUIDO'?'<span class="tag done">CONCLUÍDA</span>':s==='ATRASADO'?'<span class="tag late">ATRASADA</span>':'<span class="tag pending">PENDENTE</span>'}
 async function recarregar(){clearNotice();await Promise.all([loadDashboard(),loadMissions(),loadCalendar()]);await loadDisciplines()}
 async function loadDashboard(){
@@ -184,7 +201,7 @@ async function loadDisciplines(){
 function toggleDiscipline(n){selectedDiscipline=selectedDiscipline===n?'':n;loadDisciplines();if(selectedDiscipline){requestAnimationFrame(()=>{const row=[...document.querySelectorAll('.discipline-row')].find(x=>x.dataset.name===selectedDiscipline);row?.scrollIntoView({behavior:'smooth',block:'nearest'})})}}
 function abrirDisciplinas(){const el=document.getElementById('disciplines');el.scrollIntoView({behavior:'smooth',block:'start'});if(!selectedDiscipline&&allSubjects.length)toggleDiscipline(allSubjects[0].disciplina)}
 function renderSubjectPanel(discipline){
- const rows=allSubjects.filter(x=>x.disciplina===discipline);
+ const rows=ordenarAssuntosNumericos(allSubjects.filter(x=>x.disciplina===discipline));
  return '<div class="subjects-inline"><div class="subjects-heading">'+esc(discipline)+' · ASSUNTOS</div>'+rows.map(s=>{
   const cycles=allCycles.filter(c=>c.codrelacional===s.codrelacional);
   const startedSelected=cycles.some(c=>c.data_inicio===selectedDate);const state=startedSelected?'Teoria iniciada nesta data':cycles.length?'Já possui '+cycles.length+' ciclo(s) de estudo':'Ainda não iniciado';
@@ -274,7 +291,7 @@ function openModal(mode,title,description){
 }
 function openStart(cod){selectedCod=cod;const s=allSubjects.find(x=>x.codrelacional===cod);openModal('start','Iniciar teoria',s?s.disciplina+' · '+s.conteudo:'Informe o tempo dedicado à teoria.')}
 function openAvulsa(){if(!allSubjects.length){notice('Aguarde o carregamento do edital para registrar uma atividade.',true);return}modalMode='avulsa';selectedMission=null;selectedCod=null;document.getElementById('modal-title').textContent='Registrar atividade avulsa';document.getElementById('modal-description').textContent='Atividade fora do cronograma · '+fmtDate(selectedDate);document.getElementById('avulsa-fields').classList.remove('hidden');document.getElementById('avulsa-discipline').innerHTML=[...new Set(allSubjects.map(x=>x.disciplina))].sort().map(n=>'<option value="'+esc(n)+'">'+esc(n)+'</option>').join('');updateAvulsaSubjects();document.getElementById('avulsa-type').value='QUESTOES';toggleAvulsaQuestions();setTempo(45);document.getElementById('questions-done').value='20';document.getElementById('questions-right').value='0';document.getElementById('modal-error').classList.add('hidden');document.getElementById('confirm-btn').textContent='Salvar atividade';document.getElementById('modal-bg').classList.add('open')}
-function updateAvulsaSubjects(){const d=document.getElementById('avulsa-discipline').value;document.getElementById('avulsa-subject').innerHTML=allSubjects.filter(x=>x.disciplina===d).map(x=>'<option value="'+esc(x.codrelacional)+'">'+esc(x.conteudo)+'</option>').join('')}
+function updateAvulsaSubjects(){const d=document.getElementById('avulsa-discipline').value;document.getElementById('avulsa-subject').innerHTML=ordenarAssuntosNumericos(allSubjects.filter(x=>x.disciplina===d)).map(x=>'<option value="'+esc(x.codrelacional)+'">'+esc(x.conteudo)+'</option>').join('')}
 function toggleAvulsaQuestions(){document.getElementById('questions-fields').classList.toggle('hidden',document.getElementById('avulsa-type').value!=='QUESTOES')}
 function openMission(id){selectedMission=missionsToday.find(x=>Number(x.cronograma_id)===Number(id));if(!selectedMission)return;openModal('mission','Concluir '+typeName(selectedMission.tipo_evento).toLowerCase(),selectedMission.disciplina+' · '+selectedMission.conteudo)}
 function closeModal(){document.getElementById('modal-bg').classList.remove('open');document.getElementById('avulsa-fields').classList.add('hidden');selectedMission=null;selectedCod=null}
