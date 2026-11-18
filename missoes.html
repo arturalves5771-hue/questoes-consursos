@@ -229,7 +229,7 @@ async function loadDisciplines(){
  allSubjects=s.data||[];allCycles=c.data||[];disciplineCatalog=cat.data||[];disciplineAliases=als.data||[];
  renderExamFilter();
  const selectedSet=new Set(selectedExams);
- const visible=disciplineCatalog.filter(d=>(d.concursos||[]).every(code=>selectedSet.has(code)));
+ const visible=disciplineCatalog.filter(d=>[...selectedSet].every(code=>(d.concursos||[]).includes(code)));
  document.getElementById('disc-count').textContent=visible.length+' disciplinas · '+selectedExams.length+' concurso(s)';
  document.getElementById('disciplines').innerHTML=visible.map(d=>{
   const sourceNames=disciplineAliases.filter(a=>a.disciplina_id===d.id).map(a=>a.disciplina_origem);
