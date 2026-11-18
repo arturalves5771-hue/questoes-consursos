@@ -213,7 +213,7 @@ function examName(code){
  return code==='PCPE'?'PCPE · Agente':code==='PMPE'?'PMPE · Soldado':'PPPE · Policial Penal';
 }
 function normalizeStudyText(value){
- return String(value||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().replace(/^\\s*\\d+(?:\\.\\d+)*[.)]?\\s*/,'').replace(/[^a-z0-9]+/g,' ').trim();
+ return String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/^\s*\d+(?:\.\d+)*[.)]?\s*/,'').replace(/[^a-z0-9]+/g,' ').trim();
 }
 function findCurrentStudySubject(origin){
  if(!origin||origin.source_tag!=='pppe2026')return null;
