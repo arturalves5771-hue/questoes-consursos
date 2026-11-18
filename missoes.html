@@ -246,7 +246,7 @@ async function loadDisciplines(){
 }
 
 function toggleDiscipline(n){selectedDiscipline=selectedDiscipline===n?'':n;loadDisciplines();if(selectedDiscipline){requestAnimationFrame(()=>{const row=[...document.querySelectorAll('.discipline-row')].find(x=>x.dataset.id===selectedDiscipline);row?.scrollIntoView({behavior:'smooth',block:'nearest'})})}}
-function abrirDisciplinas(){const el=document.getElementById('disciplines');el.scrollIntoView({behavior:'smooth',block:'start'});if(!selectedDiscipline&&disciplineCatalog.length){const first=disciplineCatalog.find(d=>(d.concursos||[]).every(code=>selectedExams.includes(code)));if(first)toggleDiscipline(first.id)}}
+function abrirDisciplinas(){const el=document.getElementById('disciplines');el.scrollIntoView({behavior:'smooth',block:'start'});if(!selectedDiscipline&&disciplineCatalog.length){const first=disciplineCatalog.find(d=>selectedExams.every(code=>(d.concursos||[]).includes(code)));if(first)toggleDiscipline(first.id)}}
 function renderSubjectPanel(disciplineId){
  const discipline=disciplineCatalog.find(d=>d.id===disciplineId);
  const sourceNames=disciplineAliases.filter(a=>a.disciplina_id===disciplineId).map(a=>a.disciplina_origem);
