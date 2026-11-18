@@ -65,7 +65,7 @@
     <button type="button" class="topic-filter-btn" data-count="2" onclick="setTopicCountFilter('2')">Presentes em 2 provas</button>
     <button type="button" class="topic-filter-btn" data-count="1" onclick="setTopicCountFilter('1')">Presentes em 1 prova</button>
    </div>
-   <div class="topic-filter-help">A equivalência é feita pelo conteúdo, não apenas pela igualdade do texto. Em cada assunto, você verá a redação original de cada edital para conferir diferenças de abrangência e detalhamento.</div>
+   <div class="topic-filter-help">A equivalência é feita pelo conteúdo, não apenas pela igualdade do texto. Em cada assunto, você verá a redação original de cada edital. Um tópico amplo pode aparecer em mais de uma equivalência quando abrange subassuntos distintos.</div>
   </div>
   <div id="disciplines" class="discipline-list"><div class="empty">Carregando disciplinas...</div></div>
   <div id="subjects-area"></div>
@@ -219,9 +219,7 @@ function findCurrentStudySubject(origin){
  if(!origin||origin.source_tag!=='pppe2026')return null;
  const topic=normalizeStudyText(origin.assunto_original);
  const discipline=normalizeStudyText(origin.disciplina_original);
- return allSubjects.find(s=>normalizeStudyText(s.conteudo)===topic&&normalizeStudyText(s.disciplina)===discipline)
-  ||allSubjects.find(s=>normalizeStudyText(s.conteudo)===topic)
-  ||null;
+ return allSubjects.find(s=>normalizeStudyText(s.conteudo)===topic&&normalizeStudyText(s.disciplina)===discipline)||null;
 }
 function renderTopicPanel(disciplineId,topics){
  return '<div class="topic-list">'+topics.map(topic=>{
