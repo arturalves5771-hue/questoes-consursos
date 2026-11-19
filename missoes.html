@@ -223,16 +223,8 @@ function findCurrentStudySubject(origin){
 }
 function findCurrentStudySubjectsForTopic(topic){
  const linkedCodes=(allStudyLinks||[]).filter(x=>x.equivalencia_id===topic.id).map(x=>x.codrelacional);
- const linked=linkedCodes.map(code=>allSubjects.find(s=>s.codrelacional===code)).filter(Boolean);
- if(linked.length)return [...new Map(linked.map(s=>[s.codrelacional,s])).values()];
- const origins=topic.origens||[];
- for(const origin of origins){
-  const subject=findCurrentStudySubject(origin);
-  if(subject)return [subject];
- }
- const canonical=normalizeStudyText(topic.assunto_canonico);
- const matches=allSubjects.filter(s=>normalizeStudyText(s.conteudo)===canonical);
- return matches.length===1?matches:[];
+ const linked=linkedCodes.map(code=>allSubjects.find(s=>String(s.codrelacional)===String(code))).filter(Boolean);
+ return [...new Map(linked.map(s=>[s.codrelacional,s])).values()];
 }
 function renderTopicPanel(disciplineId,topics){
  return '<div class="topic-list">'+topics.map(topic=>{
