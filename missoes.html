@@ -102,7 +102,7 @@ const SUPABASE_URL='https://npedrsbixoaqupljsnpt.supabase.co';
 const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5wZWRyc2JpeG9hcXVwbGpzbnB0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI1MTUzNTIsImV4cCI6MjEwODA5MTM1Mn0.Sthx6-Owgs4cz-jj3wVmUxxQX3V8wq4aQqiMJmnxtjw';
 const db=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 let allSubjects=[],allCycles=[],missionsToday=[],selectedDiscipline='',selectedMission=null,modalMode='',selectedCod=null,calendarMode='week',historyRows=[],weekOffset=0,selectedDate=null,activityStatsByCode={};
-let disciplineCatalog=[],allTopicEquivalences=[],topicCountFilter='all';
+let disciplineCatalog=[],allTopicEquivalences=[],allStudyLinks=[],topicCountFilter='all';
 
 const dateKey=(date=new Date())=>{const p=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Recife',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(date);const o={};p.forEach(x=>o[x.type]=x.value);return o.year+'-'+o.month+'-'+o.day};
 const today=()=>dateKey();
@@ -221,37 +221,41 @@ function findCurrentStudySubject(origin){
  const discipline=normalizeStudyText(origin.disciplina_original);
  return allSubjects.find(s=>normalizeStudyText(s.conteudo)===topic&&normalizeStudyText(s.disciplina)===discipline)||null;
 }
-function findCurrentStudySubjectForTopic(topic){
+function findCurrentStudySubjectsForTopic(topic){
+ const linkedCodes=(allStudyLinks||[]).filter(x=>x.equivalencia_id===topic.id).map(x=>x.codrelacional);
+ const linked=linkedCodes.map(code=>allSubjects.find(s=>s.codrelacional===code)).filter(Boolean);
+ if(linked.length)return [...new Map(linked.map(s=>[s.codrelacional,s])).values()];
  const origins=topic.origens||[];
  for(const origin of origins){
   const subject=findCurrentStudySubject(origin);
-  if(subject)return subject;
+  if(subject)return [subject];
  }
- // Segunda tentativa: o nome consolidado pode coincidir com o item do edital
- // mesmo quando a redação original ou a disciplina de origem é diferente.
  const canonical=normalizeStudyText(topic.assunto_canonico);
  const matches=allSubjects.filter(s=>normalizeStudyText(s.conteudo)===canonical);
- return matches.length===1?matches[0]:null;
+ return matches.length===1?matches:[];
 }
 function renderTopicPanel(disciplineId,topics){
  return '<div class="topic-list">'+topics.map(topic=>{
   const exams=[...new Set((topic.origens||[]).map(o=>o.concurso_code))];
   const examChips=exams.map(code=>'<span class="topic-exam-chip">'+examName(code)+'</span>').join('');
-  const studySubject=findCurrentStudySubjectForTopic(topic);
-  const alreadyStarted=studySubject&&allCycles.some(c=>c.codrelacional===studySubject.codrelacional);
-  const action=studySubject?'<div class="topic-card-action"><button class="btn '+(alreadyStarted?'light':'primary')+' small" '+(alreadyStarted?'disabled':'')+' data-cod="'+esc(studySubject.codrelacional)+'" onclick="openStart(this.dataset.cod)">'+(alreadyStarted?'Teoria já iniciada':'📖 Iniciar teoria')+'</button></div>':'';
+  const studySubjects=findCurrentStudySubjectsForTopic(topic);
+  const action=studySubjects.length?'<div class="topic-card-action">'+studySubjects.map(studySubject=>{
+   const alreadyStarted=allCycles.some(c=>c.codrelacional===studySubject.codrelacional);
+   return '<button class="btn '+(alreadyStarted?'light':'primary')+' small" style="margin:2px" '+(alreadyStarted?'disabled':'')+' data-cod="'+esc(studySubject.codrelacional)+'" onclick="openStart(this.dataset.cod)">'+(alreadyStarted?'Teoria já iniciada':'📖 Iniciar teoria')+'</button>';
+  }).join('')+'</div>':'';
   return '<article class="topic-card"><div class="topic-card-main"><div class="topic-card-title">'+esc(topic.assunto_canonico)+'</div><div class="topic-card-meta"><span class="topic-count-badge '+topicCountClass(Number(topic.quantidade_concursos))+'">'+topicCountLabel(Number(topic.quantidade_concursos))+'</span>'+examChips+'</div></div>'+action+'</article>';
  }).join('')+'</div>';
 }
 async function loadDisciplines(){
- const [s,c,cat,topics]=await Promise.all([
+ const [s,c,cat,topics,links]=await Promise.all([
   db.from('edital_verticalizado').select('codrelacional,disciplina,conteudo,status_teoria').order('disciplina').order('conteudo'),
   db.from('tb_ciclos_estudo').select('codrelacional,data_inicio'),
   db.from('edital_disciplina_catalogo').select('id,nome').order('nome'),
-  db.from('vw_edital_assuntos_equivalentes').select('id,disciplina_id,assunto_canonico,observacao,ordem,quantidade_concursos,concursos,origens').order('ordem')
+  db.from('vw_edital_assuntos_equivalentes').select('id,disciplina_id,assunto_canonico,observacao,ordem,quantidade_concursos,concursos,origens').order('ordem'),
+  db.from('edital_assunto_estudo_vinculo').select('equivalencia_id,codrelacional')
  ]);
- if(s.error||cat.error||topics.error){document.getElementById('disciplines').innerHTML='<div class="empty">Erro ao carregar os assuntos equivalentes: '+esc((s.error||cat.error||topics.error).message)+'</div>';return}
- allSubjects=s.data||[];allCycles=c.data||[];disciplineCatalog=cat.data||[];allTopicEquivalences=topics.data||[];
+ if(s.error||cat.error||topics.error||links.error){document.getElementById('disciplines').innerHTML='<div class="empty">Erro ao carregar os assuntos equivalentes: '+esc((s.error||cat.error||topics.error||links.error).message)+'</div>';return}
+ allSubjects=s.data||[];allCycles=c.data||[];disciplineCatalog=cat.data||[];allTopicEquivalences=topics.data||[];allStudyLinks=links.data||[];
  document.querySelectorAll('#topic-count-filter .topic-filter-btn').forEach(btn=>btn.classList.toggle('active',btn.dataset.count===topicCountFilter));
  const filtered=allTopicEquivalences.filter(t=>topicCountFilter==='all'||Number(t.quantidade_concursos)===Number(topicCountFilter));
  const visibleDisciplines=disciplineCatalog.filter(d=>filtered.some(t=>t.disciplina_id===d.id));
