@@ -224,7 +224,11 @@ function findCurrentStudySubject(origin){
 function findCurrentStudySubjectsForTopic(topic){
  const linkedCodes=[...new Set((allStudyLinks||[]).filter(x=>String(x.equivalencia_id)===String(topic.id)).map(x=>String(x.codrelacional)))];
  const byCode=new Map(allSubjects.map(s=>[String(s.codrelacional),s]));
- return linkedCodes.map(code=>byCode.get(code)).filter(Boolean);
+ const linked=linkedCodes.map(code=>byCode.get(code)).filter(Boolean);
+ // Complementa a tabela com correspondência literal PPPE -> trilha atual:
+ // texto normalizado e disciplina precisam coincidir exatamente.
+ const exactOrigins=(topic.origens||[]).filter(o=>o.source_tag==='pppe2026').map(findCurrentStudySubject).filter(Boolean);
+ return [...new Map([...linked,...exactOrigins].map(s=>[String(s.codrelacional),s])).values()];
 }
 function openTopicTheory(topicId){
  const topic=allTopicEquivalences.find(x=>String(x.id)===String(topicId));
