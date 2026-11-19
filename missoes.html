@@ -227,7 +227,11 @@ function findCurrentStudySubjectForTopic(topic){
   const subject=findCurrentStudySubject(origin);
   if(subject)return subject;
  }
- return null;
+ // Segunda tentativa: o nome consolidado pode coincidir com o item do edital
+ // mesmo quando a redação original ou a disciplina de origem é diferente.
+ const canonical=normalizeStudyText(topic.assunto_canonico);
+ const matches=allSubjects.filter(s=>normalizeStudyText(s.conteudo)===canonical);
+ return matches.length===1?matches[0]:null;
 }
 function renderTopicPanel(disciplineId,topics){
  return '<div class="topic-list">'+topics.map(topic=>{
